@@ -13,7 +13,8 @@
     "build": "npm run build:css && NODE_ENV=production tsup",
     "build:css": "postcss ./src/ui/styles.css -o ./src/ui/styles.processed.css",
     "test": "echo \"No tests yet\"",
-    "serve": "serve"
+    "serve": "serve",
+    "canary": "pnpm run build && npx auto canary --force"
   },
   "files": [
     "dist",
