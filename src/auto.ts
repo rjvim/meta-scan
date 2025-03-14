@@ -4,6 +4,7 @@
 import { MetaScan, init, enableOrDisable } from "./index";
 import { renderUI } from "./ui";
 import type { MetaScanOptions, Corner } from "./types";
+import { logger } from "./utils/logger";
 
 // Set up global object
 if (typeof window !== "undefined") {
@@ -45,10 +46,10 @@ if (typeof window !== "undefined") {
       // Only render UI if auto-enable is true
       if (shouldAutoEnable) {
         renderUI();
-        console.log("MetaScan auto-initialized and enabled");
+        logger.info("MetaScan auto-initialized and enabled");
       } else {
         enableOrDisable(false);
-        console.log("MetaScan initialized but disabled (auto-enable: false)");
+        logger.info("MetaScan initialized but disabled (auto-enable: false)");
       }
     } else {
       // Default initialization with auto-update enabled
@@ -59,7 +60,7 @@ if (typeof window !== "undefined") {
 
       if (shouldAutoEnable) {
         renderUI();
-        console.log("MetaScan auto-initialized with defaults");
+        logger.info("MetaScan auto-initialized with defaults");
       }
     }
   };

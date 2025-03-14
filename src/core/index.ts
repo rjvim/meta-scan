@@ -1,6 +1,7 @@
 /**
  * Core functionality for metadata extraction
  */
+import { logger } from "~/utils/logger";
 import type { MetadataResult } from "../types";
 
 /**
@@ -10,7 +11,7 @@ import type { MetadataResult } from "../types";
  * @returns The extracted metadata object
  */
 export function extractMetadata(): MetadataResult {
-  console.log("Extracting metadata from page");
+  logger.info("Extracting metadata from page");
 
   // Placeholder implementation - will be filled with actual extraction logic
   const metadata: MetadataResult = {
@@ -35,7 +36,7 @@ export function extractMetadata(): MetadataResult {
     extractedAt: new Date().toISOString(), // Always add this
   };
 
-  console.log("Metadata extracted:", metadata);
+  logger.info("Metadata extracted:", metadata);
   return metadata;
 }
 

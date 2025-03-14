@@ -61,7 +61,7 @@ class Logger {
    */
   debug(...args: any[]): void {
     if (!this.options.enabled || this.options.level > LogLevel.DEBUG) return;
-    logger.log(`[${this.options.prefix}:debug]`, ...args);
+    console.debug(`[${this.options.prefix}:debug]`, ...args);
   }
 
   /**
@@ -69,7 +69,7 @@ class Logger {
    */
   info(...args: any[]): void {
     if (!this.options.enabled || this.options.level > LogLevel.INFO) return;
-    logger.log(`[${this.options.prefix}:info]`, ...args);
+    console.info(`[${this.options.prefix}:info]`, ...args);
   }
 
   /**

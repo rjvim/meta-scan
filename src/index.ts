@@ -5,6 +5,7 @@ import type { MetaScanAPI, MetaScanOptions, MetadataResult } from "./types";
 import { extractMetadata } from "./core";
 import { cleanup, initDOMWatcher } from "./utils/dom-watcher";
 import { renderUI } from "./ui";
+import { logger } from "./utils/logger";
 
 // Default options
 const defaultOptions: MetaScanOptions = {
@@ -23,7 +24,7 @@ let options = { ...defaultOptions };
  */
 export function enableOrDisable(enabled: boolean): void {
   // isEnabled = enabled;
-  console.log(`MetaScan ${enabled ? "enabled" : "disabled"}`);
+  logger.info(`MetaScan ${enabled ? "enabled" : "disabled"}`);
 
   if (typeof window === "undefined") return;
 
@@ -43,7 +44,7 @@ export function enableOrDisable(enabled: boolean): void {
     if (window.MetaScan._watchers?.domWatcher) {
       initDOMWatcher((isReload) => {
         // Handler code for DOM changes...
-        console.log(
+        logger.info(
           `MetaScan: Detected ${isReload ? "page reload" : "DOM changes"}`
         );
         // Update metadata...
@@ -69,14 +70,14 @@ export function init(userOptions?: Partial<MetaScanOptions>): void {
     options = { ...options, ...userOptions };
   }
 
-  console.log("MetaScan initialized with options:", options);
+  logger.info("MetaScan initialized with options:", options);
 }
 
 /**
  * Get extracted metadata
  */
 export function getMetadata(): MetadataResult {
-  console.log("Getting metadata");
+  logger.info("Getting metadata");
   return extractMetadata();
 }
 
@@ -85,7 +86,7 @@ export function getMetadata(): MetadataResult {
  */
 export function exportData(format: "json" | "csv" | "text"): string {
   const data = getMetadata();
-  console.log(`Exporting metadata as ${format}`);
+  logger.info(`Exporting metadata as ${format}`);
 
   if (format === "json") {
     return JSON.stringify(data, null, 2);
@@ -121,7 +122,7 @@ export function exportData(format: "json" | "csv" | "text"): string {
  */
 export function configure(newOptions: Partial<MetaScanOptions>): void {
   options = { ...options, ...newOptions };
-  console.log("MetaScan reconfigured with options:", options);
+  logger.info("MetaScan reconfigured with options:", options);
 }
 
 // Create the public API

@@ -7,6 +7,7 @@ import { extractMetadata } from "../core";
 import { App } from "./app";
 import "./styles.css";
 import type { Corner } from "~/types";
+import { logger } from "~/utils/logger";
 
 let container: HTMLElement | null = null;
 let isInitialized = false;
@@ -22,7 +23,7 @@ export function renderUI(): void {
     render(<App initialMetadata={metadata} />, container);
 
     isInitialized = true;
-    console.log("UI rendered");
+    logger.info("UI rendered");
   }
 }
 

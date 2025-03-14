@@ -15,6 +15,7 @@ import {
   BottomLeftIcon,
   BottomRightIcon,
 } from "./icons";
+import { logger } from "~/utils/logger";
 
 export function App({
   initialMetadata = {
@@ -117,7 +118,7 @@ export function App({
   useEffect(() => {
     // Initialize watcher that updates metadata on changes
     initDOMWatcher((isReload) => {
-      console.log(
+      logger.info(
         `MetaScan: Detected ${isReload ? "page reload" : "DOM changes"}`
       );
 

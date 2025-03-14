@@ -1,5 +1,6 @@
 // Import processed CSS
 import processedStyles from "../ui/styles.processed.css";
+import { logger } from "./logger";
 
 // CSS styles to be inserted into shadow DOM
 let cssContent = processedStyles;
@@ -29,7 +30,7 @@ export function createIsolatedContainer(): HTMLElement {
   // Append to document
   document.body.appendChild(container);
 
-  console.log("Shadow DOM container created");
+  logger.info("Shadow DOM container created");
   return mount;
 }
 
@@ -39,7 +40,7 @@ export function createIsolatedContainer(): HTMLElement {
  */
 export function setStyleContent(styles: string): void {
   cssContent = styles;
-  console.log("Shadow DOM styles set");
+  logger.info("Shadow DOM styles set");
 }
 
 /**
@@ -49,6 +50,6 @@ export function cleanup(): void {
   const container = document.getElementById("meta-scan-root");
   if (container) {
     container.remove();
-    console.log("Shadow DOM container removed");
+    logger.info("Shadow DOM container removed");
   }
 }

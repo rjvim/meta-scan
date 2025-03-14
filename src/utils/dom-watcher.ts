@@ -3,6 +3,7 @@
  * src/utils/dom-watcher.ts
  */
 import { debounce } from "./index";
+import { logger } from "./logger";
 
 type MetadataChangeCallback = (isReload: boolean) => void;
 
@@ -112,7 +113,7 @@ export function startObserving(): void {
     });
 
     isObserving = true;
-    console.log("MetaScan: Started observing DOM changes");
+    logger.info("MetaScan: Started observing DOM changes");
   }
 }
 
@@ -124,7 +125,7 @@ export function stopObserving(): void {
 
   observer.disconnect();
   isObserving = false;
-  console.log("MetaScan: Stopped observing DOM changes");
+  logger.info("MetaScan: Stopped observing DOM changes");
 }
 
 /**
