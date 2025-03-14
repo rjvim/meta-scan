@@ -2,18 +2,44 @@
  * Main App component for MetaScan
  */
 import { h } from "preact";
-import { useState } from "preact/hooks";
+import { useState, useEffect } from "preact/hooks";
 import { ToggleButton } from "./toggle-button";
 import type { Corner, MetadataResult, MetadataCategory } from "../types";
+import { initUIState, saveUIState } from "../utils/storage";
 
 interface AppProps {
-  position: Corner;
   metadata: MetadataResult;
 }
 
-export function App({ position, metadata }: AppProps) {
-  const [isOpen, setIsOpen] = useState(false);
+export function App({ metadata }: AppProps) {
+  const [uiState, setUiState] = useState(() =>
+    initUIState({
+      position: "bottom-right",
+      isOpen: false,
+      extractedAt: new Date().toISOString(),
+    })
+  );
+
   const [activeTab, setActiveTab] = useState<MetadataCategory>("general");
+
+  useEffect(() => {
+    saveUIState(uiState);
+  }, [uiState]);
+
+  const togglePanel = () => {
+    setUiState((prev) => ({ ...prev, isOpen: !prev.isOpen }));
+  };
+
+  // const updatePosition = (position: Corner) => {
+  //   setUiState((prev) => ({ ...prev, position }));
+  // };
+
+  const positionClasses = {
+    "top-left": "top-5 left-5",
+    "top-right": "top-5 right-5",
+    "bottom-left": "bottom-5 left-5",
+    "bottom-right": "bottom-5 right-5",
+  };
 
   const MetadataCard = ({
     title,
@@ -44,22 +70,22 @@ export function App({ position, metadata }: AppProps) {
     </div>
   );
 
-  const togglePanel = () => {
-    setIsOpen((prev) => !prev);
-  };
-
   return (
-    <>
+    <div
+      className={`
+      fixed 
+      ${positionClasses[uiState.position]} 
+      flex flex-col items-end // This ensures toggle and panel align correctly
+    `}
+    >
       <ToggleButton
-        position={position}
-        isOpen={isOpen}
+        position={uiState.position}
+        isOpen={uiState.isOpen}
         onToggle={togglePanel}
       />
 
-      {isOpen && (
-        <div
-          className={`meta-scan-app meta-scan-position-${position} meta-scan-fade-in bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 max-w-md`}
-        >
+      {uiState.isOpen && (
+        <div className="w-full max-w-md meta-scan-fade-in bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4">
           <header className="flex justify-between items-center mb-4">
             <h1 className="text-lg font-bold text-meta-primary">MetaScan</h1>
             <button
@@ -108,6 +134,6 @@ export function App({ position, metadata }: AppProps) {
           </main>
         </div>
       )}
-    </>
+    </div>
   );
 }

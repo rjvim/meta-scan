@@ -3,7 +3,6 @@
  * Appears as a floating button on the page
  */
 import { h } from "preact";
-import { useState, useEffect } from "preact/hooks";
 import type { Corner } from "../types";
 
 interface ToggleButtonProps {
@@ -12,18 +11,14 @@ interface ToggleButtonProps {
   onToggle: () => void;
 }
 
-export function ToggleButton({
-  position,
-  isOpen,
-  onToggle,
-}: ToggleButtonProps) {
-  const positionClass = `meta-scan-position-${position}`;
-
+export function ToggleButton({ isOpen, onToggle }: ToggleButtonProps) {
   return (
     <div
-      className={`meta-scan-toggle ${positionClass} ${
-        isOpen ? "meta-scan-toggle-active" : ""
-      }`}
+      className={`
+        meta-scan-toggle 
+        self-end
+        ${isOpen ? "meta-scan-toggle-active" : ""}
+      `}
       onClick={onToggle}
       role="button"
       tabIndex={0}

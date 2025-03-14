@@ -4,7 +4,13 @@
 
 export type Corner = "top-left" | "top-right" | "bottom-left" | "bottom-right";
 
-export interface MetaScanOptions {
+export interface MetaScanUIState {
+  position: Corner;
+  isOpen: boolean;
+  extractedAt: string;
+}
+
+export interface MetaScanOptions extends Partial<MetaScanUIState> {
   /**
    * Enable/disable scanning
    * @default true
