@@ -169,7 +169,6 @@ const MetadataPanel = ({ metadata, refreshMetadata, theme = "light" }) => {
     { id: "opengraph", label: "Open Graph" },
     { id: "twitter", label: "Twitter" },
     { id: "technical", label: "Technical" },
-    { id: "structured", label: "Structured Data" },
   ];
 
   const renderTabContent = () => {
@@ -214,24 +213,6 @@ const MetadataPanel = ({ metadata, refreshMetadata, theme = "light" }) => {
         return Object.entries(metadata.technical || {}).map(([key, value]) => (
           <MetadataItem key={key} label={key} value={value} />
         ));
-      case "structured":
-        return metadata.structured && metadata.structured.length > 0 ? (
-          <div className="space-y-3">
-            {metadata.structured.map((item, index) => (
-              <div
-                key={index}
-                className="bg-gray-100 dark:bg-gray-800 p-3 rounded overflow-x-auto"
-              >
-                <div className="text-xs mb-1 font-medium">Item {index + 1}</div>
-                <pre className="text-xs">{JSON.stringify(item, null, 2)}</pre>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-xs text-gray-500 dark:text-gray-400 py-2">
-            No structured data found on this page.
-          </div>
-        );
       default:
         return null;
     }

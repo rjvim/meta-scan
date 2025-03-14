@@ -32,7 +32,6 @@ export function extractMetadata(): MetadataResult {
       viewport: getMetaContent("viewport"),
       charset: document.characterSet,
     },
-    structured: [],
     extractedAt: new Date().toISOString(), // Always add this
   };
 

@@ -82,7 +82,6 @@ export function App({
     opengraph: {},
     twitter: {},
     technical: {},
-    structured: [],
     extractedAt: new Date().toISOString(),
   },
 }: {
@@ -265,13 +264,6 @@ export function App({
           >
             {uiState.isOpen ? <CloseIcon /> : <MenuIcon />}
           </button>
-
-          {/* Extraction Timestamp */}
-          {uiState.isOpen && (
-            <div className="text-xs text-gray-500 dark:text-gray-400 ml-1">
-              {new Date(metadata.extractedAt).toLocaleTimeString()}
-            </div>
-          )}
         </div>
       </div>
     </div>

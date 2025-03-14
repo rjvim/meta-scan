@@ -93,8 +93,6 @@ export function exportData(format: "json" | "csv" | "text"): string {
     // Simple CSV conversion for demonstration
     let csv = "Category,Key,Value\n";
     for (const [category, values] of Object.entries(data)) {
-      if (category === "structured") continue; // Skip complex structured data
-
       for (const [key, value] of Object.entries(values)) {
         if (value) {
           csv += `${category},${key},"${String(value).replace(/"/g, '""')}"\n`;
@@ -106,8 +104,6 @@ export function exportData(format: "json" | "csv" | "text"): string {
     // Plain text format
     let text = "MetaScan Metadata Report\n\n";
     for (const [category, values] of Object.entries(data)) {
-      if (category === "structured") continue;
-
       text += `== ${category.toUpperCase()} ==\n`;
       for (const [key, value] of Object.entries(values)) {
         if (value) {

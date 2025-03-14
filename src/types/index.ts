@@ -36,8 +36,7 @@ export type MetadataCategory =
   | "general"
   | "opengraph"
   | "twitter"
-  | "technical"
-  | "structured";
+  | "technical";
 
 /**
  * Main metadata extraction result
@@ -47,7 +46,6 @@ export interface MetadataResult {
   opengraph: OpenGraphMetadata;
   twitter: TwitterMetadata;
   technical: TechnicalMetadata;
-  structured: StructuredData[];
   extractedAt: string;
 }
 
@@ -92,8 +90,6 @@ export interface TechnicalMetadata {
   strictTransportSecurity?: string;
   [key: string]: string | undefined;
 }
-
-export type StructuredData = Record<string, unknown>;
 
 /**
  * Global MetaScan API interface
