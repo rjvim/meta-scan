@@ -1,44 +1,88 @@
-/**
- * Main App component for MetaScan
- */
-import { h } from "preact";
-import { useState, useEffect } from "preact/hooks";
-import { ToggleButton } from "./toggle-button";
-import type { Corner, MetadataResult, MetadataCategory } from "../types";
-import { initUIState, saveUIState } from "../utils/storage";
+import { useState, useEffect, useRef } from "preact/hooks";
+import type { MetadataResult, MetadataCategory } from "../types";
+import { initUIState } from "../utils/storage";
+import { extractMetadata } from "../core";
+import { cn } from "../utils/cn";
 
-interface AppProps {
-  metadata: MetadataResult;
-}
+// Placeholder for icons (replace with actual imports)
+const RefreshCw = () => <svg>refresh icon</svg>;
+const X = () => <svg>close icon</svg>;
 
-export function App({ metadata }: AppProps) {
+export function App({
+  initialMetadata = {
+    general: {},
+    opengraph: {},
+    twitter: {},
+    technical: {},
+    structured: [],
+    extractedAt: new Date().toISOString(),
+  },
+}: {
+  initialMetadata: MetadataResult;
+}) {
   const [uiState, setUiState] = useState(() =>
     initUIState({
-      position: "bottom-right",
+      position: "top-right",
       isOpen: false,
       extractedAt: new Date().toISOString(),
     })
   );
 
-  const [activeTab, setActiveTab] = useState<MetadataCategory>("general");
+  console.log("Metadata changed", initialMetadata);
 
-  useEffect(() => {
-    saveUIState(uiState);
-  }, [uiState]);
+  const [metadata, setMetadata] = useState(initialMetadata);
+  const [activeTab, setActiveTab] = useState<MetadataCategory>("general");
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  // Outside click handler
+  // useEffect(() => {
+  //   const handleClickOutside = (event: MouseEvent) => {
+  //     if (
+  //       panelRef.current &&
+  //       !panelRef.current.contains(event.target as Node) &&
+  //       uiState.isOpen
+  //     ) {
+  //       togglePanel();
+  //     }
+  //   };
+
+  //   document.addEventListener("mousedown", handleClickOutside);
+  //   return () => {
+  //     document.removeEventListener("mousedown", handleClickOutside);
+  //   };
+  // }, [uiState.isOpen]);
 
   const togglePanel = () => {
     setUiState((prev) => ({ ...prev, isOpen: !prev.isOpen }));
   };
 
-  // const updatePosition = (position: Corner) => {
-  //   setUiState((prev) => ({ ...prev, position }));
-  // };
+  const refreshMetadata = () => {
+    const freshMetadata = extractMetadata();
+    setMetadata(freshMetadata);
+    setUiState((prev) => ({
+      ...prev,
+      extractedAt: new Date().toISOString(),
+    }));
+  };
 
-  const positionClasses = {
-    "top-left": "top-5 left-5",
-    "top-right": "top-5 right-5",
-    "bottom-left": "bottom-5 left-5",
-    "bottom-right": "bottom-5 right-5",
+  // Position classes
+  const getContainerPositionClasses = () => {
+    const positionMap = {
+      "top-left": "top-4 left-4",
+      "top-right": "top-4 right-4",
+      "bottom-left": "bottom-4 left-4",
+      "bottom-right": "bottom-4 right-4",
+    };
+    return positionMap[uiState.position];
+  };
+
+  const getPanelPositionClasses = () => {
+    const isTop = uiState.position.startsWith("top");
+    return cn(
+      "absolute w-[500px] max-w-[90vw]",
+      isTop ? "top-full mt-2" : "bottom-full mb-2",
+      uiState.position.endsWith("right") ? "right-0" : "left-0"
+    );
   };
 
   const MetadataCard = ({
@@ -48,19 +92,11 @@ export function App({ metadata }: AppProps) {
     title: string;
     value: unknown;
   }) => (
-    <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
-      <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-        {title}
-      </h3>
-      <div className="text-gray-800 dark:text-gray-200 text-sm">
-        {Array.isArray(value) ? (
-          <ul className="list-disc pl-4 space-y-1">
-            {value.map((item, i) => (
-              <li key={i}>{String(item)}</li>
-            ))}
-          </ul>
-        ) : typeof value === "object" ? (
-          <pre className="text-xs overflow-auto max-h-40">
+    <div className="p-4 bg-gray-800 rounded-lg">
+      <h3 className="text-sm font-medium text-gray-400 mb-2">{title}</h3>
+      <div className="text-white">
+        {typeof value === "object" ? (
+          <pre className="text-xs overflow-auto">
             {JSON.stringify(value, null, 2)}
           </pre>
         ) : (
@@ -72,68 +108,116 @@ export function App({ metadata }: AppProps) {
 
   return (
     <div
-      className={`
-      fixed 
-      ${positionClasses[uiState.position]} 
-      flex flex-col items-end // This ensures toggle and panel align correctly
-    `}
+      ref={panelRef}
+      className={cn("fixed z-50", getContainerPositionClasses())}
     >
-      <ToggleButton
-        position={uiState.position}
-        isOpen={uiState.isOpen}
-        onToggle={togglePanel}
-      />
-
       {uiState.isOpen && (
-        <div className="w-full max-w-md meta-scan-fade-in bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4">
-          <header className="flex justify-between items-center mb-4">
-            <h1 className="text-lg font-bold text-meta-primary">MetaScan</h1>
+        <div
+          className={cn(
+            "bg-black text-white rounded-lg shadow-xl overflow-hidden",
+            "transition-all duration-300 ease-in-out",
+            getPanelPositionClasses(),
+            uiState.isOpen
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-2"
+          )}
+        >
+          {/* Panel Header */}
+          <div className="flex items-center justify-between p-4 border-b border-gray-800">
+            <h2 className="text-lg font-mono">MetaScan</h2>
             <button
-              className="bg-meta-secondary hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded p-1"
               onClick={togglePanel}
+              className="text-gray-400 hover:text-white"
             >
-              ✕
+              <X />
             </button>
-          </header>
+          </div>
 
-          <nav className="flex space-x-2 mb-4 border-b border-gray-100 dark:border-gray-700">
-            {["general", "opengraph", "twitter", "technical", "structured"].map(
-              (tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab as MetadataCategory)}
-                  className={`px-4 py-2 text-sm font-medium transition-colors
-                  ${
-                    activeTab === tab
-                      ? "text-meta-primary border-b-2 border-meta-primary"
-                      : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                  }`}
-                >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                </button>
-              )
-            )}
-          </nav>
-
-          <main className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {Object.entries(metadata[activeTab]).map(([key, value]) => (
-                <MetadataCard
-                  key={key}
-                  title={key.replace(/([a-z])([A-Z])/g, "$1 $2").toUpperCase()}
-                  value={value}
-                />
-              ))}
+          {/* Panel Content */}
+          <div className="flex">
+            {/* Sidebar */}
+            <div className="w-[180px] border-r border-gray-800 p-4">
+              <div className="flex items-center gap-2 p-2 bg-gray-800 rounded mb-2">
+                <span className="text-sm">Extracted</span>
+                <span className="ml-auto text-xs px-1.5 py-0.5 rounded">
+                  {new Date(metadata.extractedAt).toLocaleTimeString()}
+                </span>
+              </div>
             </div>
 
-            {activeTab === "structured" && (
-              <div className="mt-4 text-xs text-gray-500 dark:text-gray-400">
-                Structured data detected: {metadata.structured.length} items
+            {/* Main Content */}
+            <div className="flex-1 p-6">
+              <nav className="flex space-x-2 mb-4 border-b border-gray-700">
+                {(
+                  [
+                    "general",
+                    "opengraph",
+                    "twitter",
+                    "technical",
+                  ] as MetadataCategory[]
+                ).map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={cn(
+                      "px-4 py-2 text-sm transition-colors",
+                      activeTab === tab
+                        ? "text-purple-400 border-b-2 border-purple-400"
+                        : "text-gray-500 hover:text-white"
+                    )}
+                  >
+                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  </button>
+                ))}
+              </nav>
+
+              <div className="grid grid-cols-2 gap-4">
+                {Object.entries(metadata[activeTab]).map(([key, value]) => (
+                  <MetadataCard
+                    key={key}
+                    title={key
+                      .replace(/([a-z])([A-Z])/g, "$1 $2")
+                      .toUpperCase()}
+                    value={value}
+                  />
+                ))}
               </div>
-            )}
-          </main>
+            </div>
+          </div>
         </div>
       )}
+
+      {/* Toggle Bar */}
+      <div className="flex items-center gap-2 bg-black text-white p-2 rounded-lg shadow-lg">
+        {uiState.isOpen && (
+          <button
+            onClick={refreshMetadata}
+            className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-white"
+          >
+            <RefreshCw />
+          </button>
+        )}
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={togglePanel}
+            className="w-8 h-4 bg-gray-700 rounded-full p-0.5 flex items-center"
+          >
+            <div
+              className={cn(
+                "w-3 h-3 rounded-full transition-transform",
+                uiState.isOpen ? "bg-white translate-x-4" : "bg-gray-400"
+              )}
+            />
+          </button>
+        </div>
+
+        <div className="flex items-center gap-1">
+          <span className="text-purple-400 font-mono">
+            {new Date(metadata.extractedAt).toLocaleTimeString()}
+          </span>
+        </div>
+      </div>
     </div>
   );
 }

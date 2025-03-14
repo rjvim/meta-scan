@@ -33,6 +33,7 @@ export function extractMetadata(): MetadataResult {
       charset: document.characterSet,
     },
     structured: [],
+    extractedAt: new Date().toISOString(), // Always add this
   };
 
   console.log("Metadata extracted:", metadata);

@@ -7,7 +7,7 @@ import { extractMetadata } from "./core";
 // Default options
 const defaultOptions: MetaScanOptions = {
   enabled: true,
-  position: "bottom-right",
+  position: "top-right",
   autoOpen: false,
   theme: "auto",
   showPreview: true,

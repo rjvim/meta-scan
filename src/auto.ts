@@ -43,7 +43,7 @@ if (typeof window !== "undefined") {
     } else {
       // Default initialization
       init();
-      renderUI({ position: "bottom-right" });
+      renderUI({ position: "top-right" });
       console.log("MetaScan auto-initialized with defaults");
     }
   };
