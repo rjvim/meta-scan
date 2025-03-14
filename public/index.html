@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="MetaScan Test Page" />
+    <meta property="og:title" content="MetaScan OpenGraph Title" />
+    <meta
+      property="og:description"
+      content="This is a test page for MetaScan library"
+    />
+    <meta property="og:image" content="https://picsum.photos/200/300" />
+    <meta name="twitter:title" content="MetaScan Twitter Title" />
+    <meta
+      name="twitter:description"
+      content="MetaScan Twitter description text"
+    />
+    <title>MetaScan Test Page</title>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+        line-height: 1.6;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      h1 {
+        color: #333;
+      }
+      button {
+        padding: 8px 16px;
+        background-color: #4a6cf7;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #3451b2;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>MetaScan Test Page</h1>
+    <p>This page is used to test the MetaScan library.</p>
+
+    <div>
+      <h2>Test Controls</h2>
+      <button onclick="window.MetaScan.toggle()">Toggle MetaScan</button>
+      <button onclick="console.log(window.MetaScan.getMetadata())">
+        Log Metadata
+      </button>
+    </div>
+
+    <script src="../dist/auto.global.js"></script>
+  </body>
+</html>

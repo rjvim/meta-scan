@@ -1,0 +1,82 @@
+/* Tailwind directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* MetaScan specific styles */
+.meta-scan-app {
+  font-family: system-ui, -apple-system, sans-serif;
+  width: 100%;
+  max-width: 400px;
+  position: fixed;
+  box-sizing: border-box;
+}
+
+/* Toggle button styles */
+.meta-scan-toggle {
+  position: fixed;
+  z-index: 999999;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: theme("colors.meta-primary");
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.meta-scan-toggle:hover {
+  transform: scale(1.1);
+}
+
+/* Positioning classes */
+.meta-scan-position-top-right {
+  top: 20px;
+  right: 20px;
+}
+
+.meta-scan-position-top-left {
+  top: 20px;
+  left: 20px;
+}
+
+.meta-scan-position-bottom-right {
+  bottom: 20px;
+  right: 20px;
+}
+
+.meta-scan-position-bottom-left {
+  bottom: 20px;
+  left: 20px;
+}
+
+/* Animation classes */
+.meta-scan-fade-in {
+  animation: metaScanFadeIn 0.3s forwards;
+}
+
+.meta-scan-fade-out {
+  animation: metaScanFadeOut 0.3s forwards;
+}
+
+@keyframes metaScanFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes metaScanFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
