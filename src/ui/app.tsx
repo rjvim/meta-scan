@@ -150,7 +150,7 @@ export function App({
   // Watch for metadata changes
   useEffect(() => {
     // You might want to log or trigger some UI update when metadata changes
-    console.log("Metadata updated:", metadata);
+    // console.log("Metadata updated:", metadata);
   }, [metadata]);
   const panelRef = useRef<HTMLDivElement>(null);
 
