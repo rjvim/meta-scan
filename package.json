@@ -12,7 +12,8 @@
     "dev:tsup": "tsup --watch",
     "build": "npm run build:css && NODE_ENV=production tsup",
     "build:css": "postcss ./src/ui/styles.css -o ./src/ui/styles.processed.css",
-    "test": "echo \"No tests yet\""
+    "test": "echo \"No tests yet\"",
+    "serve": "serve"
   },
   "files": [
     "dist",
@@ -38,6 +39,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "preact": "^10.19.2"
+    "preact": "^10.19.2",
+    "serve": "^14.2.4"
   }
 }
