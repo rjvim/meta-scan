@@ -2,10 +2,10 @@
  * Main entry point for the MetaScan library
  */
 import type { MetaScanAPI, MetaScanOptions, MetadataResult } from "./types";
-import { extractMetadata } from "./core";
 import { cleanup, initDOMWatcher } from "./utils/dom-watcher";
 import { renderUI } from "./ui";
 import { logger } from "./utils/logger";
+import { extractMetadata } from "./core";
 
 // Default options
 const defaultOptions: MetaScanOptions = {

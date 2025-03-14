@@ -1,5 +1,6 @@
 import { useState } from "preact/hooks";
 import { cn } from "../utils/cn";
+import type { MetadataResult } from "~/types";
 
 // Icons
 const RefreshIcon = () => (
@@ -68,7 +69,15 @@ const JsonIcon = () => (
 );
 
 // Component for metadata item display
-const MetadataItem = ({ label, value, copyable = true }) => {
+const MetadataItem = ({
+  label,
+  value,
+  copyable = true,
+}: {
+  label: string;
+  value: string | number | object | null;
+  copyable?: boolean;
+}) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
@@ -111,7 +120,7 @@ const MetadataItem = ({ label, value, copyable = true }) => {
 };
 
 // Component for metadata preview image
-const MetadataImage = ({ src, alt }) => {
+const MetadataImage = ({ src, alt }: { src: string | null; alt?: string }) => {
   const [error, setError] = useState(false);
 
   if (!src || error) return null;
@@ -136,7 +145,15 @@ const MetadataImage = ({ src, alt }) => {
 };
 
 // Tabs Component
-const Tabs = ({ tabs, activeTab, onTabChange }) => {
+const Tabs = ({
+  tabs,
+  activeTab,
+  onTabChange,
+}: {
+  tabs: { id: string; label: string }[];
+  activeTab: string;
+  onTabChange: (id: string) => void;
+}) => {
   return (
     <div className="flex overflow-x-auto mb-4 border-b border-gray-200 dark:border-gray-700">
       {tabs.map((tab) => (
@@ -158,7 +175,15 @@ const Tabs = ({ tabs, activeTab, onTabChange }) => {
 };
 
 // Main metadata panel component
-const MetadataPanel = ({ metadata, refreshMetadata, theme = "light" }) => {
+const MetadataPanel = ({
+  metadata,
+  refreshMetadata,
+  theme = "light",
+}: {
+  metadata: MetadataResult | null;
+  refreshMetadata: () => void;
+  theme?: "light" | "dark";
+}) => {
   const [activeTab, setActiveTab] = useState("general");
   const [showJSON, setShowJSON] = useState(false);
 
