@@ -1,6 +1,7 @@
+import { h } from "preact";
 import { useState, useEffect, useRef } from "preact/hooks";
-import type { MetadataResult, MetadataCategory } from "../types";
-import { initUIState } from "../utils/storage";
+import type { Corner, MetadataResult, MetadataCategory } from "../types";
+import { initUIState, saveUIState } from "../utils/storage";
 import { extractMetadata } from "../core";
 import { cn } from "../utils/cn";
 
@@ -22,35 +23,21 @@ export function App({
 }) {
   const [uiState, setUiState] = useState(() =>
     initUIState({
-      position: "top-right",
+      position: "bottom-right",
       isOpen: false,
       extractedAt: new Date().toISOString(),
     })
   );
 
-  console.log("Metadata changed", initialMetadata);
-
   const [metadata, setMetadata] = useState(initialMetadata);
   const [activeTab, setActiveTab] = useState<MetadataCategory>("general");
+
+  // Watch for metadata changes
+  useEffect(() => {
+    // You might want to log or trigger some UI update when metadata changes
+    console.log("Metadata updated:", metadata);
+  }, [metadata]);
   const panelRef = useRef<HTMLDivElement>(null);
-
-  // Outside click handler
-  // useEffect(() => {
-  //   const handleClickOutside = (event: MouseEvent) => {
-  //     if (
-  //       panelRef.current &&
-  //       !panelRef.current.contains(event.target as Node) &&
-  //       uiState.isOpen
-  //     ) {
-  //       togglePanel();
-  //     }
-  //   };
-
-  //   document.addEventListener("mousedown", handleClickOutside);
-  //   return () => {
-  //     document.removeEventListener("mousedown", handleClickOutside);
-  //   };
-  // }, [uiState.isOpen]);
 
   const togglePanel = () => {
     setUiState((prev) => ({ ...prev, isOpen: !prev.isOpen }));
@@ -137,11 +124,44 @@ export function App({
           <div className="flex">
             {/* Sidebar */}
             <div className="w-[180px] border-r border-gray-800 p-4">
-              <div className="flex items-center gap-2 p-2 bg-gray-800 rounded mb-2">
-                <span className="text-sm">Extracted</span>
-                <span className="ml-auto text-xs px-1.5 py-0.5 rounded">
-                  {new Date(metadata.extractedAt).toLocaleTimeString()}
-                </span>
+              <div className="flex flex-col space-y-2">
+                {/* Position Switcher */}
+                <div className="bg-gray-800 rounded p-2">
+                  <label className="text-sm text-gray-400 mb-1 block">
+                    Position
+                  </label>
+                  <select
+                    value={uiState.position}
+                    onChange={(e) => {
+                      const newPosition = e.target.value as Corner;
+                      setUiState((prev) => ({
+                        ...prev,
+                        position: newPosition,
+                      }));
+                      saveUIState({ ...uiState, position: newPosition });
+                    }}
+                    className="w-full bg-black text-white p-1 rounded"
+                  >
+                    {[
+                      "top-left",
+                      "top-right",
+                      "bottom-left",
+                      "bottom-right",
+                    ].map((pos) => (
+                      <option key={pos} value={pos}>
+                        {pos}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Extraction Time */}
+                <div className="flex items-center gap-2 p-2 bg-gray-800 rounded">
+                  <span className="text-sm">Extracted</span>
+                  <span className="ml-auto text-xs px-1.5 py-0.5 rounded">
+                    {new Date(metadata.extractedAt).toLocaleTimeString()}
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -171,16 +191,18 @@ export function App({
                 ))}
               </nav>
 
-              <div className="grid grid-cols-2 gap-4">
-                {Object.entries(metadata[activeTab]).map(([key, value]) => (
-                  <MetadataCard
-                    key={key}
-                    title={key
-                      .replace(/([a-z])([A-Z])/g, "$1 $2")
-                      .toUpperCase()}
-                    value={value}
-                  />
-                ))}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {Object.entries(metadata[activeTab] || {}).map(
+                  ([key, value]) => (
+                    <MetadataCard
+                      key={key}
+                      title={key
+                        .replace(/([a-z])([A-Z])/g, "$1 $2")
+                        .toUpperCase()}
+                      value={value}
+                    />
+                  )
+                )}
               </div>
             </div>
           </div>
