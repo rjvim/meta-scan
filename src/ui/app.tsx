@@ -6,10 +6,6 @@ import { cn } from "../utils/cn";
 import { cleanup, initDOMWatcher } from "../utils/dom-watcher";
 import MetadataPanel from "./MetadataPanel";
 
-// Placeholder for icons (replace with actual imports)
-const RefreshCw = () => <svg>refresh icon</svg>;
-const X = () => <svg>close icon</svg>;
-
 const SunIcon = () => (
   <svg
     width="16"

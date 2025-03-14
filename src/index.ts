@@ -10,10 +10,7 @@ import { renderUI } from "./ui";
 const defaultOptions: MetaScanOptions = {
   enabled: true,
   position: "top-right",
-  autoOpen: false,
   theme: "auto",
-  showPreview: true,
-  tabs: ["general", "opengraph", "twitter", "technical", "structured"],
 };
 
 let options = { ...defaultOptions };

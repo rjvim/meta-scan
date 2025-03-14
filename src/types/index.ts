@@ -26,28 +26,10 @@ export interface MetaScanOptions extends Partial<MetaScanUIState> {
   position?: Corner;
 
   /**
-   * Auto open on load
-   * @default false
-   */
-  autoOpen?: boolean;
-
-  /**
    * Theme mode
    * @default 'auto'
    */
   theme?: "auto" | "light" | "dark";
-
-  /**
-   * Show image previews
-   * @default true
-   */
-  showPreview?: boolean;
-
-  /**
-   * Visible tabs
-   * @default ['general', 'opengraph', 'twitter', 'technical', 'structured']
-   */
-  tabs?: Array<MetadataCategory>;
 }
 
 export type MetadataCategory =

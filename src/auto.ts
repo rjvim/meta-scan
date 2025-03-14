@@ -31,10 +31,6 @@ if (typeof window !== "undefined") {
         options.position = scriptTag.dataset.position as Corner;
       }
 
-      if (scriptTag.dataset.autoOpen === "true") {
-        options.autoOpen = true;
-      }
-
       if (scriptTag.dataset.autoUpdate !== "false") {
         options.autoUpdate = true;
       }
