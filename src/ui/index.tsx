@@ -1,8 +1,8 @@
 /**
  * UI components for MetaScan
  */
-import { render, h } from "preact";
-import { createIsolatedContainer, cleanup } from "../utils/shadow-dom";
+import { render } from "preact";
+import { createIsolatedContainer } from "../utils/shadow-dom";
 import { extractMetadata } from "../core";
 import { App } from "./app";
 import "./styles.css";
