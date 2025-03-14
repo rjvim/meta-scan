@@ -7,6 +7,7 @@ export type Corner = "top-left" | "top-right" | "bottom-left" | "bottom-right";
 export interface MetaScanUIState {
   position: Corner;
   isOpen: boolean;
+  theme: string;
   extractedAt: string;
 }
 

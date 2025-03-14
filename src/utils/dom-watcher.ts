@@ -2,7 +2,6 @@
  * Utility to detect DOM changes and page reloads
  * src/utils/dom-watcher.ts
  */
-import { extractMetadata } from "../core";
 import { debounce } from "./index";
 
 type MetadataChangeCallback = (isReload: boolean) => void;

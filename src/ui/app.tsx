@@ -1,4 +1,3 @@
-import { h } from "preact";
 import { useState, useEffect, useRef } from "preact/hooks";
 import type { Corner, MetadataResult, MetadataCategory } from "../types";
 import { initUIState, saveUIState } from "../utils/storage";
@@ -9,6 +8,77 @@ import { cleanup, initDOMWatcher } from "../utils/dom-watcher";
 // Placeholder for icons (replace with actual imports)
 const RefreshCw = () => <svg>refresh icon</svg>;
 const X = () => <svg>close icon</svg>;
+
+const SunIcon = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <circle cx="12" cy="12" r="4" />
+    <path d="M12 2v2" />
+    <path d="M12 20v2" />
+    <path d="m4.93 4.93 1.41 1.41" />
+    <path d="m17.66 17.66 1.41 1.41" />
+    <path d="M2 12h2" />
+    <path d="M20 12h2" />
+    <path d="m6.34 17.66-1.41 1.41" />
+    <path d="m19.07 4.93-1.41 1.41" />
+  </svg>
+);
+
+const MoonIcon = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+  </svg>
+);
+
+const MenuIcon = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M4 12h16" />
+    <path d="M4 6h16" />
+    <path d="M4 18h16" />
+  </svg>
+);
+
+const CloseIcon = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M18 6 6 18" />
+    <path d="m6 6 12 12" />
+  </svg>
+);
 
 export function App({
   initialMetadata = {
@@ -26,11 +96,57 @@ export function App({
     initUIState({
       position: "bottom-right",
       isOpen: false,
+      theme: "auto",
       extractedAt: new Date().toISOString(),
     })
   );
 
   const [metadata, setMetadata] = useState(initialMetadata);
+  const [loading, setLoading] = useState(false);
+
+  // Theme handling
+  const [theme, setTheme] = useState(() => {
+    if (uiState.theme === "auto") {
+      return window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
+    }
+    return uiState.theme;
+  });
+
+  // Watch for system theme changes
+  useEffect(() => {
+    if (uiState.theme !== "auto") return;
+
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleChange = (e) => {
+      setTheme(e.matches ? "dark" : "light");
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, [uiState.theme]);
+
+  const toggleTheme = () => {
+    const themes = ["light", "dark", "auto"];
+    const currentIndex = themes.indexOf(uiState.theme);
+    const nextTheme = themes[(currentIndex + 1) % themes.length];
+
+    setUiState((prev) => ({ ...prev, theme: nextTheme }));
+
+    if (nextTheme === "auto") {
+      setTheme(
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light"
+      );
+    } else {
+      setTheme(nextTheme);
+    }
+
+    saveUIState({ ...uiState, theme: nextTheme });
+  };
+
   const [activeTab, setActiveTab] = useState<MetadataCategory>("general");
 
   // Watch for metadata changes
@@ -45,12 +161,15 @@ export function App({
   };
 
   const refreshMetadata = () => {
+    setLoading(true);
     const freshMetadata = extractMetadata();
     setMetadata(freshMetadata);
     setUiState((prev) => ({
       ...prev,
       extractedAt: new Date().toISOString(),
     }));
+    saveUIState({ ...uiState, extractedAt: new Date().toISOString() });
+    setLoading(false);
   };
 
   // Position classes
@@ -124,6 +243,15 @@ export function App({
       cleanup(); // Import the cleanup function from dom-watcher
     };
   }, []); // Empty dependency array - run once on mount
+
+  const LoadingIndicator = () => (
+    <div className="absolute inset-0 flex items-center justify-center bg-black/10 backdrop-blur-sm rounded-lg z-10">
+      <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg flex items-center space-x-3">
+        <div className="h-5 w-5 border-2 border-t-transparent border-purple-600 dark:border-purple-400 rounded-full animate-spin"></div>
+        <span className="text-sm">Refreshing metadata...</span>
+      </div>
+    </div>
+  );
 
   return (
     <div
