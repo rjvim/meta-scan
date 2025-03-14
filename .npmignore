@@ -1,0 +1,10 @@
+src/
+test/
+.github/
+.vscode/
+.changeset/
+*.test.ts
+*.spec.ts
+tsconfig.json
+vitest.config.ts
+.windsurfrules

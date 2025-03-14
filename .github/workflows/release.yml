@@ -1,0 +1,100 @@
+name: Release
+
+on: [push]
+
+concurrency:
+  group: all-release
+  cancel-in-progress: true
+
+jobs:
+  check-release:
+    runs-on: ubuntu-latest
+    if: ${{ !contains(github.event.head_commit.message, 'ci skip') && !contains(github.event.head_commit.message, 'skip ci') }}
+    outputs:
+      should_release: ${{ steps.check.outputs.should_release }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 22.x
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10.6.2
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: pnpm-deps-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-deps-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check for version bump
+        id: check
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          echo "Node.js version: $(node -v)"
+          echo "npm version: $(npm -v)"
+          OUTPUT=$(npx auto shipit --dry-run 2>&1 | sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g")
+          echo "Cleaned Output:"
+          echo "$OUTPUT"
+
+          if echo "$OUTPUT" | grep -q "Calculated version bump: none"; then
+            echo "should_release=false" >> $GITHUB_OUTPUT
+            echo "No version bump needed"
+          else
+            echo "should_release=true" >> $GITHUB_OUTPUT
+            echo "Version bump needed"
+          fi
+
+  release:
+    needs: check-release
+    if: needs.check-release.outputs.should_release == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Prepare repository
+        run: git fetch --unshallow --tags
+
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 22.x
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 10.6.2
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: pnpm-deps-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-deps-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Create Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npx auto shipit
