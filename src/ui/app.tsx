@@ -74,7 +74,9 @@ export function App({
   const panelRef = useRef<HTMLDivElement>(null);
 
   const togglePanel = () => {
-    setUiState((prev) => ({ ...prev, isOpen: !prev.isOpen }));
+    const newIsOpen = !uiState.isOpen;
+    setUiState((prev) => ({ ...prev, isOpen: newIsOpen }));
+    saveUIState({ ...uiState, isOpen: newIsOpen });
   };
 
   const changePosition = (position: Corner) => {
