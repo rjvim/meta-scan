@@ -1,11 +1,12 @@
 /**
- * Auto initialization script - used for script tag inclusion
- * This file is the entry point when including via CDN:
- * <script src="//unpkg.com/meta-scan/dist/auto.global.js"></script>
+ * Modified auto.ts to include auto-update configuration
  */
 import { MetaScan, init } from "./index";
 import { renderUI } from "./ui";
 import type { MetaScanOptions, Corner } from "./types";
+
+// Update the MetaScanOptions type in src/types/index.ts to include:
+// autoUpdate?: boolean; // Whether to automatically update on DOM changes
 
 // Set up global object
 if (typeof window !== "undefined") {
@@ -29,6 +30,10 @@ if (typeof window !== "undefined") {
         options.autoOpen = true;
       }
 
+      // Add support for auto-update configuration
+      // Default to true - auto update enabled
+      options.autoUpdate = scriptTag.dataset.autoUpdate !== "false";
+
       if (scriptTag.dataset.theme) {
         options.theme = scriptTag.dataset.theme as any;
       }
@@ -39,10 +44,10 @@ if (typeof window !== "undefined") {
       // Always render the UI with toggle button
       renderUI();
 
-      console.log("MetaScan auto-initialized from script tag");
+      console.log("MetaScan auto-initialized from script tag", options);
     } else {
-      // Default initialization
-      init();
+      // Default initialization with auto-update enabled
+      init({ autoUpdate: true });
       renderUI();
       console.log("MetaScan auto-initialized with defaults");
     }

@@ -16,6 +16,7 @@ export interface MetaScanOptions extends Partial<MetaScanUIState> {
    * @default true
    */
   enabled?: boolean;
+  autoUpdate?: boolean;
 
   /**
    * Position of the toggle button

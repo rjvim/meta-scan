@@ -4,6 +4,7 @@ import type { Corner, MetadataResult, MetadataCategory } from "../types";
 import { initUIState, saveUIState } from "../utils/storage";
 import { extractMetadata } from "../core";
 import { cn } from "../utils/cn";
+import { cleanup, initDOMWatcher } from "../utils/dom-watcher";
 
 // Placeholder for icons (replace with actual imports)
 const RefreshCw = () => <svg>refresh icon</svg>;
@@ -92,6 +93,37 @@ export function App({
       </div>
     </div>
   );
+
+  // Monitor for DOM changes that might affect metadata
+  useEffect(() => {
+    // Initialize watcher that updates metadata on changes
+    initDOMWatcher((isReload) => {
+      console.log(
+        `MetaScan: Detected ${isReload ? "page reload" : "DOM changes"}`
+      );
+
+      // Extract fresh metadata and update state
+      const freshMetadata = extractMetadata();
+      setMetadata(freshMetadata);
+
+      // Update extraction timestamp
+      setUiState((prev) => ({
+        ...prev,
+        extractedAt: new Date().toISOString(),
+      }));
+
+      // Save updated state to storage
+      saveUIState({
+        ...uiState,
+        extractedAt: new Date().toISOString(),
+      });
+    });
+
+    // Cleanup on component unmount
+    return () => {
+      cleanup(); // Import the cleanup function from dom-watcher
+    };
+  }, []); // Empty dependency array - run once on mount
 
   return (
     <div
