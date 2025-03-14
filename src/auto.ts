@@ -1,12 +1,9 @@
 /**
- * Modified auto.ts to include auto-update configuration
+ * Modified auto.ts to include auto-enable configuration
  */
-import { MetaScan, init } from "./index";
+import { MetaScan, init, enableOrDisable } from "./index";
 import { renderUI } from "./ui";
 import type { MetaScanOptions, Corner } from "./types";
-
-// Update the MetaScanOptions type in src/types/index.ts to include:
-// autoUpdate?: boolean; // Whether to automatically update on DOM changes
 
 // Set up global object
 if (typeof window !== "undefined") {
@@ -15,13 +12,21 @@ if (typeof window !== "undefined") {
   // Auto initialize from script tag data attributes if present
   const autoInitialize = () => {
     const scriptTags = document.querySelectorAll('script[src*="meta-scan"]');
+    let shouldAutoEnable = true; // Default to enabled
 
     if (scriptTags.length > 0) {
       const scriptTag = scriptTags[0] as HTMLElement;
 
-      const options: Partial<MetaScanOptions> = {};
+      // Check for data-auto-enable attribute
+      if (scriptTag.dataset.autoEnable === "false") {
+        shouldAutoEnable = false;
+      }
 
-      // Parse data attributes
+      const options: Partial<MetaScanOptions> = {
+        enabled: shouldAutoEnable,
+      };
+
+      // Parse other data attributes
       if (scriptTag.dataset.position) {
         options.position = scriptTag.dataset.position as Corner;
       }
@@ -30,9 +35,9 @@ if (typeof window !== "undefined") {
         options.autoOpen = true;
       }
 
-      // Add support for auto-update configuration
-      // Default to true - auto update enabled
-      options.autoUpdate = scriptTag.dataset.autoUpdate !== "false";
+      if (scriptTag.dataset.autoUpdate !== "false") {
+        options.autoUpdate = true;
+      }
 
       if (scriptTag.dataset.theme) {
         options.theme = scriptTag.dataset.theme as any;
@@ -41,15 +46,25 @@ if (typeof window !== "undefined") {
       // Initialize with extracted options
       init(options);
 
-      // Always render the UI with toggle button
-      renderUI();
-
-      console.log("MetaScan auto-initialized from script tag", options);
+      // Only render UI if auto-enable is true
+      if (shouldAutoEnable) {
+        renderUI();
+        console.log("MetaScan auto-initialized and enabled");
+      } else {
+        enableOrDisable(false);
+        console.log("MetaScan initialized but disabled (auto-enable: false)");
+      }
     } else {
       // Default initialization with auto-update enabled
-      init({ autoUpdate: true });
-      renderUI();
-      console.log("MetaScan auto-initialized with defaults");
+      init({
+        autoUpdate: true,
+        enabled: shouldAutoEnable,
+      });
+
+      if (shouldAutoEnable) {
+        renderUI();
+        console.log("MetaScan auto-initialized with defaults");
+      }
     }
   };
 

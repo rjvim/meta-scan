@@ -541,6 +541,9 @@ video {
 .contents {
   display: contents;
 }
+.hidden {
+  display: none;
+}
 .h-3 {
   height: 0.75rem;
 }

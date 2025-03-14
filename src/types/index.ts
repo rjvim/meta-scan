@@ -130,6 +130,10 @@ export interface MetaScanAPI {
    * Configure options
    */
   configure: (options: Partial<MetaScanOptions>) => void;
+
+  enableOrDisable: (enabled: boolean) => void;
+
+  _watchers?: any;
 }
 
 // Extend global Window interface

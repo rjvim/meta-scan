@@ -3,6 +3,8 @@
  */
 import type { MetaScanAPI, MetaScanOptions, MetadataResult } from "./types";
 import { extractMetadata } from "./core";
+import { cleanup, initDOMWatcher } from "./utils/dom-watcher";
+import { renderUI } from "./ui";
 
 // Default options
 const defaultOptions: MetaScanOptions = {
@@ -15,6 +17,52 @@ const defaultOptions: MetaScanOptions = {
 };
 
 let options = { ...defaultOptions };
+
+// In src/index.ts
+// let isEnabled = true;
+
+/**
+ * Enable or disable MetaScan
+ */
+export function enableOrDisable(enabled: boolean): void {
+  // isEnabled = enabled;
+  console.log(`MetaScan ${enabled ? "enabled" : "disabled"}`);
+
+  if (typeof window === "undefined") return;
+
+  const container = document.getElementById("meta-scan-root");
+
+  if (enabled) {
+    // Re-enable functionality
+    if (!container) {
+      // If container doesn't exist, render UI
+      renderUI();
+    } else {
+      // If container exists but is hidden, show it
+      container.style.display = "";
+    }
+
+    // Re-initialize DOM watcher if it was disabled
+    if (window.MetaScan._watchers?.domWatcher) {
+      initDOMWatcher((isReload) => {
+        // Handler code for DOM changes...
+        console.log(
+          `MetaScan: Detected ${isReload ? "page reload" : "DOM changes"}`
+        );
+        // Update metadata...
+      });
+    }
+  } else {
+    // Disable functionality
+    if (container) {
+      // Hide UI
+      container.style.display = "none";
+    }
+
+    // Clean up DOM watcher
+    cleanup();
+  }
+}
 
 /**
  * Initialize MetaScan with options
@@ -88,4 +136,6 @@ export const MetaScan: MetaScanAPI = {
   getMetadata,
   export: exportData,
   configure,
+  enableOrDisable,
+  _watchers: {}, // For internal use
 };
