@@ -19,16 +19,7 @@ export function renderUI(options: { position: Corner }): void {
     container = createIsolatedContainer();
     const metadata = extractMetadata();
 
-    render(
-      <App
-        position={options.position}
-        metadata={metadata}
-        onClose={() => {
-          hideUI();
-        }}
-      />,
-      container
-    );
+    render(<App position={options.position} metadata={metadata} />, container);
 
     isInitialized = true;
     console.log("UI rendered");

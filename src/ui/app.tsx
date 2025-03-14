@@ -9,10 +9,9 @@ import type { Corner, MetadataResult, MetadataCategory } from "../types";
 interface AppProps {
   position: Corner;
   metadata: MetadataResult;
-  onClose: () => void;
 }
 
-export function App({ position, metadata, onClose }: AppProps) {
+export function App({ position, metadata }: AppProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<MetadataCategory>("general");
 
