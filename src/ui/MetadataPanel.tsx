@@ -1,7 +1,7 @@
 import { useState } from "preact/hooks";
 import { cn } from "../utils/cn";
 
-// Icons (simplified for the artifact)
+// Icons
 const RefreshIcon = () => (
   <svg
     width="16"
@@ -22,8 +22,8 @@ const RefreshIcon = () => (
 
 const CopyIcon = () => (
   <svg
-    width="16"
-    height="16"
+    width="14"
+    height="14"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -38,8 +38,8 @@ const CopyIcon = () => (
 
 const CheckIcon = () => (
   <svg
-    width="16"
-    height="16"
+    width="14"
+    height="14"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -51,13 +51,29 @@ const CheckIcon = () => (
   </svg>
 );
 
+const JsonIcon = () => (
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1" />
+    <path d="M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1" />
+  </svg>
+);
+
 // Component for metadata item display
 const MetadataItem = ({ label, value, copyable = true }) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
     if (!value) return;
-    navigator.clipboard.writeText(value);
+    navigator.clipboard.writeText(String(value));
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -65,23 +81,30 @@ const MetadataItem = ({ label, value, copyable = true }) => {
   if (!value) return null;
 
   return (
-    <div className="mb-3 group">
-      <div className="flex items-center justify-between">
-        <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+    <div className="mb-2 border-b border-gray-200 dark:border-gray-700 pb-2 group">
+      <div className="flex items-center justify-between mb-1">
+        <div className="text-xs font-semibold text-gray-500 dark:text-gray-400">
           {label}
         </div>
         {copyable && (
           <button
             onClick={handleCopy}
-            className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 p-1 rounded"
             aria-label={`Copy ${label}`}
+            title="Copy to clipboard"
           >
             {copied ? <CheckIcon /> : <CopyIcon />}
           </button>
         )}
       </div>
-      <div className="text-sm break-words text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-gray-800 p-2 rounded">
-        {value}
+      <div className="text-xs break-words text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-gray-800 p-2 rounded overflow-x-auto">
+        {typeof value === "object" ? (
+          <pre className="whitespace-pre-wrap">
+            {JSON.stringify(value, null, 2)}
+          </pre>
+        ) : (
+          String(value)
+        )}
       </div>
     </div>
   );
@@ -94,8 +117,8 @@ const MetadataImage = ({ src, alt }) => {
   if (!src || error) return null;
 
   return (
-    <div className="mb-4">
-      <div className="bg-gray-100 dark:bg-gray-800 rounded-md overflow-hidden">
+    <div className="mb-3">
+      <div className="bg-gray-100 dark:bg-gray-800 rounded overflow-hidden">
         <div className="relative aspect-video flex items-center justify-center p-2">
           <img
             src={src}
@@ -112,118 +135,159 @@ const MetadataImage = ({ src, alt }) => {
   );
 };
 
-// Component for metadata section
-const MetadataSection = ({ title, children }) => (
-  <div className="mb-6">
-    <h3 className="text-sm font-semibold mb-3 text-purple-700 dark:text-purple-400 border-b border-gray-200 dark:border-gray-700 pb-1">
-      {title}
-    </h3>
-    <div className="space-y-2">{children}</div>
-  </div>
-);
+// Tabs Component
+const Tabs = ({ tabs, activeTab, onTabChange }) => {
+  return (
+    <div className="flex overflow-x-auto mb-4 border-b border-gray-200 dark:border-gray-700">
+      {tabs.map((tab) => (
+        <button
+          key={tab.id}
+          onClick={() => onTabChange(tab.id)}
+          className={cn(
+            "px-3 py-2 text-xs whitespace-nowrap transition-colors",
+            activeTab === tab.id
+              ? "border-b-2 border-purple-600 dark:border-purple-400 text-purple-700 dark:text-purple-400"
+              : "text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400"
+          )}
+        >
+          {tab.label}
+        </button>
+      ))}
+    </div>
+  );
+};
 
 // Main metadata panel component
 const MetadataPanel = ({ metadata, refreshMetadata, theme = "light" }) => {
+  const [activeTab, setActiveTab] = useState("general");
+  const [showJSON, setShowJSON] = useState(false);
+
   if (!metadata) return null;
+
+  const tabs = [
+    { id: "general", label: "General" },
+    { id: "opengraph", label: "Open Graph" },
+    { id: "twitter", label: "Twitter" },
+    { id: "technical", label: "Technical" },
+    { id: "structured", label: "Structured Data" },
+  ];
+
+  const renderTabContent = () => {
+    if (showJSON) {
+      return (
+        <div className="bg-gray-100 dark:bg-gray-800 p-3 rounded overflow-x-auto text-xs">
+          <pre>{JSON.stringify(metadata, null, 2)}</pre>
+        </div>
+      );
+    }
+
+    switch (activeTab) {
+      case "general":
+        return Object.entries(metadata.general || {}).map(([key, value]) => (
+          <MetadataItem key={key} label={key} value={value} />
+        ));
+      case "opengraph":
+        return (
+          <>
+            <MetadataImage
+              src={metadata.opengraph?.image}
+              alt={metadata.opengraph?.title || metadata.general?.title}
+            />
+            {Object.entries(metadata.opengraph || {}).map(([key, value]) => (
+              <MetadataItem key={key} label={key} value={value} />
+            ))}
+          </>
+        );
+      case "twitter":
+        return (
+          <>
+            <MetadataImage
+              src={metadata.twitter?.image}
+              alt={metadata.twitter?.title || metadata.general?.title}
+            />
+            {Object.entries(metadata.twitter || {}).map(([key, value]) => (
+              <MetadataItem key={key} label={key} value={value} />
+            ))}
+          </>
+        );
+      case "technical":
+        return Object.entries(metadata.technical || {}).map(([key, value]) => (
+          <MetadataItem key={key} label={key} value={value} />
+        ));
+      case "structured":
+        return metadata.structured && metadata.structured.length > 0 ? (
+          <div className="space-y-3">
+            {metadata.structured.map((item, index) => (
+              <div
+                key={index}
+                className="bg-gray-100 dark:bg-gray-800 p-3 rounded overflow-x-auto"
+              >
+                <div className="text-xs mb-1 font-medium">Item {index + 1}</div>
+                <pre className="text-xs">{JSON.stringify(item, null, 2)}</pre>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-xs text-gray-500 dark:text-gray-400 py-2">
+            No structured data found on this page.
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <div
       className={cn(
-        "p-5 overflow-y-auto max-h-[70vh] scrollbar-thin",
+        "overflow-y-auto max-h-[70vh] scrollbar-thin",
         "bg-white dark:bg-gray-900",
         "text-black dark:text-white",
         "transition-colors duration-200",
         theme === "dark" ? "dark" : ""
       )}
     >
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="font-mono text-base font-bold">MetaScan Results</h2>
-        <button
-          onClick={refreshMetadata}
-          className="p-1.5 rounded-full bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-800 transition-colors"
-          aria-label="Refresh Metadata"
-        >
-          <RefreshIcon />
-        </button>
-      </div>
-
-      <MetadataImage
-        src={metadata.opengraph?.image}
-        alt={metadata.opengraph?.title || metadata.general?.title}
-      />
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <MetadataSection title="General">
-            <MetadataItem label="Title" value={metadata.general?.title} />
-            <MetadataItem
-              label="Description"
-              value={metadata.general?.description}
-            />
-            <MetadataItem label="Author" value={metadata.general?.author} />
-            <MetadataItem
-              label="Keywords"
-              value={metadata.general?.keywords?.join(", ")}
-            />
-          </MetadataSection>
-
-          <MetadataSection title="Technical">
-            <MetadataItem label="Charset" value={metadata.technical?.charset} />
-            <MetadataItem
-              label="Viewport"
-              value={metadata.technical?.viewport}
-            />
-            <MetadataItem
-              label="Language"
-              value={metadata.technical?.language}
-            />
-            <MetadataItem
-              label="Canonical URL"
-              value={metadata.technical?.canonical}
-            />
-            <MetadataItem label="Robots" value={metadata.technical?.robots} />
-          </MetadataSection>
-        </div>
-
-        <div>
-          <MetadataSection title="Open Graph">
-            <MetadataItem label="Title" value={metadata.opengraph?.title} />
-            <MetadataItem
-              label="Description"
-              value={metadata.opengraph?.description}
-            />
-            <MetadataItem label="URL" value={metadata.opengraph?.url} />
-            <MetadataItem label="Type" value={metadata.opengraph?.type} />
-            <MetadataItem
-              label="Site Name"
-              value={metadata.opengraph?.siteName}
-            />
-          </MetadataSection>
-
-          <MetadataSection title="Twitter Card">
-            <MetadataItem label="Card" value={metadata.twitter?.card} />
-            <MetadataItem label="Title" value={metadata.twitter?.title} />
-            <MetadataItem
-              label="Description"
-              value={metadata.twitter?.description}
-            />
-            <MetadataItem label="Site" value={metadata.twitter?.site} />
-            <MetadataItem label="Creator" value={metadata.twitter?.creator} />
-          </MetadataSection>
-        </div>
-      </div>
-
-      {metadata.structured && metadata.structured.length > 0 && (
-        <MetadataSection title="Structured Data">
-          <div className="bg-gray-100 dark:bg-gray-800 p-3 rounded overflow-x-auto">
-            <pre className="text-xs">
-              {JSON.stringify(metadata.structured, null, 2)}
-            </pre>
+      {/* Header */}
+      <div className="p-3 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-900 z-10">
+        <div className="flex items-center justify-between">
+          <h2 className="font-mono text-sm font-bold">MetaScan</h2>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setShowJSON(!showJSON)}
+              className={cn(
+                "p-1.5 rounded-full transition-colors",
+                showJSON
+                  ? "bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300"
+                  : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
+              )}
+              title={showJSON ? "Hide JSON" : "Show JSON"}
+            >
+              <JsonIcon />
+            </button>
+            <button
+              onClick={refreshMetadata}
+              className="p-1.5 rounded-full bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-800 transition-colors"
+              aria-label="Refresh Metadata"
+              title="Refresh Metadata"
+            >
+              <RefreshIcon />
+            </button>
           </div>
-        </MetadataSection>
+        </div>
+      </div>
+
+      {/* Tab Navigation */}
+      {!showJSON && (
+        <div className="px-3 pt-2">
+          <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+        </div>
       )}
 
-      <div className="text-xs text-gray-500 dark:text-gray-400 mt-4 text-center">
+      {/* Content */}
+      <div className="p-3 pt-0">{renderTabContent()}</div>
+
+      {/* Footer */}
+      <div className="p-3 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400 text-center">
         Data extracted at {new Date(metadata.extractedAt).toLocaleTimeString()}
       </div>
     </div>

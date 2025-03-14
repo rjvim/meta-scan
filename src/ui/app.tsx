@@ -8,8 +8,8 @@ import MetadataPanel from "./MetadataPanel";
 
 const SunIcon = () => (
   <svg
-    width="16"
-    height="16"
+    width="14"
+    height="14"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -31,8 +31,8 @@ const SunIcon = () => (
 
 const MoonIcon = () => (
   <svg
-    width="16"
-    height="16"
+    width="14"
+    height="14"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -46,16 +46,14 @@ const MoonIcon = () => (
 
 const MenuIcon = () => (
   <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width={24}
-    height={24}
+    width="16"
+    height="16"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
-    strokeWidth={2}
+    strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
-    className="lucide lucide-square-mouse-pointer"
   >
     <path d="M12.034 12.681a.498.498 0 0 1 .647-.647l9 3.5a.5.5 0 0 1-.033.943l-3.444 1.068a1 1 0 0 0-.66.66l-1.067 3.443a.5.5 0 0 1-.943.033z" />
     <path d="M21 11V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h6" />
@@ -64,8 +62,8 @@ const MenuIcon = () => (
 
 const CloseIcon = () => (
   <svg
-    width="16"
-    height="16"
+    width="14"
+    height="14"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -126,32 +124,13 @@ export function App({
   }, [uiState.theme]);
 
   const toggleTheme = () => {
-    const themes = ["light", "dark", "auto"];
-    const currentIndex = themes.indexOf(uiState.theme);
-    const nextTheme = themes[(currentIndex + 1) % themes.length];
+    const nextTheme = theme === "dark" ? "light" : "dark";
 
     setUiState((prev) => ({ ...prev, theme: nextTheme }));
-
-    if (nextTheme === "auto") {
-      setTheme(
-        window.matchMedia("(prefers-color-scheme: dark)").matches
-          ? "dark"
-          : "light"
-      );
-    } else {
-      setTheme(nextTheme);
-    }
-
+    setTheme(nextTheme);
     saveUIState({ ...uiState, theme: nextTheme });
   };
 
-  const [activeTab, setActiveTab] = useState<MetadataCategory>("general");
-
-  // Watch for metadata changes
-  useEffect(() => {
-    // You might want to log or trigger some UI update when metadata changes
-    // console.log("Metadata updated:", metadata);
-  }, [metadata]);
   const panelRef = useRef<HTMLDivElement>(null);
 
   const togglePanel = () => {
@@ -167,7 +146,7 @@ export function App({
       extractedAt: new Date().toISOString(),
     }));
     saveUIState({ ...uiState, extractedAt: new Date().toISOString() });
-    setLoading(false);
+    setTimeout(() => setLoading(false), 300); // Add a small delay for visual feedback
   };
 
   // Position classes
@@ -184,32 +163,11 @@ export function App({
   const getPanelPositionClasses = () => {
     const isTop = uiState.position.startsWith("top");
     return cn(
-      "absolute w-[500px] max-w-[90vw]",
+      "absolute w-[400px] max-w-[90vw]",
       isTop ? "top-full mt-2" : "bottom-full mb-2",
       uiState.position.endsWith("right") ? "right-0" : "left-0"
     );
   };
-
-  const MetadataCard = ({
-    title,
-    value,
-  }: {
-    title: string;
-    value: unknown;
-  }) => (
-    <div className="p-4 bg-gray-800 rounded-lg">
-      <h3 className="text-sm font-medium text-gray-400 mb-2">{title}</h3>
-      <div className="text-white">
-        {typeof value === "object" ? (
-          <pre className="text-xs overflow-auto">
-            {JSON.stringify(value, null, 2)}
-          </pre>
-        ) : (
-          String(value)
-        )}
-      </div>
-    </div>
-  );
 
   // Monitor for DOM changes that might affect metadata
   useEffect(() => {
@@ -238,15 +196,15 @@ export function App({
 
     // Cleanup on component unmount
     return () => {
-      cleanup(); // Import the cleanup function from dom-watcher
+      cleanup();
     };
-  }, []); // Empty dependency array - run once on mount
+  }, []);
 
   const LoadingIndicator = () => (
-    <div className="absolute inset-0 flex items-center justify-center bg-black/10 backdrop-blur-sm rounded-lg z-10">
-      <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg flex items-center space-x-3">
-        <div className="h-5 w-5 border-2 border-t-transparent border-purple-600 dark:border-purple-400 rounded-full animate-spin"></div>
-        <span className="text-sm">Refreshing metadata...</span>
+    <div className="absolute inset-0 flex items-center justify-center bg-black/10 backdrop-blur-sm rounded z-10">
+      <div className="p-2 bg-white dark:bg-gray-800 rounded shadow-lg flex items-center space-x-2">
+        <div className="h-4 w-4 border-2 border-t-transparent border-purple-600 dark:border-purple-400 rounded-full animate-spin"></div>
+        <span className="text-xs">Refreshing...</span>
       </div>
     </div>
   );
@@ -275,7 +233,7 @@ export function App({
         {/* Control Bar */}
         <div
           className={cn(
-            "flex items-center gap-2 p-2 rounded-lg shadow-lg self-end",
+            "flex items-center gap-2 p-1.5 rounded-lg shadow-lg self-end",
             "bg-white dark:bg-gray-800",
             "text-gray-800 dark:text-gray-200",
             "transition-colors duration-200"
@@ -284,31 +242,29 @@ export function App({
           {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
-            className="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 bg-gray-100 dark:bg-gray-700 rounded-full"
-            title={`Current theme: ${uiState.theme}. Click to toggle.`}
+            className="w-6 h-6 flex items-center justify-center text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 bg-gray-100 dark:bg-gray-700 rounded-full"
+            title={`Theme: ${uiState.theme}`}
           >
             {theme === "dark" ? <MoonIcon /> : <SunIcon />}
           </button>
 
           {/* Separator */}
-          <div className="w-px h-6 bg-gray-200 dark:bg-gray-700"></div>
+          <div className="w-px h-4 bg-gray-200 dark:bg-gray-700"></div>
 
           {/* Panel Toggle */}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={togglePanel}
-              className={cn(
-                "w-8 h-8 flex items-center justify-center rounded-full",
-                "transition-colors duration-200",
-                uiState.isOpen
-                  ? "bg-purple-600 text-white hover:bg-purple-700"
-                  : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400"
-              )}
-              title={uiState.isOpen ? "Close panel" : "Open panel"}
-            >
-              {uiState.isOpen ? <CloseIcon /> : <MenuIcon />}
-            </button>
-          </div>
+          <button
+            onClick={togglePanel}
+            className={cn(
+              "w-6 h-6 flex items-center justify-center rounded-full",
+              "transition-colors duration-200",
+              uiState.isOpen
+                ? "bg-purple-600 text-white hover:bg-purple-700"
+                : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400"
+            )}
+            title={uiState.isOpen ? "Close panel" : "Open panel"}
+          >
+            {uiState.isOpen ? <CloseIcon /> : <MenuIcon />}
+          </button>
 
           {/* Extraction Timestamp */}
           {uiState.isOpen && (
