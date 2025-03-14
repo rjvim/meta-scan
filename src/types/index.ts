@@ -58,6 +58,7 @@ export interface MetadataResult {
   twitter: TwitterMetadata;
   technical: TechnicalMetadata;
   structured: StructuredData[];
+  extractedAt: string;
 }
 
 export interface GeneralMetadata {
@@ -66,6 +67,8 @@ export interface GeneralMetadata {
   author?: string;
   keywords?: string[];
   favicons?: string[];
+  themeColor?: string;
+  manifestUrl?: string;
   [key: string]: string | string[] | undefined;
 }
 
@@ -95,6 +98,8 @@ export interface TechnicalMetadata {
   robots?: string;
   language?: string;
   charset?: string;
+  contentSecurityPolicy?: string;
+  strictTransportSecurity?: string;
   [key: string]: string | undefined;
 }
 

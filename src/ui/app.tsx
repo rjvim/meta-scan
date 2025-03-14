@@ -4,7 +4,7 @@
 import { h } from "preact";
 import { useState } from "preact/hooks";
 import { ToggleButton } from "./toggle-button";
-import type { Corner, MetadataResult } from "../types";
+import type { Corner, MetadataResult, MetadataCategory } from "../types";
 
 interface AppProps {
   position: Corner;
@@ -14,6 +14,28 @@ interface AppProps {
 
 export function App({ position, metadata, onClose }: AppProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<MetadataCategory>('general');
+
+  const MetadataCard = ({ title, value }: { title: string; value: unknown }) => (
+    <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
+      <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{title}</h3>
+      <div className="text-gray-800 dark:text-gray-200 text-sm">
+        {Array.isArray(value) ? (
+          <ul className="list-disc pl-4 space-y-1">
+            {value.map((item, i) => (
+              <li key={i}>{String(item)}</li>
+            ))}
+          </ul>
+        ) : typeof value === 'object' ? (
+          <pre className="text-xs overflow-auto max-h-40">
+            {JSON.stringify(value, null, 2)}
+          </pre>
+        ) : (
+          String(value)
+        )}
+      </div>
+    </div>
+  );
 
   const togglePanel = () => {
     setIsOpen((prev) => !prev);
@@ -40,16 +62,38 @@ export function App({ position, metadata, onClose }: AppProps) {
               ✕
             </button>
           </header>
-          <main>
-            <p className="text-gray-800 dark:text-gray-200">
-              Metadata extracted from the page
-            </p>
-            {/* Placeholder for metadata display */}
-            <div className="mt-4 p-3 bg-meta-secondary dark:bg-gray-700 rounded">
-              <p className="text-sm text-gray-700 dark:text-gray-300">
-                Title: {metadata.general.title || "No title found"}
-              </p>
+          
+          <nav className="flex space-x-2 mb-4 border-b border-gray-100 dark:border-gray-700">
+            {['general', 'opengraph', 'twitter', 'technical', 'structured'].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab as MetadataCategory)}
+                className={`px-4 py-2 text-sm font-medium transition-colors
+                  ${activeTab === tab
+                    ? 'text-meta-primary border-b-2 border-meta-primary'
+                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'}`}
+              >
+                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              </button>
+            ))}
+          </nav>
+
+          <main className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {Object.entries(metadata[activeTab]).map(([key, value]) => (
+                <MetadataCard
+                  key={key}
+                  title={key.replace(/([a-z])([A-Z])/g, '$1 $2').toUpperCase()}
+                  value={value}
+                />
+              ))}
             </div>
+            
+            {activeTab === 'structured' && (
+              <div className="mt-4 text-xs text-gray-500 dark:text-gray-400">
+                Structured data detected: {metadata.structured.length} items
+              </div>
+            )}
           </main>
         </div>
       )}
