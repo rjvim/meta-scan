@@ -1,3 +1,15 @@
+# v0.3.1 (Fri Mar 14 2025)
+
+#### 🐛 Bug Fix
+
+- fix: update togglePanel to save UI state on toggle [#4](https://github.com/rjvim/meta-scan/pull/4) ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.3.0 (Fri Mar 14 2025)
 
 #### 🚀 Enhancement
