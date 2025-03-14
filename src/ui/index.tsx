@@ -44,27 +44,3 @@ export function hideUI(): void {
     container.classList.add("meta-scan-hidden");
   }
 }
-
-/**
- * Show the UI
- */
-export function showUI(): void {
-  if (!isInitialized) {
-    renderUI();
-  } else if (container) {
-    container.classList.remove("meta-scan-hidden");
-  }
-}
-
-/**
- * Destroy the UI
- */
-export function destroyUI(): void {
-  if (container) {
-    render(null, container);
-    cleanup();
-    container = null;
-    isInitialized = false;
-    console.log("UI destroyed");
-  }
-}
