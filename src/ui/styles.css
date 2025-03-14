@@ -80,3 +80,38 @@
     opacity: 0;
   }
 }
+
+/* Toggle button styles */
+.meta-scan-toggle {
+  position: fixed;
+  z-index: 999999;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: theme("colors.meta-primary");
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.meta-scan-toggle:hover {
+  transform: scale(1.1);
+}
+
+.meta-scan-toggle-active {
+  background-color: theme("colors.meta-accent");
+  transform: rotate(45deg);
+}
+
+.meta-scan-toggle-active:hover {
+  transform: rotate(45deg) scale(1.1);
+}
+
+/* Hide utility class */
+.meta-scan-hidden {
+  display: none !important;
+}

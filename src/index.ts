@@ -3,7 +3,7 @@
  */
 import type { MetaScanAPI, MetaScanOptions, MetadataResult } from "./types";
 import { extractMetadata } from "./core";
-import { renderUI, destroyUI } from "./ui";
+import { renderUI, showUI, hideUI, toggleUI, destroyUI } from "./ui";
 
 // Default options
 const defaultOptions: MetaScanOptions = {
@@ -34,17 +34,12 @@ export function init(userOptions?: Partial<MetaScanOptions>): void {
  */
 export function show(): void {
   if (!initialized) {
-    renderUI();
+    renderUI({ position: options.position || "bottom-right" });
     initialized = true;
+  } else {
+    showUI();
   }
   console.log("MetaScan panel shown");
-}
-
-/**
- * Hide the metadata panel
- */
-export function hide(): void {
-  console.log("MetaScan panel hidden");
 }
 
 /**
@@ -52,10 +47,20 @@ export function hide(): void {
  */
 export function toggle(): void {
   if (!initialized) {
-    show();
+    renderUI({ position: options.position || "bottom-right" });
+    initialized = true;
   } else {
-    console.log("MetaScan panel toggled");
+    toggleUI();
   }
+  console.log("MetaScan panel toggled");
+}
+
+/**
+ * Hide the metadata panel
+ */
+export function hide(): void {
+  hideUI();
+  console.log("MetaScan panel hidden");
 }
 
 /**
@@ -72,7 +77,38 @@ export function getMetadata(): MetadataResult {
 export function exportData(format: "json" | "csv" | "text"): string {
   const data = getMetadata();
   console.log(`Exporting metadata as ${format}`);
-  return JSON.stringify(data);
+
+  if (format === "json") {
+    return JSON.stringify(data, null, 2);
+  } else if (format === "csv") {
+    // Simple CSV conversion for demonstration
+    let csv = "Category,Key,Value\n";
+    for (const [category, values] of Object.entries(data)) {
+      if (category === "structured") continue; // Skip complex structured data
+
+      for (const [key, value] of Object.entries(values)) {
+        if (value) {
+          csv += `${category},${key},"${String(value).replace(/"/g, '""')}"\n`;
+        }
+      }
+    }
+    return csv;
+  } else {
+    // Plain text format
+    let text = "MetaScan Metadata Report\n\n";
+    for (const [category, values] of Object.entries(data)) {
+      if (category === "structured") continue;
+
+      text += `== ${category.toUpperCase()} ==\n`;
+      for (const [key, value] of Object.entries(values)) {
+        if (value) {
+          text += `${key}: ${value}\n`;
+        }
+      }
+      text += "\n";
+    }
+    return text;
+  }
 }
 
 /**

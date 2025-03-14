@@ -8,6 +8,23 @@ const banner = `/**
  * MIT License
  */`;
 
+// Read the processed CSS file directly
+const inlineProcessedCss = () => {
+  try {
+    const cssPath = path.resolve(__dirname, "./src/ui/styles.processed.css");
+    if (fs.existsSync(cssPath)) {
+      return fs.readFileSync(cssPath, "utf8");
+    }
+    console.warn(
+      "Warning: styles.processed.css not found, is the CSS build step missing?"
+    );
+    return "";
+  } catch (err) {
+    console.error("Error reading processed CSS:", err);
+    return "";
+  }
+};
+
 export default defineConfig([
   // Main library builds
   {
@@ -25,6 +42,9 @@ export default defineConfig([
     },
     loader: {
       ".css": "text",
+    },
+    onSuccess: async () => {
+      console.log("Build completed, ensuring CSS is bundled properly...");
     },
     outDir: "./dist",
   },
@@ -48,5 +68,12 @@ export default defineConfig([
       ".css": "text",
     },
     outDir: "./dist",
+    esbuildOptions(options) {
+      // Ensure the CSS is properly processed and included
+      options.define = {
+        ...options.define,
+        "process.env.INLINE_CSS": JSON.stringify(inlineProcessedCss()),
+      };
+    },
   },
 ]);

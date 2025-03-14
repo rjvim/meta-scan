@@ -1,10 +1,8 @@
-/**
- * Shadow DOM integration utilities
- * Creates an isolated container with shadow DOM to prevent style conflicts
- */
+// Import processed CSS
+import processedStyles from "../ui/styles.processed.css";
 
 // CSS styles to be inserted into shadow DOM
-let cssContent = "";
+let cssContent = processedStyles;
 
 /**
  * Creates an isolated container using Shadow DOM

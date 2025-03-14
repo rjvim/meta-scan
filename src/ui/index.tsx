@@ -3,47 +3,67 @@
  */
 import { render, h } from "preact";
 import { createIsolatedContainer, cleanup } from "../utils/shadow-dom";
+import { extractMetadata } from "../core";
+import { App } from "./app";
 import "./styles.css";
-
-/**
- * Main App component
- */
-function App() {
-  return (
-    <div className="meta-scan-app bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 max-w-md">
-      <header className="flex justify-between items-center mb-4">
-        <h1 className="text-lg font-bold text-meta-primary">MetaScan</h1>
-        <button
-          className="bg-meta-secondary hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 rounded p-1"
-          onClick={() => console.log("Close button clicked")}
-        >
-          ✕
-        </button>
-      </header>
-      <main>
-        <p className="text-gray-800 dark:text-gray-200">
-          Hello World! This is a test message from MetaScan.
-        </p>
-        <div className="mt-4 p-3 bg-meta-secondary dark:bg-gray-700 rounded">
-          <p className="text-sm text-gray-700 dark:text-gray-300">
-            This panel is rendered in a Shadow DOM to prevent style conflicts.
-          </p>
-        </div>
-      </main>
-    </div>
-  );
-}
+import type { Corner } from "~/types";
 
 let container: HTMLElement | null = null;
+let isInitialized = false;
 
 /**
  * Render the UI into the shadow DOM
  */
-export function renderUI(): void {
+export function renderUI(options: { position: Corner }): void {
   if (!container) {
     container = createIsolatedContainer();
-    render(<App />, container);
+    const metadata = extractMetadata();
+
+    render(
+      <App
+        position={options.position}
+        metadata={metadata}
+        onClose={() => {
+          hideUI();
+        }}
+      />,
+      container
+    );
+
+    isInitialized = true;
     console.log("UI rendered");
+  }
+}
+
+/**
+ * Hide the UI
+ */
+export function hideUI(): void {
+  // This doesn't destroy the component, just hides it
+  if (container) {
+    container.classList.add("meta-scan-hidden");
+  }
+}
+
+/**
+ * Show the UI
+ */
+export function showUI(): void {
+  if (!isInitialized) {
+    renderUI();
+  } else if (container) {
+    container.classList.remove("meta-scan-hidden");
+  }
+}
+
+/**
+ * Toggle UI visibility
+ */
+export function toggleUI(): void {
+  if (!isInitialized) {
+    renderUI();
+  } else if (container) {
+    container.classList.toggle("meta-scan-hidden");
   }
 }
 
@@ -55,6 +75,7 @@ export function destroyUI(): void {
     render(null, container);
     cleanup();
     container = null;
+    isInitialized = false;
     console.log("UI destroyed");
   }
 }

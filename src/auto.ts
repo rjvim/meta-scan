@@ -4,7 +4,8 @@
  * <script src="//unpkg.com/meta-scan/dist/auto.global.js"></script>
  */
 import { MetaScan, init } from "./index";
-import type { MetaScanOptions } from "./types";
+import { renderUI } from "./ui";
+import type { MetaScanOptions, Corner } from "./types";
 
 // Set up global object
 if (typeof window !== "undefined") {
@@ -21,7 +22,7 @@ if (typeof window !== "undefined") {
 
       // Parse data attributes
       if (scriptTag.dataset.position) {
-        options.position = scriptTag.dataset.position as any;
+        options.position = scriptTag.dataset.position as Corner;
       }
 
       if (scriptTag.dataset.autoOpen === "true") {
@@ -35,15 +36,14 @@ if (typeof window !== "undefined") {
       // Initialize with extracted options
       init(options);
 
-      // Auto-open if specified
-      if (options.autoOpen) {
-        MetaScan.show();
-      }
+      // Always render the UI with toggle button
+      renderUI({ position: options.position || "bottom-right" });
 
       console.log("MetaScan auto-initialized from script tag");
     } else {
       // Default initialization
       init();
+      renderUI({ position: "bottom-right" });
       console.log("MetaScan auto-initialized with defaults");
     }
   };
