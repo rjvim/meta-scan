@@ -5,76 +5,16 @@ import { extractMetadata } from "../core";
 import { cn } from "../utils/cn";
 import { cleanup, initDOMWatcher } from "../utils/dom-watcher";
 import MetadataPanel from "./MetadataPanel";
-
-const SunIcon = () => (
-  <svg
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <circle cx="12" cy="12" r="4" />
-    <path d="M12 2v2" />
-    <path d="M12 20v2" />
-    <path d="m4.93 4.93 1.41 1.41" />
-    <path d="m17.66 17.66 1.41 1.41" />
-    <path d="M2 12h2" />
-    <path d="M20 12h2" />
-    <path d="m6.34 17.66-1.41 1.41" />
-    <path d="m19.07 4.93-1.41 1.41" />
-  </svg>
-);
-
-const MoonIcon = () => (
-  <svg
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
-  </svg>
-);
-
-const MenuIcon = () => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M12.034 12.681a.498.498 0 0 1 .647-.647l9 3.5a.5.5 0 0 1-.033.943l-3.444 1.068a1 1 0 0 0-.66.66l-1.067 3.443a.5.5 0 0 1-.943.033z" />
-    <path d="M21 11V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h6" />
-  </svg>
-);
-
-const CloseIcon = () => (
-  <svg
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M18 6 6 18" />
-    <path d="m6 6 12 12" />
-  </svg>
-);
+import {
+  SunIcon,
+  MoonIcon,
+  MenuIcon,
+  CloseIcon,
+  TopLeftIcon,
+  TopRightIcon,
+  BottomLeftIcon,
+  BottomRightIcon,
+} from "./icons";
 
 export function App({
   initialMetadata = {
@@ -134,6 +74,11 @@ export function App({
 
   const togglePanel = () => {
     setUiState((prev) => ({ ...prev, isOpen: !prev.isOpen }));
+  };
+
+  const changePosition = (position: Corner) => {
+    setUiState((prev) => ({ ...prev, position }));
+    saveUIState({ ...uiState, position });
   };
 
   const refreshMetadata = () => {
@@ -238,6 +183,65 @@ export function App({
             "transition-colors duration-200"
           )}
         >
+          {/* Position Controls */}
+          <div className="flex gap-1">
+            <button
+              onClick={() => changePosition("top-left")}
+              className={cn(
+                "w-6 h-6 flex items-center justify-center rounded-full",
+                "transition-colors duration-200",
+                uiState.position === "top-left"
+                  ? "bg-purple-600 text-white hover:bg-purple-700"
+                  : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400"
+              )}
+              title="Position top left"
+            >
+              <TopLeftIcon />
+            </button>
+            <button
+              onClick={() => changePosition("top-right")}
+              className={cn(
+                "w-6 h-6 flex items-center justify-center rounded-full",
+                "transition-colors duration-200",
+                uiState.position === "top-right"
+                  ? "bg-purple-600 text-white hover:bg-purple-700"
+                  : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400"
+              )}
+              title="Position top right"
+            >
+              <TopRightIcon />
+            </button>
+            <button
+              onClick={() => changePosition("bottom-left")}
+              className={cn(
+                "w-6 h-6 flex items-center justify-center rounded-full",
+                "transition-colors duration-200",
+                uiState.position === "bottom-left"
+                  ? "bg-purple-600 text-white hover:bg-purple-700"
+                  : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400"
+              )}
+              title="Position bottom left"
+            >
+              <BottomLeftIcon />
+            </button>
+            <button
+              onClick={() => changePosition("bottom-right")}
+              className={cn(
+                "w-6 h-6 flex items-center justify-center rounded-full",
+                "transition-colors duration-200",
+                uiState.position === "bottom-right"
+                  ? "bg-purple-600 text-white hover:bg-purple-700"
+                  : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400"
+              )}
+              title="Position bottom right"
+            >
+              <BottomRightIcon />
+            </button>
+          </div>
+
+          {/* Separator */}
+          <div className="w-px h-4 bg-gray-200 dark:bg-gray-700"></div>
+
           {/* Theme Toggle */}
           <button
             onClick={toggleTheme}
