@@ -4,6 +4,7 @@ import { initUIState, saveUIState } from "../utils/storage";
 import { extractMetadata } from "../core";
 import { cn } from "../utils/cn";
 import { cleanup, initDOMWatcher } from "../utils/dom-watcher";
+import MetadataPanel from "./MetadataPanel";
 
 // Placeholder for icons (replace with actual imports)
 const RefreshCw = () => <svg>refresh icon</svg>;
@@ -254,150 +255,70 @@ export function App({
   );
 
   return (
-    <div
-      ref={panelRef}
-      className={cn("fixed z-50", getContainerPositionClasses())}
-    >
-      {uiState.isOpen && (
+    <div className={cn("fixed z-50", getContainerPositionClasses())}>
+      <div className={cn("flex flex-col", theme === "dark" ? "dark" : "")}>
+        {uiState.isOpen && (
+          <div
+            className={cn(
+              "relative rounded-lg shadow-xl overflow-hidden",
+              "transition-all duration-300 ease-in-out",
+              getPanelPositionClasses()
+            )}
+          >
+            {loading && <LoadingIndicator />}
+
+            <MetadataPanel
+              metadata={metadata}
+              refreshMetadata={refreshMetadata}
+              theme={theme}
+            />
+          </div>
+        )}
+
+        {/* Control Bar */}
         <div
           className={cn(
-            "bg-black text-white rounded-lg shadow-xl overflow-hidden",
-            "transition-all duration-300 ease-in-out",
-            getPanelPositionClasses(),
-            uiState.isOpen
-              ? "opacity-100 translate-y-0"
-              : "opacity-0 translate-y-2"
+            "flex items-center gap-2 p-2 rounded-lg shadow-lg self-end",
+            "bg-white dark:bg-gray-800",
+            "text-gray-800 dark:text-gray-200",
+            "transition-colors duration-200"
           )}
         >
-          {/* Panel Header */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-800">
-            <h2 className="text-lg font-mono">MetaScan</h2>
+          {/* Theme Toggle */}
+          <button
+            onClick={toggleTheme}
+            className="w-8 h-8 flex items-center justify-center text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 bg-gray-100 dark:bg-gray-700 rounded-full"
+            title={`Current theme: ${uiState.theme}. Click to toggle.`}
+          >
+            {theme === "dark" ? <MoonIcon /> : <SunIcon />}
+          </button>
+
+          {/* Separator */}
+          <div className="w-px h-6 bg-gray-200 dark:bg-gray-700"></div>
+
+          {/* Panel Toggle */}
+          <div className="flex items-center gap-2">
             <button
               onClick={togglePanel}
-              className="text-gray-400 hover:text-white"
+              className={cn(
+                "w-8 h-8 flex items-center justify-center rounded-full",
+                "transition-colors duration-200",
+                uiState.isOpen
+                  ? "bg-purple-600 text-white hover:bg-purple-700"
+                  : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400"
+              )}
+              title={uiState.isOpen ? "Close panel" : "Open panel"}
             >
-              <X />
+              {uiState.isOpen ? <CloseIcon /> : <MenuIcon />}
             </button>
           </div>
 
-          {/* Panel Content */}
-          <div className="flex">
-            {/* Sidebar */}
-            <div className="w-[180px] border-r border-gray-800 p-4">
-              <div className="flex flex-col space-y-2">
-                {/* Position Switcher */}
-                <div className="bg-gray-800 rounded p-2">
-                  <label className="text-sm text-gray-400 mb-1 block">
-                    Position
-                  </label>
-                  <select
-                    value={uiState.position}
-                    onChange={(e) => {
-                      const newPosition = e.target.value as Corner;
-                      setUiState((prev) => ({
-                        ...prev,
-                        position: newPosition,
-                      }));
-                      saveUIState({ ...uiState, position: newPosition });
-                    }}
-                    className="w-full bg-black text-white p-1 rounded"
-                  >
-                    {[
-                      "top-left",
-                      "top-right",
-                      "bottom-left",
-                      "bottom-right",
-                    ].map((pos) => (
-                      <option key={pos} value={pos}>
-                        {pos}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Extraction Time */}
-                <div className="flex items-center gap-2 p-2 bg-gray-800 rounded">
-                  <span className="text-sm">Extracted</span>
-                  <span className="ml-auto text-xs px-1.5 py-0.5 rounded">
-                    {new Date(metadata.extractedAt).toLocaleTimeString()}
-                  </span>
-                </div>
-              </div>
+          {/* Extraction Timestamp */}
+          {uiState.isOpen && (
+            <div className="text-xs text-gray-500 dark:text-gray-400 ml-1">
+              {new Date(metadata.extractedAt).toLocaleTimeString()}
             </div>
-
-            {/* Main Content */}
-            <div className="flex-1 p-6">
-              <nav className="flex space-x-2 mb-4 border-b border-gray-700">
-                {(
-                  [
-                    "general",
-                    "opengraph",
-                    "twitter",
-                    "technical",
-                  ] as MetadataCategory[]
-                ).map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={cn(
-                      "px-4 py-2 text-sm transition-colors",
-                      activeTab === tab
-                        ? "text-purple-400 border-b-2 border-purple-400"
-                        : "text-gray-500 hover:text-white"
-                    )}
-                  >
-                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                  </button>
-                ))}
-              </nav>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {Object.entries(metadata[activeTab] || {}).map(
-                  ([key, value]) => (
-                    <MetadataCard
-                      key={key}
-                      title={key
-                        .replace(/([a-z])([A-Z])/g, "$1 $2")
-                        .toUpperCase()}
-                      value={value}
-                    />
-                  )
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Toggle Bar */}
-      <div className="flex items-center gap-2 bg-black text-white p-2 rounded-lg shadow-lg">
-        {uiState.isOpen && (
-          <button
-            onClick={refreshMetadata}
-            className="w-6 h-6 flex items-center justify-center text-gray-400 hover:text-white"
-          >
-            <RefreshCw />
-          </button>
-        )}
-
-        <div className="flex items-center gap-2">
-          <button
-            onClick={togglePanel}
-            className="w-8 h-4 bg-gray-700 rounded-full p-0.5 flex items-center"
-          >
-            <div
-              className={cn(
-                "w-3 h-3 rounded-full transition-transform",
-                uiState.isOpen ? "bg-white translate-x-4" : "bg-gray-400"
-              )}
-            />
-          </button>
-        </div>
-
-        <div className="flex items-center gap-1">
-          <span className="text-purple-400 font-mono">
-            {new Date(metadata.extractedAt).toLocaleTimeString()}
-          </span>
+          )}
         </div>
       </div>
     </div>
