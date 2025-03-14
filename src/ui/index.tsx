@@ -40,7 +40,7 @@ export function renderUI(options: { position: Corner }): void {
  */
 export function hideUI(): void {
   // This doesn't destroy the component, just hides it
-  if (container) {
-    container.classList.add("meta-scan-hidden");
-  }
+  // if (container) {
+  //   container.classList.add("meta-scan-hidden");
+  // }
 }
