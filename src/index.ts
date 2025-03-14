@@ -3,7 +3,6 @@
  */
 import type { MetaScanAPI, MetaScanOptions, MetadataResult } from "./types";
 import { extractMetadata } from "./core";
-import { renderUI, showUI, hideUI, destroyUI } from "./ui";
 
 // Default options
 const defaultOptions: MetaScanOptions = {
@@ -16,7 +15,6 @@ const defaultOptions: MetaScanOptions = {
 };
 
 let options = { ...defaultOptions };
-let initialized = false;
 
 /**
  * Initialize MetaScan with options
@@ -27,27 +25,6 @@ export function init(userOptions?: Partial<MetaScanOptions>): void {
   }
 
   console.log("MetaScan initialized with options:", options);
-}
-
-/**
- * Show the metadata panel
- */
-export function show(): void {
-  if (!initialized) {
-    renderUI({ position: options.position || "bottom-right" });
-    initialized = true;
-  } else {
-    showUI();
-  }
-  console.log("MetaScan panel shown");
-}
-
-/**
- * Hide the metadata panel
- */
-export function hide(): void {
-  hideUI();
-  console.log("MetaScan panel hidden");
 }
 
 /**
@@ -106,19 +83,8 @@ export function configure(newOptions: Partial<MetaScanOptions>): void {
   console.log("MetaScan reconfigured with options:", options);
 }
 
-/**
- * Clean up resources
- */
-export function cleanup(): void {
-  destroyUI();
-  initialized = false;
-  console.log("MetaScan cleaned up");
-}
-
 // Create the public API
 export const MetaScan: MetaScanAPI = {
-  show,
-  hide,
   getMetadata,
   export: exportData,
   configure,

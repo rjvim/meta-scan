@@ -105,16 +105,6 @@ export type StructuredData = Record<string, unknown>;
  */
 export interface MetaScanAPI {
   /**
-   * Show the metadata panel
-   */
-  show: () => void;
-
-  /**
-   * Hide the metadata panel
-   */
-  hide: () => void;
-
-  /**
    * Get extracted metadata
    */
   getMetadata: () => MetadataResult;
