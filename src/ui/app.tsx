@@ -21,7 +21,11 @@ export function App({ position, metadata, onClose }: AppProps) {
 
   return (
     <>
-      <ToggleButton position={position} isOpen={isOpen} onClick={togglePanel} />
+      <ToggleButton
+        position={position}
+        isOpen={isOpen}
+        onToggle={togglePanel}
+      />
 
       {isOpen && (
         <div

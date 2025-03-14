@@ -57,17 +57,6 @@ export function showUI(): void {
 }
 
 /**
- * Toggle UI visibility
- */
-export function toggleUI(): void {
-  if (!isInitialized) {
-    renderUI();
-  } else if (container) {
-    container.classList.toggle("meta-scan-hidden");
-  }
-}
-
-/**
  * Destroy the UI
  */
 export function destroyUI(): void {

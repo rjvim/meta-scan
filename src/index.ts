@@ -3,7 +3,7 @@
  */
 import type { MetaScanAPI, MetaScanOptions, MetadataResult } from "./types";
 import { extractMetadata } from "./core";
-import { renderUI, showUI, hideUI, toggleUI, destroyUI } from "./ui";
+import { renderUI, showUI, hideUI, destroyUI } from "./ui";
 
 // Default options
 const defaultOptions: MetaScanOptions = {
@@ -40,19 +40,6 @@ export function show(): void {
     showUI();
   }
   console.log("MetaScan panel shown");
-}
-
-/**
- * Toggle visibility of the metadata panel
- */
-export function toggle(): void {
-  if (!initialized) {
-    renderUI({ position: options.position || "bottom-right" });
-    initialized = true;
-  } else {
-    toggleUI();
-  }
-  console.log("MetaScan panel toggled");
 }
 
 /**
@@ -132,7 +119,6 @@ export function cleanup(): void {
 export const MetaScan: MetaScanAPI = {
   show,
   hide,
-  toggle,
   getMetadata,
   export: exportData,
   configure,

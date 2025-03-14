@@ -115,11 +115,6 @@ export interface MetaScanAPI {
   hide: () => void;
 
   /**
-   * Toggle visibility of the metadata panel
-   */
-  toggle: () => void;
-
-  /**
    * Get extracted metadata
    */
   getMetadata: () => MetadataResult;
