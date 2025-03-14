@@ -37,13 +37,13 @@ if (typeof window !== "undefined") {
       init(options);
 
       // Always render the UI with toggle button
-      renderUI({ position: options.position || "bottom-right" });
+      renderUI();
 
       console.log("MetaScan auto-initialized from script tag");
     } else {
       // Default initialization
       init();
-      renderUI({ position: "top-right" });
+      renderUI();
       console.log("MetaScan auto-initialized with defaults");
     }
   };

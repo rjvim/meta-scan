@@ -14,12 +14,12 @@ let isInitialized = false;
 /**
  * Render the UI into the shadow DOM
  */
-export function renderUI(options: { position: Corner }): void {
+export function renderUI(): void {
   if (!container) {
     container = createIsolatedContainer();
     const metadata = extractMetadata();
 
-    render(<App position={options.position} metadata={metadata} />, container);
+    render(<App initialMetadata={metadata} />, container);
 
     isInitialized = true;
     console.log("UI rendered");
