@@ -26,7 +26,7 @@ const MetadataItem = ({
   if (!value) return null;
 
   return (
-    <div className="mb-2 border-b border-gray-200 dark:border-gray-700 pb-2 group">
+    <div className=" pb-2 group">
       <div className="flex items-center justify-between mb-1">
         <div className="text-xs font-semibold text-gray-500 dark:text-gray-400">
           {label}
