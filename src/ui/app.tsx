@@ -16,6 +16,7 @@ import {
   BottomRightIcon,
 } from "./icons";
 import { logger } from "~/utils/logger";
+import MetadataLayoutWrapper from "./MetadataLayoutWrapper"; // New import
 
 export function App({
   initialMetadata = {
@@ -169,7 +170,13 @@ export function App({
           >
             {loading && <LoadingIndicator />}
 
-            <MetadataPanel
+            {/* <MetadataPanel
+              metadata={metadata}
+              refreshMetadata={refreshMetadata}
+              theme={theme}
+            /> */}
+
+            <MetadataLayoutWrapper
               metadata={metadata}
               refreshMetadata={refreshMetadata}
               theme={theme}
