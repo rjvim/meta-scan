@@ -1,10 +1,8 @@
 import { useState, useEffect, useRef } from "preact/hooks";
-import type { Corner, MetadataResult, MetadataCategory } from "../types";
-import { initUIState, saveUIState } from "../utils/storage";
+import type { Corner, MetadataResult, MetaScanUIState } from "../types";
 import { extractMetadata } from "../core";
 import { cn } from "../utils/cn";
 import { cleanup, initDOMWatcher } from "../utils/dom-watcher";
-import MetadataPanel from "./MetadataPanel";
 import {
   SunIcon,
   MoonIcon,
@@ -17,27 +15,21 @@ import {
 } from "./icons";
 import { logger } from "~/utils/logger";
 import MetadataLayoutWrapper from "./MetadataLayoutWrapper"; // New import
-import MetadataLayout from "./MetadataLayout";
+import { stateManager } from "~/state";
 
-export function App({
-  initialMetadata = {
-    general: {},
-    opengraph: {},
-    twitter: {},
-    technical: {},
-    extractedAt: new Date().toISOString(),
-  },
-}: {
-  initialMetadata: MetadataResult;
-}) {
-  const [uiState, setUiState] = useState(() =>
-    initUIState({
-      position: "bottom-right",
-      isOpen: false,
-      theme: "auto",
-      extractedAt: new Date().toISOString(),
-    })
-  );
+export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
+  const [uiState, setUiState] = useState(stateManager.getState());
+
+  useEffect(() => {
+    const unsubscribe = stateManager.subscribe((newState) => {
+      setUiState(newState);
+    });
+    return unsubscribe;
+  }, []);
+
+  const updateUIState = (updates: Partial<MetaScanUIState>) => {
+    stateManager.updateState(updates);
+  };
 
   const [metadata, setMetadata] = useState(initialMetadata);
   const [loading, setLoading] = useState(false);
@@ -70,7 +62,7 @@ export function App({
 
     setUiState((prev) => ({ ...prev, theme: nextTheme }));
     setTheme(nextTheme);
-    saveUIState({ ...uiState, theme: nextTheme });
+    updateUIState({ ...uiState, theme: nextTheme });
   };
 
   const panelRef = useRef<HTMLDivElement>(null);
@@ -78,12 +70,12 @@ export function App({
   const togglePanel = () => {
     const newIsOpen = !uiState.isOpen;
     setUiState((prev) => ({ ...prev, isOpen: newIsOpen }));
-    saveUIState({ ...uiState, isOpen: newIsOpen });
+    updateUIState({ ...uiState, isOpen: newIsOpen });
   };
 
   const changePosition = (position: Corner) => {
     setUiState((prev) => ({ ...prev, position }));
-    saveUIState({ ...uiState, position });
+    updateUIState({ ...uiState, position });
   };
 
   const refreshMetadata = () => {
@@ -94,7 +86,7 @@ export function App({
       ...prev,
       extractedAt: new Date().toISOString(),
     }));
-    saveUIState({ ...uiState, extractedAt: new Date().toISOString() });
+    updateUIState({ ...uiState, extractedAt: new Date().toISOString() });
     setTimeout(() => setLoading(false), 300); // Add a small delay for visual feedback
   };
 
@@ -137,7 +129,7 @@ export function App({
       }));
 
       // Save updated state to storage
-      saveUIState({
+      updateUIState({
         ...uiState,
         extractedAt: new Date().toISOString(),
       });
