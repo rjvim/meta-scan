@@ -6,7 +6,6 @@
   "baseBranch": "main",
   "onlyPublishWithReleaseLabel": true,
   "plugins": [
-    "all-contributors",
     [
       "npm",
       {
