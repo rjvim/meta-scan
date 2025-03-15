@@ -1,14 +1,13 @@
 import { useState } from "preact/hooks";
 import { cn } from "../utils/cn";
-import type { MetadataResult } from "../types";
+import type { MetadataResult } from "~/types";
 
 // Import all layout components
 import MetadataPanel from "./MetadataPanel"; // Original layout
 import MetadataLayout from "./MetadataLayout"; // Simple cards/tabs layout
-import TransitionMetadataLayout from "./TransitionMetadataLayout"; // Animated transition layout
-import FlipMetadataLayout from "./FlipMetadataLayout"; // FLIP animation layout
+// Only using simple MetadataLayout now
 
-type LayoutVariant = "original" | "simple" | "transition" | "flip";
+type LayoutVariant = "original" | "simple";
 
 /**
  * Wrapper component to switch between different layout implementations
@@ -22,7 +21,7 @@ const MetadataLayoutWrapper = ({
   refreshMetadata: () => void;
   theme?: "light" | "dark";
 }) => {
-  const [layoutVariant, setLayoutVariant] = useState<LayoutVariant>("original");
+  const [layoutVariant, setLayoutVariant] = useState<LayoutVariant>("simple");
 
   if (!metadata) return null;
 
@@ -30,13 +29,11 @@ const MetadataLayoutWrapper = ({
     <div className={theme === "dark" ? "dark" : ""}>
       {/* Layout selector */}
       <div className="p-2 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between sticky top-0 z-20">
-        <div className="text-xs text-gray-500 dark:text-gray-400">Layout:</div>
+        <div className="text-xs text-gray-500 dark:text-gray-400">View:</div>
         <div className="flex gap-2">
           {[
-            { id: "original", label: "Original" },
-            { id: "simple", label: "Simple" },
-            { id: "transition", label: "Transition" },
-            { id: "flip", label: "FLIP" },
+            { id: "original", label: "Tabs" },
+            { id: "simple", label: "Cards" },
           ].map((variant) => (
             <button
               key={variant.id}
@@ -65,22 +62,6 @@ const MetadataLayoutWrapper = ({
 
       {layoutVariant === "simple" && (
         <MetadataLayout
-          metadata={metadata}
-          refreshMetadata={refreshMetadata}
-          theme={theme as "light" | "dark"}
-        />
-      )}
-
-      {layoutVariant === "transition" && (
-        <TransitionMetadataLayout
-          metadata={metadata}
-          refreshMetadata={refreshMetadata}
-          theme={theme as "light" | "dark"}
-        />
-      )}
-
-      {layoutVariant === "flip" && (
-        <FlipMetadataLayout
           metadata={metadata}
           refreshMetadata={refreshMetadata}
           theme={theme as "light" | "dark"}

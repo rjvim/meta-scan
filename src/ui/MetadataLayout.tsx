@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from "preact/hooks";
 import { cn } from "../utils/cn";
-import type { MetadataResult } from "../types";
+import type { MetadataResult } from "~/types";
 import { CheckIcon, CopyIcon, JsonIcon, RefreshIcon } from "./icons";
+import { type ComponentChildren } from "preact";
 
 type LayoutType = "tabs" | "cards";
 
@@ -121,12 +122,12 @@ const Card = ({
   title: string;
   active: boolean;
   onClick: () => void;
-  children: React.ReactNode;
+  children: ComponentChildren;
 }) => {
   return (
     <div
       className={cn(
-        "flex-shrink-0 w-80 rounded-lg overflow-hidden shadow-md transition-all duration-300 transform",
+        "flex-shrink-0 w-[350px] rounded-lg overflow-hidden shadow-md transition-all duration-300 transform",
         "bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700",
         active ? "ring-2 ring-purple-500" : "hover:shadow-lg"
       )}
@@ -139,7 +140,7 @@ const Card = ({
           {title}
         </button>
       </div>
-      <div className="p-3 overflow-y-auto max-h-80">{children}</div>
+      <div className="p-3 overflow-y-auto max-h-[60vh]">{children}</div>
     </div>
   );
 };
@@ -174,7 +175,7 @@ const MetadataLayout = ({
 }) => {
   const [activeTab, setActiveTab] = useState("general");
   const [showJSON, setShowJSON] = useState(false);
-  const [layout, setLayout] = useState<LayoutType>("tabs");
+  const [layout, setLayout] = useState<LayoutType>("cards");
   const [animating, setAnimating] = useState(false);
   const cardsContainerRef = useRef<HTMLDivElement>(null);
 
@@ -189,7 +190,7 @@ const MetadataLayout = ({
   const toggleLayout = () => {
     setAnimating(true);
     setTimeout(() => {
-      setLayout(layout === "tabs" ? "cards" : "tabs");
+      setLayout(layout === "cards" ? "tabs" : "cards");
       setTimeout(() => {
         setAnimating(false);
       }, 500); // Wait for animation to complete
@@ -197,21 +198,21 @@ const MetadataLayout = ({
   };
 
   // Handle horizontal scrolling for cards
-  useEffect(() => {
-    const container = cardsContainerRef.current;
-    if (!container || layout !== "cards") return;
+  // useEffect(() => {
+  //   const container = cardsContainerRef.current;
+  //   if (!container || layout !== "cards") return;
 
-    const handleWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
-      e.preventDefault();
-      container.scrollLeft += e.deltaY;
-    };
+  //   const handleWheel = (e: WheelEvent) => {
+  //     if (Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
+  //     e.preventDefault();
+  //     container.scrollLeft += e.deltaY;
+  //   };
 
-    container.addEventListener("wheel", handleWheel, { passive: false });
-    return () => {
-      container.removeEventListener("wheel", handleWheel);
-    };
-  }, [layout, cardsContainerRef.current]);
+  //   container.addEventListener("wheel", handleWheel, { passive: false });
+  //   return () => {
+  //     container.removeEventListener("wheel", handleWheel);
+  //   };
+  // }, [layout, cardsContainerRef.current]);
 
   if (!metadata) return null;
 
@@ -257,7 +258,7 @@ const MetadataLayout = ({
   return (
     <div
       className={cn(
-        "overflow-y-auto max-h-[70vh] scrollbar-thin",
+        "overflow-hidden max-h-[80vh]", // Changed to overflow-hidden since cards have their own scroll
         "bg-white dark:bg-gray-900",
         "text-black dark:text-white",
         "transition-colors duration-200",
@@ -315,9 +316,10 @@ const MetadataLayout = ({
         <div
           ref={cardsContainerRef}
           className={cn(
-            "p-3 flex gap-4 overflow-x-auto pb-4",
+            "p-3 flex gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600",
             animating ? "animate-fade-out" : "animate-fade-in"
           )}
+          style={{ scrollbarWidth: "thin" }}
         >
           {tabs.map((tab) => (
             <Card
