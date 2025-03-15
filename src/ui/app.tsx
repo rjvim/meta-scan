@@ -22,7 +22,9 @@ import MetadataLayoutWrapper from "./MetadataLayoutWrapper";
 import { stateManager } from "../state";
 
 export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
-  const [uiState, setUiState] = useState<MetaScanUIState>(stateManager.getState());
+  const [uiState, setUiState] = useState<MetaScanUIState>(
+    stateManager.getState()
+  );
   const [showSettingsMenu, setShowSettingsMenu] = useState(false);
 
   useEffect(() => {
@@ -79,20 +81,20 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
   // Close settings menu when clicking outside
   useEffect(() => {
     if (!showSettingsMenu) return;
-    
+
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Element;
-      const isClickInside = target.closest('.settings-menu') !== null;
-      const isClickOnToggle = target.closest('#settings-toggle') !== null;
-      
+      const isClickInside = target.closest(".settings-menu") !== null;
+      const isClickOnToggle = target.closest("#settings-toggle") !== null;
+
       if (!isClickInside && !isClickOnToggle) {
         setShowSettingsMenu(false);
       }
     };
 
-    document.addEventListener('click', handleClickOutside);
+    document.addEventListener("click", handleClickOutside);
     return () => {
-      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener("click", handleClickOutside);
     };
   }, [showSettingsMenu]);
 
@@ -269,17 +271,19 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
             >
               <CogIcon />
             </button>
-            
+
             {/* Settings Dropdown Menu */}
             {showSettingsMenu && (
-              <div className={`absolute w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700 settings-menu ${
-                uiState.position.startsWith('top') ? 'top-full mt-2' : 'bottom-full mb-2'
-              } ${
-                uiState.position.endsWith('right') ? 'right-0' : 'left-0'
-              }`}>
-                <a 
-                  href="https://github.com/rjvim/meta-scan" 
-                  target="_blank" 
+              <div
+                className={`absolute w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700 settings-menu ${
+                  uiState.position.startsWith("top")
+                    ? "top-full mt-2"
+                    : "bottom-full mb-2"
+                } ${uiState.position.endsWith("right") ? "right-0" : "left-0"}`}
+              >
+                <a
+                  href="https://github.com/rjvim/meta-scan"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
@@ -288,9 +292,9 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
                   </span>
                   About
                 </a>
-                <a 
-                  href="https://github.com/rjvim/meta-scan/issues/new" 
-                  target="_blank" 
+                <a
+                  href="https://github.com/rjvim/meta-scan/issues/new"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
@@ -299,9 +303,9 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
                   </span>
                   Raise an issue
                 </a>
-                <a 
-                  href="https://github.com/rjvim/meta-scan#documentation" 
-                  target="_blank" 
+                <a
+                  href="https://github.com/rjvim/meta-scan#documentation"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
