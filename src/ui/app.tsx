@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "preact/hooks";
+import { useState, useEffect } from "preact/hooks";
 import type { Corner, MetadataResult, MetaScanUIState } from "../types";
 import { extractMetadata } from "../core";
 import { cn } from "../utils/cn";
@@ -12,36 +12,37 @@ import {
   TopRightIcon,
   BottomLeftIcon,
   BottomRightIcon,
+  CogIcon,
+  InfoIcon,
+  BugIcon,
+  BookIcon,
 } from "./icons";
-import { logger } from "~/utils/logger";
-import MetadataLayoutWrapper from "./MetadataLayoutWrapper"; // New import
-import { stateManager } from "~/state";
+import { logger } from "../utils/logger";
+import MetadataLayoutWrapper from "./MetadataLayoutWrapper";
+import { stateManager } from "../state";
 
 export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
-  const [uiState, setUiState] = useState(stateManager.getState());
+  const [uiState, setUiState] = useState<MetaScanUIState>(stateManager.getState());
+  const [showSettingsMenu, setShowSettingsMenu] = useState(false);
 
   useEffect(() => {
     const unsubscribe = stateManager.subscribe((newState) => {
-      setUiState(newState);
+      setUiState((prev) => ({ ...prev, ...newState }));
     });
     return unsubscribe;
   }, []);
-
-  const updateUIState = (updates: Partial<MetaScanUIState>) => {
-    stateManager.updateState(updates);
-  };
 
   const [metadata, setMetadata] = useState(initialMetadata);
   const [loading, setLoading] = useState(false);
 
   // Theme handling
-  const [theme, setTheme] = useState(() => {
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
     if (uiState.theme === "auto") {
       return window.matchMedia("(prefers-color-scheme: dark)").matches
         ? "dark"
         : "light";
     }
-    return uiState.theme;
+    return uiState.theme as "light" | "dark";
   });
 
   // Watch for system theme changes
@@ -49,7 +50,7 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
     if (uiState.theme !== "auto") return;
 
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    const handleChange = (e) => {
+    const handleChange = (e: MediaQueryListEvent) => {
       setTheme(e.matches ? "dark" : "light");
     };
 
@@ -59,34 +60,55 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
 
   const toggleTheme = () => {
     const nextTheme = theme === "dark" ? "light" : "dark";
-
     setUiState((prev) => ({ ...prev, theme: nextTheme }));
     setTheme(nextTheme);
-    updateUIState({ ...uiState, theme: nextTheme });
+    stateManager.updateState({ theme: nextTheme });
   };
-
-  const panelRef = useRef<HTMLDivElement>(null);
 
   const togglePanel = () => {
-    const newIsOpen = !uiState.isOpen;
-    setUiState((prev) => ({ ...prev, isOpen: newIsOpen }));
-    updateUIState({ ...uiState, isOpen: newIsOpen });
+    setUiState((prev) => ({ ...prev, isOpen: !prev.isOpen }));
+    stateManager.updateState({ isOpen: !uiState.isOpen });
   };
+
+  // Toggle settings menu
+  const toggleSettingsMenu = (e: MouseEvent) => {
+    e.stopPropagation();
+    setShowSettingsMenu(!showSettingsMenu);
+  };
+
+  // Close settings menu when clicking outside
+  useEffect(() => {
+    if (!showSettingsMenu) return;
+    
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      const isClickInside = target.closest('.settings-menu') !== null;
+      const isClickOnToggle = target.closest('#settings-toggle') !== null;
+      
+      if (!isClickInside && !isClickOnToggle) {
+        setShowSettingsMenu(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [showSettingsMenu]);
 
   const changePosition = (position: Corner) => {
     setUiState((prev) => ({ ...prev, position }));
-    updateUIState({ ...uiState, position });
+    stateManager.updateState({ position });
   };
 
   const refreshMetadata = () => {
     setLoading(true);
-    const freshMetadata = extractMetadata();
-    setMetadata(freshMetadata);
+    setMetadata(extractMetadata());
     setUiState((prev) => ({
       ...prev,
       extractedAt: new Date().toISOString(),
     }));
-    updateUIState({ ...uiState, extractedAt: new Date().toISOString() });
+    stateManager.updateState({ extractedAt: new Date().toISOString() });
     setTimeout(() => setLoading(false), 300); // Add a small delay for visual feedback
   };
 
@@ -129,8 +151,7 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
       }));
 
       // Save updated state to storage
-      updateUIState({
-        ...uiState,
+      stateManager.updateState({
         extractedAt: new Date().toISOString(),
       });
     });
@@ -162,24 +183,11 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
             )}
           >
             {loading && <LoadingIndicator />}
-            {/* 
-            <MetadataPanel
-              metadata={metadata}
-              refreshMetadata={refreshMetadata}
-              theme={theme}
-            /> */}
-
             <MetadataLayoutWrapper
               metadata={metadata}
               refreshMetadata={refreshMetadata}
               theme={theme}
             />
-
-            {/* <MetadataLayout
-              metadata={metadata}
-              refreshMetadata={refreshMetadata}
-              theme={theme as "light" | "dark"}
-            /> */}
           </div>
         )}
 
@@ -246,6 +254,64 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
             >
               <BottomRightIcon />
             </button>
+          </div>
+
+          {/* Separator */}
+          <div className="w-px h-4 bg-gray-200 dark:bg-gray-700"></div>
+
+          {/* Settings Menu */}
+          <div className="relative">
+            <button
+              id="settings-toggle"
+              onClick={toggleSettingsMenu}
+              className="w-6 h-6 flex items-center justify-center text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 bg-gray-100 dark:bg-gray-700 rounded-full"
+              title="Settings"
+            >
+              <CogIcon />
+            </button>
+            
+            {/* Settings Dropdown Menu */}
+            {showSettingsMenu && (
+              <div className={`absolute w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700 settings-menu ${
+                uiState.position.startsWith('top') ? 'top-full mt-2' : 'bottom-full mb-2'
+              } ${
+                uiState.position.endsWith('right') ? 'right-0' : 'left-0'
+              }`}>
+                <a 
+                  href="https://github.com/rjvim/meta-scan" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  <span className="mr-2">
+                    <InfoIcon />
+                  </span>
+                  About
+                </a>
+                <a 
+                  href="https://github.com/rjvim/meta-scan/issues/new" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  <span className="mr-2">
+                    <BugIcon />
+                  </span>
+                  Raise an issue
+                </a>
+                <a 
+                  href="https://github.com/rjvim/meta-scan#documentation" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  <span className="mr-2">
+                    <BookIcon />
+                  </span>
+                  Documentation
+                </a>
+              </div>
+            )}
           </div>
 
           {/* Separator */}
