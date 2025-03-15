@@ -1,10 +1,8 @@
-import { useState, useRef, useEffect } from "preact/hooks";
+import { useState, useRef } from "preact/hooks";
 import { cn } from "../utils/cn";
 import type { MetadataResult } from "~/types";
 import { CheckIcon, CopyIcon, JsonIcon, RefreshIcon } from "./icons";
 import { type ComponentChildren } from "preact";
-
-type LayoutType = "tabs" | "cards";
 
 // Component for metadata item display
 const MetadataItem = ({
@@ -82,36 +80,6 @@ const MetadataImage = ({ src, alt }: { src: string | null; alt?: string }) => {
   );
 };
 
-// Tabs component for tab layout
-const Tabs = ({
-  tabs,
-  activeTab,
-  onTabChange,
-}: {
-  tabs: { id: string; label: string }[];
-  activeTab: string;
-  onTabChange: (id: string) => void;
-}) => {
-  return (
-    <div className="flex overflow-x-auto mb-4 border-b border-gray-200 dark:border-gray-700">
-      {tabs.map((tab) => (
-        <button
-          key={tab.id}
-          onClick={() => onTabChange(tab.id)}
-          className={cn(
-            "px-3 py-2 text-xs whitespace-nowrap transition-colors",
-            activeTab === tab.id
-              ? "border-b-2 border-purple-600 dark:border-purple-400 text-purple-700 dark:text-purple-400"
-              : "text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400"
-          )}
-        >
-          {tab.label}
-        </button>
-      ))}
-    </div>
-  );
-};
-
 // Card component for card layout
 const Card = ({
   title,
@@ -145,24 +113,6 @@ const Card = ({
   );
 };
 
-// Layout toggle button
-const LayoutToggle = ({
-  layout,
-  onToggle,
-}: {
-  layout: LayoutType;
-  onToggle: () => void;
-}) => {
-  return (
-    <button
-      onClick={onToggle}
-      className="px-2 py-1 text-xs rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-    >
-      Switch to {layout === "tabs" ? "cards" : "tabs"}
-    </button>
-  );
-};
-
 // Main MetadataLayout component
 const MetadataLayout = ({
   metadata,
@@ -175,8 +125,6 @@ const MetadataLayout = ({
 }) => {
   const [activeTab, setActiveTab] = useState("general");
   const [showJSON, setShowJSON] = useState(false);
-  const [layout, setLayout] = useState<LayoutType>("cards");
-  const [animating, setAnimating] = useState(false);
   const cardsContainerRef = useRef<HTMLDivElement>(null);
 
   const tabs = [
@@ -185,34 +133,6 @@ const MetadataLayout = ({
     { id: "twitter", label: "Twitter" },
     { id: "technical", label: "Technical" },
   ];
-
-  // Toggle between layouts with animation
-  const toggleLayout = () => {
-    setAnimating(true);
-    setTimeout(() => {
-      setLayout(layout === "cards" ? "tabs" : "cards");
-      setTimeout(() => {
-        setAnimating(false);
-      }, 500); // Wait for animation to complete
-    }, 10);
-  };
-
-  // Handle horizontal scrolling for cards
-  // useEffect(() => {
-  //   const container = cardsContainerRef.current;
-  //   if (!container || layout !== "cards") return;
-
-  //   const handleWheel = (e: WheelEvent) => {
-  //     if (Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
-  //     e.preventDefault();
-  //     container.scrollLeft += e.deltaY;
-  //   };
-
-  //   container.addEventListener("wheel", handleWheel, { passive: false });
-  //   return () => {
-  //     container.removeEventListener("wheel", handleWheel);
-  //   };
-  // }, [layout, cardsContainerRef.current]);
 
   if (!metadata) return null;
 
@@ -270,7 +190,6 @@ const MetadataLayout = ({
         <div className="flex items-center justify-between">
           <h2 className="font-mono text-sm font-bold">MetaScan</h2>
           <div className="flex items-center space-x-2">
-            <LayoutToggle layout={layout} onToggle={toggleLayout} />
             <button
               onClick={() => setShowJSON(!showJSON)}
               className={cn(
@@ -302,22 +221,11 @@ const MetadataLayout = ({
             <pre>{JSON.stringify(metadata, null, 2)}</pre>
           </div>
         </div>
-      ) : layout === "tabs" ? (
-        <div
-          className={cn(
-            "p-3",
-            animating ? "animate-fade-out" : "animate-fade-in"
-          )}
-        >
-          <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
-          <div className="tab-content">{renderTabContent(activeTab)}</div>
-        </div>
       ) : (
         <div
           ref={cardsContainerRef}
           className={cn(
-            "p-3 flex gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600",
-            animating ? "animate-fade-out" : "animate-fade-in"
+            "p-3 flex gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600"
           )}
           style={{ scrollbarWidth: "thin" }}
         >
