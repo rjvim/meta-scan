@@ -1,3 +1,26 @@
+# v0.4.0 (Sat Mar 15 2025)
+
+#### 🚀 Enhancement
+
+- feat: enhance UI styles with additional utility classes and animations ([@rjvim](https://github.com/rjvim))
+- Cards [#6](https://github.com/rjvim/meta-scan/pull/6) ([@rjvim](https://github.com/rjvim))
+
+#### 🐛 Bug Fix
+
+- refactor: clean up unused CSS classes and reorganize styles for bette… [#8](https://github.com/rjvim/meta-scan/pull/8) ([@rjvim](https://github.com/rjvim))
+- chore: remove all-contributors plugin from configuration [#7](https://github.com/rjvim/meta-scan/pull/7) ([@rjvim](https://github.com/rjvim))
+- docs: add README.md with project overview and usage instructions ([@rjvim](https://github.com/rjvim))
+
+#### ⚠️ Pushed to `main`
+
+- Merge branch 'main' of github.com:rjvim/meta-scan ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.3.1 (Fri Mar 14 2025)
 
 #### 🐛 Bug Fix
