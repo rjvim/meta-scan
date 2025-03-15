@@ -143,17 +143,21 @@ const MetadataPanel = ({
     switch (activeTab) {
       case "general":
         return Object.entries(metadata.general || {}).map(([key, value]) => (
-          <MetadataItem key={key} label={key} value={value} />
+          <MetadataItem key={key} label={key} value={value || null} />
         ));
       case "opengraph":
         return (
           <>
             <MetadataImage
-              src={metadata.opengraph?.image}
-              alt={metadata.opengraph?.title || metadata.general?.title}
+              src={metadata.opengraph?.image || null}
+              alt={
+                metadata.opengraph?.title ||
+                metadata.general?.title ||
+                undefined
+              }
             />
             {Object.entries(metadata.opengraph || {}).map(([key, value]) => (
-              <MetadataItem key={key} label={key} value={value} />
+              <MetadataItem key={key} label={key} value={value || null} />
             ))}
           </>
         );
@@ -161,17 +165,19 @@ const MetadataPanel = ({
         return (
           <>
             <MetadataImage
-              src={metadata.twitter?.image}
-              alt={metadata.twitter?.title || metadata.general?.title}
+              src={metadata.twitter?.image || null}
+              alt={
+                metadata.twitter?.title || metadata.general?.title || undefined
+              }
             />
             {Object.entries(metadata.twitter || {}).map(([key, value]) => (
-              <MetadataItem key={key} label={key} value={value} />
+              <MetadataItem key={key} label={key} value={value || null} />
             ))}
           </>
         );
       case "technical":
         return Object.entries(metadata.technical || {}).map(([key, value]) => (
-          <MetadataItem key={key} label={key} value={value} />
+          <MetadataItem key={key} label={key} value={value || null} />
         ));
       default:
         return null;
