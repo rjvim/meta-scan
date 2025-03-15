@@ -203,16 +203,18 @@ export const CogIcon = () => (
 
 export const InfoIcon = () => (
   <svg
-    width="14"
-    height="14"
+    xmlns="http://www.w3.org/2000/svg"
+    width={14}
+    height={14}
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
-    strokeWidth="2"
+    strokeWidth={2}
     strokeLinecap="round"
     strokeLinejoin="round"
+    className="lucide lucide-info"
   >
-    <circle cx="12" cy="12" r="10" />
+    <circle cx={12} cy={12} r={10} />
     <path d="M12 16v-4" />
     <path d="M12 8h.01" />
   </svg>
@@ -220,24 +222,28 @@ export const InfoIcon = () => (
 
 export const BugIcon = () => (
   <svg
-    width="14"
-    height="14"
+    xmlns="http://www.w3.org/2000/svg"
+    width={14}
+    height={14}
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
-    strokeWidth="2"
+    strokeWidth={2}
     strokeLinecap="round"
     strokeLinejoin="round"
+    className="lucide lucide-bug"
   >
-    <path d="m8 2 1.5 1.5" />
-    <path d="M14.5 3.5 16 2" />
-    <path d="M16 16h.01" />
-    <path d="M8 16h.01" />
-    <path d="M12 20v-4" />
-    <path d="M12 12v-1" />
-    <path d="M7 8v1" />
-    <path d="M17 8v1" />
-    <path d="M14 17h-4a4 4 0 0 1-4-4v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3a4 4 0 0 1-4 4Z" />
+    <path d="m8 2 1.88 1.88" />
+    <path d="M14.12 3.88 16 2" />
+    <path d="M9 7.13v-1a3.003 3.003 0 1 1 6 0v1" />
+    <path d="M12 20c-3.3 0-6-2.7-6-6v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3c0 3.3-2.7 6-6 6" />
+    <path d="M12 20v-9" />
+    <path d="M6.53 9C4.6 8.8 3 7.1 3 5" />
+    <path d="M6 13H2" />
+    <path d="M3 21c0-2.1 1.7-3.9 3.8-4" />
+    <path d="M20.97 5c0 2.1-1.6 3.8-3.5 4" />
+    <path d="M22 13h-4" />
+    <path d="M17.2 17c2.1.1 3.8 1.9 3.8 4" />
   </svg>
 );
 
@@ -253,6 +259,24 @@ export const BookIcon = () => (
     strokeLinejoin="round"
   >
     <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+  </svg>
+);
+
+export const HelpIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={14}
+    height={14}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={2}
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="lucide lucide-circle-help"  >
+    <circle cx={12} cy={12} r={10} />
+    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+    <path d="M12 17h.01" />
   </svg>
 );
 

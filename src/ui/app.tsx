@@ -12,10 +12,10 @@ import {
   TopRightIcon,
   BottomLeftIcon,
   BottomRightIcon,
-  CogIcon,
   InfoIcon,
   BugIcon,
   BookIcon,
+  HelpIcon,
 } from "./icons";
 import { logger } from "../utils/logger";
 import MetadataLayoutWrapper from "./MetadataLayoutWrapper";
@@ -261,15 +261,15 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
           {/* Separator */}
           <div className="w-px h-4 bg-gray-200 dark:bg-gray-700"></div>
 
-          {/* Settings Menu */}
+          {/* Help & Support Menu */}
           <div className="relative">
             <button
               id="settings-toggle"
               onClick={toggleSettingsMenu}
               className="w-6 h-6 flex items-center justify-center text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 bg-gray-100 dark:bg-gray-700 rounded-full"
-              title="Settings"
+              title="Help & Support"
             >
-              <CogIcon />
+              <HelpIcon />
             </button>
 
             {/* Settings Dropdown Menu */}
