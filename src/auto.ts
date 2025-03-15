@@ -5,6 +5,7 @@ import { MetaScan, init, enableOrDisable } from "./index";
 import { renderUI } from "./ui";
 import type { MetaScanOptions, Corner } from "./types";
 import { logger } from "./utils/logger";
+import { stateManager } from "./state";
 
 // Set up global object
 if (typeof window !== "undefined") {
@@ -13,18 +14,27 @@ if (typeof window !== "undefined") {
   // Auto initialize from script tag data attributes if present
   const autoInitialize = () => {
     const scriptTags = document.querySelectorAll('script[src*="meta-scan"]');
-    let shouldAutoEnable = true; // Default to enabled
+    let shouldEnable = true;
 
     if (scriptTags.length > 0) {
       const scriptTag = scriptTags[0] as HTMLElement;
 
       // Check for data-auto-enable attribute
       if (scriptTag.dataset.autoEnable === "false") {
-        shouldAutoEnable = false;
+        // Check if the property exists in saved state at all
+        const state = stateManager.getState();
+        const hasExplicitUserPreference = Object.prototype.hasOwnProperty.call(
+          state,
+          "lastEnableDisable"
+        );
+
+        shouldEnable = hasExplicitUserPreference
+          ? Boolean(state.lastEnableDisable)
+          : false;
       }
 
       const options: Partial<MetaScanOptions> = {
-        enabled: shouldAutoEnable,
+        enabled: shouldEnable,
       };
 
       // Parse other data attributes
@@ -43,22 +53,24 @@ if (typeof window !== "undefined") {
       // Initialize with extracted options
       init(options);
 
-      // Only render UI if auto-enable is true
-      if (shouldAutoEnable) {
+      // Only render UI if enabled
+      if (shouldEnable) {
         renderUI();
         logger.info("MetaScan auto-initialized and enabled");
       } else {
         enableOrDisable(false);
-        logger.info("MetaScan initialized but disabled (auto-enable: false)");
+        logger.info(
+          "MetaScan initialized but disabled (user preference or auto-enable: false)"
+        );
       }
     } else {
       // Default initialization with auto-update enabled
       init({
         autoUpdate: true,
-        enabled: shouldAutoEnable,
+        enabled: shouldEnable,
       });
 
-      if (shouldAutoEnable) {
+      if (shouldEnable) {
         renderUI();
         logger.info("MetaScan auto-initialized with defaults");
       }
