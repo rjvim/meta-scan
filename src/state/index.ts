@@ -18,7 +18,9 @@ class StateManager {
   private listeners: ((state: MetaScanUIState) => void)[] = [];
 
   constructor() {
-    this.state = this.loadState() || defaultState;
+    const savedState = this.loadState();
+    // Preserve isOpen state from storage if it exists
+    this.state = savedState ? { ...defaultState, ...savedState } : defaultState;
   }
 
   private loadState(): MetaScanUIState | null {
