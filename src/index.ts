@@ -6,6 +6,7 @@ import { cleanup, initDOMWatcher } from "./utils/dom-watcher";
 import { renderUI } from "./ui";
 import { logger } from "./utils/logger";
 import { extractMetadata } from "./core";
+import { stateManager } from "./state";
 
 // Default options
 const defaultOptions: MetaScanOptions = {
@@ -23,6 +24,7 @@ let options = { ...defaultOptions };
  * Enable or disable MetaScan
  */
 export function enableOrDisable(enabled: boolean): void {
+  stateManager.setEnableDisable(enabled);
   // isEnabled = enabled;
   logger.info(`MetaScan ${enabled ? "enabled" : "disabled"}`);
 

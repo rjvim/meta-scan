@@ -9,6 +9,7 @@ export interface MetaScanUIState {
   isOpen: boolean;
   theme: string;
   extractedAt: string;
+  lastEnableDisable?: boolean; // User's last manual setting
 }
 
 export interface MetaScanOptions extends Partial<MetaScanUIState> {
