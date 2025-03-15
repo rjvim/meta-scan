@@ -1,3 +1,26 @@
+# v0.5.1 (Sat Mar 15 2025)
+
+#### 🐛 Bug Fix
+
+- fix: styles [#13](https://github.com/rjvim/meta-scan/pull/13) ([@rjvim](https://github.com/rjvim))
+- Changed the Settings Icon to Help and Support Icon. [#12](https://github.com/rjvim/meta-scan/pull/12) ([@rjvim](https://github.com/rjvim))
+- refactor: Fix Typescript Interfaces ([@rjvim](https://github.com/rjvim))
+- fix: commit styles ([@rjvim](https://github.com/rjvim))
+- Fix: Styles ([@rjvim](https://github.com/rjvim))
+- fix: format file ([@rjvim](https://github.com/rjvim))
+- fix: rebuild css ([@rjvim](https://github.com/rjvim))
+
+#### ⚠️ Pushed to `main`
+
+- Update README.md ([@rjvim](https://github.com/rjvim))
+- Merge branch 'main' of github.com:rjvim/meta-scan ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.5.0 (Sat Mar 15 2025)
 
 #### 🚀 Enhancement
