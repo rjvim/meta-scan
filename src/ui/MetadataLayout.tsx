@@ -83,13 +83,9 @@ const MetadataImage = ({ src, alt }: { src: string | null; alt?: string }) => {
 // Card component for card layout
 const Card = ({
   title,
-  active,
-  onClick,
   children,
 }: {
   title: string;
-  active: boolean;
-  onClick: () => void;
   children: ComponentChildren;
 }) => {
   return (
@@ -97,16 +93,13 @@ const Card = ({
       className={cn(
         "flex-shrink-0 w-[350px] rounded-lg overflow-hidden shadow-md transition-all duration-300 transform",
         "bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700",
-        active ? "ring-2 ring-purple-500" : "hover:shadow-lg"
+        "hover:shadow-lg"
       )}
     >
       <div className="p-3 border-b border-gray-200 dark:border-gray-700">
-        <button
-          onClick={onClick}
-          className="w-full text-left text-sm font-semibold text-gray-700 dark:text-gray-200"
-        >
+        <div className="w-full text-left text-sm font-semibold text-gray-700 dark:text-gray-200">
           {title}
-        </button>
+        </div>
       </div>
       <div className="p-3 overflow-y-auto max-h-[60vh]">{children}</div>
     </div>
@@ -123,7 +116,6 @@ const MetadataLayout = ({
   refreshMetadata: () => void;
   theme?: "light" | "dark";
 }) => {
-  const [activeTab, setActiveTab] = useState("general");
   const [showJSON, setShowJSON] = useState(false);
   const cardsContainerRef = useRef<HTMLDivElement>(null);
 
@@ -136,21 +128,22 @@ const MetadataLayout = ({
 
   if (!metadata) return null;
 
+  // Fix TypeScript errors by ensuring null instead of undefined for metadata values
   const renderTabContent = (tabId: string) => {
     switch (tabId) {
       case "general":
         return Object.entries(metadata.general || {}).map(([key, value]) => (
-          <MetadataItem key={key} label={key} value={value} />
+          <MetadataItem key={key} label={key} value={value ?? null} />
         ));
       case "opengraph":
         return (
           <>
             <MetadataImage
-              src={metadata.opengraph?.image}
-              alt={metadata.opengraph?.title || metadata.general?.title}
+              src={metadata.opengraph?.image || null}
+              alt={metadata.opengraph?.title || metadata.general?.title || ""}
             />
             {Object.entries(metadata.opengraph || {}).map(([key, value]) => (
-              <MetadataItem key={key} label={key} value={value} />
+              <MetadataItem key={key} label={key} value={value ?? null} />
             ))}
           </>
         );
@@ -158,17 +151,17 @@ const MetadataLayout = ({
         return (
           <>
             <MetadataImage
-              src={metadata.twitter?.image}
-              alt={metadata.twitter?.title || metadata.general?.title}
+              src={metadata.twitter?.image || null}
+              alt={metadata.twitter?.title || metadata.general?.title || ""}
             />
             {Object.entries(metadata.twitter || {}).map(([key, value]) => (
-              <MetadataItem key={key} label={key} value={value} />
+              <MetadataItem key={key} label={key} value={value ?? null} />
             ))}
           </>
         );
       case "technical":
         return Object.entries(metadata.technical || {}).map(([key, value]) => (
-          <MetadataItem key={key} label={key} value={value} />
+          <MetadataItem key={key} label={key} value={value ?? null} />
         ));
       default:
         return null;
@@ -178,7 +171,7 @@ const MetadataLayout = ({
   return (
     <div
       className={cn(
-        "overflow-hidden max-h-[80vh]", // Changed to overflow-hidden since cards have their own scroll
+        "overflow-hidden max-h-[80vh]",
         "bg-white dark:bg-gray-900",
         "text-black dark:text-white",
         "transition-colors duration-200",
@@ -230,12 +223,7 @@ const MetadataLayout = ({
           style={{ scrollbarWidth: "thin" }}
         >
           {tabs.map((tab) => (
-            <Card
-              key={tab.id}
-              title={tab.label}
-              active={activeTab === tab.id}
-              onClick={() => setActiveTab(tab.id)}
-            >
+            <Card key={tab.id} title={tab.label}>
               {renderTabContent(tab.id)}
             </Card>
           ))}
