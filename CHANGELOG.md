@@ -1,3 +1,20 @@
+# v0.5.0 (Sat Mar 15 2025)
+
+#### 🚀 Enhancement
+
+- Settings-icon [#9](https://github.com/rjvim/meta-scan/pull/9) ([@rjvim](https://github.com/rjvim))
+
+#### 🐛 Bug Fix
+
+- refactor: Reorganize CSS utility classes [#10](https://github.com/rjvim/meta-scan/pull/10) ([@rjvim](https://github.com/rjvim))
+- fix: update script source URL from unpkg to jsdelivr for improved reliability ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.4.0 (Sat Mar 15 2025)
 
 #### 🚀 Enhancement
