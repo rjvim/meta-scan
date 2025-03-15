@@ -18,7 +18,7 @@ Add the script tag to your HTML:
 ```html
 <script
   crossorigin="anonymous"
-  src="//cdn.jsdelivr.net/npm/meta-scan/dist/auto.global.js"
+  src="//cdn.jsdelivr.net/npm/meta-scan@<latest-version>/dist/auto.global.js"
   data-auto-enable="true"
 ></script>
 ```
@@ -30,7 +30,7 @@ You can control whether MetaScan is enabled on page load with the `data-auto-ena
 ```html
 <script
   crossorigin="anonymous"
-  src="//cdn.jsdelivr.net/npm/meta-scan/dist/auto.global.js"
+  src="//cdn.jsdelivr.net/npm/meta-scan@<latest-version>/dist/auto.global.js"
   data-auto-enable="false"
 ></script>
 ```
