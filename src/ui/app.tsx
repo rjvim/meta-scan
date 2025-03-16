@@ -16,10 +16,12 @@ import {
   BugIcon,
   BookIcon,
   HelpIcon,
+  VersionIcon,
 } from "./icons";
 import { logger } from "../utils/logger";
 import MetadataLayoutWrapper from "./MetadataLayoutWrapper";
 import { stateManager } from "../state";
+import { version } from "../version";
 
 export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
   const [uiState, setUiState] = useState<MetaScanUIState>(
@@ -313,6 +315,19 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
                     <BookIcon />
                   </span>
                   Documentation
+                </a>
+                <a
+                  href={`https://github.com/rjvim/meta-scan/releases/tag/v${version}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center px-4 py-2 text-sm text-blue-600 dark:text-blue-400 border-t border-gray-200 dark:border-gray-700 mt-1 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  <div className="flex items-center">
+                    <span className="mr-2">
+                      <VersionIcon />
+                    </span>
+                    Version: {version}
+                  </div>
                 </a>
               </div>
             )}
