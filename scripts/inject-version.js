@@ -30,7 +30,11 @@ try {
   const content = `// Auto-generated file - do not edit\nexport const version = '${nextVersion}';\n`;
   fs.writeFileSync("./src/version-generated.ts", content);
 
-  console.log("Version file generated successfully");
+  // Commit the generated file
+  execSync("git add ./src/version-generated.ts");
+  execSync('git commit -m "bump: save version for release"');
+
+  console.log("Version file generated and committed");
 } catch (error) {
   console.error("Error generating version file:", error);
   process.exit(1);
