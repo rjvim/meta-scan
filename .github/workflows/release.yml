@@ -89,6 +89,12 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npx auto version
+
       - name: Build
         run: pnpm run build
 
