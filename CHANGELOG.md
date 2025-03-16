@@ -1,3 +1,15 @@
+# v0.5.7 (Sun Mar 16 2025)
+
+#### 🐛 Bug Fix
+
+- fix: remove logs [#27](https://github.com/rjvim/meta-scan/pull/27) ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.5.6 (Sun Mar 16 2025)
 
 #### 🐛 Bug Fix
