@@ -73,13 +73,13 @@ export const version = '${version}';
 
   try {
     // Ensure directory exists
-    const dir = path.dirname(VERSION_FILE_PATH);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
+    // const dir = path.dirname(VERSION_FILE_PATH);
+    // if (!fs.existsSync(dir)) {
+    //   fs.mkdirSync(dir, { recursive: true });
+    // }
 
     // Write the file
-    fs.writeFileSync(VERSION_FILE_PATH, content, "utf8");
+    // fs.writeFileSync(VERSION_FILE_PATH, content, "utf8");
     console.log(`Version ${version} injected into ${VERSION_FILE_PATH}`);
 
     return true;
@@ -114,6 +114,6 @@ function commitAndPushVersion(version) {
 const version = getNextVersion();
 if (version) {
   if (generateVersionFile(version)) {
-    commitAndPushVersion(version);
+    // commitAndPushVersion(version);
   }
 }
