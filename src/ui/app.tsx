@@ -21,9 +21,12 @@ import {
 import { logger } from "../utils/logger";
 import MetadataLayoutWrapper from "./MetadataLayoutWrapper";
 import { stateManager } from "../state";
-import { version } from "../version";
+
+const version = window.META_SCAN_VERSION || "0.0.0";
 
 export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
+  console.log("version", version);
+
   const [uiState, setUiState] = useState<MetaScanUIState>(
     stateManager.getState()
   );

@@ -72,6 +72,8 @@ export const version = '${version}';
 `;
 
   try {
+    console.log(`META_SCAN_VERSION=${version}`);
+
     // Ensure directory exists
     // const dir = path.dirname(VERSION_FILE_PATH);
     // if (!fs.existsSync(dir)) {
@@ -112,8 +114,17 @@ function commitAndPushVersion(version) {
 
 // Main execution
 const version = getNextVersion();
-if (version) {
-  if (generateVersionFile(version)) {
-    // commitAndPushVersion(version);
-  }
+
+// Set GitHub Actions environment variable
+if (process.env.GITHUB_ACTIONS) {
+  fs.appendFileSync(process.env.GITHUB_ENV, `META_SCAN_VERSION=${version}\n`);
+  console.log(`Version ${version} set as GitHub environment variable`);
+} else {
+  console.log(`META_SCAN_VERSION=${version}`);
 }
+
+// if (version) {
+//   if (generateVersionFile(version)) {
+//     // commitAndPushVersion(version);
+//   }
+// }

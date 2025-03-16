@@ -102,7 +102,9 @@ jobs:
           node inject-version.js
 
       - name: Build
-        run: pnpm run build
+        run: |
+          echo "Using META_SCAN_VERSION: $META_SCAN_VERSION"
+          pnpm run build
 
       - name: Create Release
         env:
