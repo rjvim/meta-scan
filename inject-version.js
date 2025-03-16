@@ -89,8 +89,31 @@ export const version = '${version}';
   }
 }
 
+function commitAndPushVersion(version) {
+  try {
+    // Add the file to git
+    execSync("git add src/version-generated.ts", { stdio: "inherit" });
+
+    // Commit the file
+    execSync(`git commit -m "chore: update version to ${version} [skip ci]"`, {
+      stdio: "inherit",
+    });
+
+    // Push the changes
+    execSync("git push origin HEAD", { stdio: "inherit" });
+
+    console.log("Version file committed and pushed successfully");
+    return true;
+  } catch (error) {
+    console.error("Error committing and pushing version file:", error.message);
+    return false;
+  }
+}
+
 // Main execution
 const version = getNextVersion();
 if (version) {
-  generateVersionFile(version);
+  if (generateVersionFile(version)) {
+    commitAndPushVersion(version);
+  }
 }
