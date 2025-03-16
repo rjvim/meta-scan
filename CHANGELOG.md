@@ -1,3 +1,22 @@
+# v0.5.2 (Sun Mar 16 2025)
+
+#### 🐛 Bug Fix
+
+- fix: styles [#15](https://github.com/rjvim/meta-scan/pull/15) ([@rjvim](https://github.com/rjvim))
+- fix: add version to the help and support card [#14](https://github.com/rjvim/meta-scan/pull/14) ([@rjvim](https://github.com/rjvim))
+- docs: Update README.md ([@rjvim](https://github.com/rjvim))
+- fix: styles ([@rjvim](https://github.com/rjvim))
+
+#### ⚠️ Pushed to `main`
+
+- Merge branch 'main' of github.com:rjvim/meta-scan ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.5.1 (Sat Mar 15 2025)
 
 #### 🐛 Bug Fix
