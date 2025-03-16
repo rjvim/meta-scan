@@ -7,7 +7,7 @@
   "types": "dist/index.d.ts",
   "browser": "dist/auto.global.js",
   "scripts": {
-    "dev": "npm-run-all --parallel dev:css dev:tsup",
+    "dev": "npm-run-all --parallel dev:css dev:tsup serve",
     "dev:css": "postcss ./src/ui/styles.css -o ./src/ui/styles.processed.css --watch",
     "dev:tsup": "NODE_ENV=development tsup --watch",
     "build": "npm run build:css && NODE_ENV=production tsup",
