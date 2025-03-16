@@ -1,3 +1,22 @@
+# v0.5.4 (Sun Mar 16 2025)
+
+#### 🐛 Bug Fix
+
+- fix: version [#24](https://github.com/rjvim/meta-scan/pull/24) ([@rjvim](https://github.com/rjvim))
+- Change_color_2 [#23](https://github.com/rjvim/meta-scan/pull/23) ([@rjvim](https://github.com/rjvim))
+- fix: change color [#22](https://github.com/rjvim/meta-scan/pull/22) ([@rjvim](https://github.com/rjvim))
+- Get_version_check [#21](https://github.com/rjvim/meta-scan/pull/21) ([@rjvim](https://github.com/rjvim))
+- fix: change color [#20](https://github.com/rjvim/meta-scan/pull/20) ([@rjvim](https://github.com/rjvim))
+- docs: change something [#19](https://github.com/rjvim/meta-scan/pull/19) ([@rjvim](https://github.com/rjvim))
+- Get_version_check [#18](https://github.com/rjvim/meta-scan/pull/18) ([@rjvim](https://github.com/rjvim))
+- Get_version_check [#17](https://github.com/rjvim/meta-scan/pull/17) ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.5.3 (Sun Mar 16 2025)
 
 #### 🐛 Bug Fix
