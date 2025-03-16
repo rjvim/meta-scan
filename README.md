@@ -13,12 +13,24 @@ MetaScan is a lightweight (29.9 kB) client-side JavaScript tool that extracts an
 
 ## Installation
 
-Add the script tag to your HTML:
+Add the script tag to your HTML using unpkg or jsdelivr:
+
+### Using jsdelivr
 
 ```html
 <script
   crossorigin="anonymous"
   src="//cdn.jsdelivr.net/npm/meta-scan@<latest-version>/dist/auto.global.js"
+  data-auto-enable="true"
+></script>
+```
+
+### Using unpkg
+
+```html
+<script
+  crossorigin="anonymous"
+  src="//unpkg.com/meta-scan/dist/auto.global.js"
   data-auto-enable="true"
 ></script>
 ```
