@@ -1,3 +1,15 @@
+# v0.5.5 (Sun Mar 16 2025)
+
+#### 🐛 Bug Fix
+
+- fix: change color 3 [#25](https://github.com/rjvim/meta-scan/pull/25) ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.5.4 (Sun Mar 16 2025)
 
 #### 🐛 Bug Fix
