@@ -74,7 +74,7 @@ export default defineConfig([
         ...options.define,
         "process.env.INLINE_CSS": JSON.stringify(inlineProcessedCss()),
         "window.META_SCAN_VERSION": JSON.stringify(
-          process.env.META_SCAN_VERSION || require("./package.json").version
+          process.env.META_SCAN_VERSION || "0.0.0"
         ),
       };
     },
