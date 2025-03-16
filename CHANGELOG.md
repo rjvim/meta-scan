@@ -1,3 +1,18 @@
+# v0.5.3 (Sun Mar 16 2025)
+
+#### 🐛 Bug Fix
+
+- Get_version_check [#16](https://github.com/rjvim/meta-scan/pull/16) ([@rjvim](https://github.com/rjvim))
+- fix: add serve cmd to dev ([@rjvim](https://github.com/rjvim))
+- fix: add src/ui/styles.processed.css to ignore ([@rjvim](https://github.com/rjvim))
+- fix: ignore src/ui/styles.processed.css ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.5.2 (Sun Mar 16 2025)
 
 #### 🐛 Bug Fix
