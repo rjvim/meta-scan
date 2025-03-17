@@ -1,3 +1,15 @@
+# v0.5.9 (Mon Mar 17 2025)
+
+#### 🐛 Bug Fix
+
+- fix: Enhance JSON copy functionality with improved reliability and accessibility [#29](https://github.com/rjvim/meta-scan/pull/29) ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.5.8 (Mon Mar 17 2025)
 
 #### 🐛 Bug Fix
