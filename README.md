@@ -10,6 +10,7 @@ MetaScan is a lightweight (29.9 kB) client-side JavaScript tool that extracts an
 - 🎨 Clean, modern UI with dark/light mode support
 - 🎛️ Configurable positioning on any corner of the screen
 - 📋 Copy functionality for metadata values
+- 🧩 Structured data extraction (JSON-LD and Microdata)
 
 ## Installation
 
@@ -74,6 +75,7 @@ export interface MetadataResult {
   opengraph: OpenGraphMetadata;
   twitter: TwitterMetadata;
   technical: TechnicalMetadata;
+  structured?: StructuredData;
   extractedAt: string;
 }
 
@@ -118,7 +120,27 @@ export interface TechnicalMetadata {
   strictTransportSecurity?: string;
   [key: string]: string | undefined;
 }
+
+export interface StructuredData {
+  jsonLd: any[];
+  microdata: MicrodataItem[];
+}
+
+export interface MicrodataItem {
+  type: string;
+  properties: Record<string, string>;
+}
 ```
+
+## Structured Data Extraction
+
+MetaScan now extracts structured data from webpages, including:
+
+1. **JSON-LD**: Extracts all JSON-LD scripts from the page, which are commonly used for rich search results.
+
+2. **Microdata**: Extracts HTML microdata annotations, providing insights into how search engines interpret your content.
+
+This makes MetaScan an invaluable tool for SEO professionals and developers who need to debug structured data implementations.
 
 ## License
 

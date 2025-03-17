@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "preact/hooks";
 import { cn } from "../utils/cn";
-import type { MetadataResult } from "~/types";
+import type { MetadataResult, StructuredData, MicrodataItem } from "~/types";
 import { CheckIcon, CopyIcon, JsonIcon, RefreshIcon } from "./icons";
 import { type ComponentChildren } from "preact";
 
@@ -120,10 +120,12 @@ const MetadataLayout = ({
   const [jsonCopied, setJsonCopied] = useState(false);
   const [copyError, setCopyError] = useState(false);
   const [copyMessage, setCopyMessage] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const copyTimeoutRef = useRef<number | null>(null);
   const errorTimeoutRef = useRef<number | null>(null);
   const jsonTextRef = useRef<HTMLPreElement>(null);
   const cardsContainerRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Clean up timeouts when component unmounts
   useEffect(() => {
@@ -137,11 +139,34 @@ const MetadataLayout = ({
     };
   }, []);
 
+  // Add keyboard shortcut for search (Ctrl+F or Cmd+F)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Check if Ctrl+F or Cmd+F is pressed
+      if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+        e.preventDefault(); // Prevent browser's default search
+        searchInputRef.current?.focus();
+      }
+      
+      // Clear search on Escape
+      if (e.key === 'Escape' && searchTerm) {
+        setSearchTerm('');
+        searchInputRef.current?.blur();
+      }
+    };
+    
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [searchTerm]);
+
   const tabs = [
     { id: "general", label: "General" },
     { id: "opengraph", label: "Open Graph" },
     { id: "twitter", label: "Twitter" },
     { id: "technical", label: "Technical" },
+    { id: "structured", label: "Structured Data" },
   ];
 
   if (!metadata) return null;
@@ -219,45 +244,198 @@ const MetadataLayout = ({
     }
   };
 
+  // Filter metadata items based on search term
+  const filterMetadataItems = (items: [string, any][]): [string, any][] => {
+    if (!searchTerm) return items;
+    
+    const lowerSearchTerm = searchTerm.toLowerCase();
+    return items.filter(([key, value]) => {
+      // Search in keys
+      if (key.toLowerCase().includes(lowerSearchTerm)) return true;
+      
+      // Search in string values
+      if (typeof value === 'string' && value.toLowerCase().includes(lowerSearchTerm)) return true;
+      
+      // Search in array values
+      if (Array.isArray(value) && value.some(item => 
+        typeof item === 'string' && item.toLowerCase().includes(lowerSearchTerm)
+      )) return true;
+      
+      // Search in object values (basic level)
+      if (value && typeof value === 'object') {
+        const stringified = JSON.stringify(value).toLowerCase();
+        return stringified.includes(lowerSearchTerm);
+      }
+      
+      return false;
+    });
+  };
+
   // Fix TypeScript errors by ensuring null instead of undefined for metadata values
   const renderTabContent = (tabId: string) => {
     switch (tabId) {
       case "general":
-        return Object.entries(metadata.general || {}).map(([key, value]) => (
+        return filterMetadataItems(Object.entries(metadata.general || {})).map(([key, value]) => (
           <MetadataItem key={key} label={key} value={value ?? null} />
         ));
       case "opengraph":
+        const filteredOgItems = filterMetadataItems(Object.entries(metadata.opengraph || {}));
         return (
           <>
-            <MetadataImage
-              src={metadata.opengraph?.image || null}
-              alt={metadata.opengraph?.title || metadata.general?.title || ""}
-            />
-            {Object.entries(metadata.opengraph || {}).map(([key, value]) => (
-              <MetadataItem key={key} label={key} value={value ?? null} />
+            {!searchTerm && metadata.opengraph?.image && (
+              <MetadataImage
+                src={metadata.opengraph.image || null}
+                alt={metadata.opengraph.title || metadata.general?.title || ""}
+              />
+            )}
+            {filteredOgItems.map(([key, value]) => (
+              <MetadataItem key={key} label={`og:${key}`} value={value ?? null} />
             ))}
+            {filteredOgItems.length === 0 && searchTerm && (
+              <div className="py-2 text-center text-gray-500 dark:text-gray-400 text-sm">
+                No matching Open Graph metadata found
+              </div>
+            )}
           </>
         );
       case "twitter":
+        const filteredTwitterItems = filterMetadataItems(Object.entries(metadata.twitter || {}));
         return (
           <>
-            <MetadataImage
-              src={metadata.twitter?.image || null}
-              alt={metadata.twitter?.title || metadata.general?.title || ""}
-            />
-            {Object.entries(metadata.twitter || {}).map(([key, value]) => (
-              <MetadataItem key={key} label={key} value={value ?? null} />
+            {!searchTerm && metadata.twitter?.image && (
+              <MetadataImage
+                src={metadata.twitter.image || null}
+                alt={metadata.twitter.title || metadata.general?.title || ""}
+              />
+            )}
+            {filteredTwitterItems.map(([key, value]) => (
+              <MetadataItem key={key} label={`twitter:${key}`} value={value ?? null} />
             ))}
+            {filteredTwitterItems.length === 0 && searchTerm && (
+              <div className="py-2 text-center text-gray-500 dark:text-gray-400 text-sm">
+                No matching Twitter metadata found
+              </div>
+            )}
           </>
         );
       case "technical":
-        return Object.entries(metadata.technical || {}).map(([key, value]) => (
-          <MetadataItem key={key} label={key} value={value ?? null} />
-        ));
+        const filteredTechItems = filterMetadataItems(Object.entries(metadata.technical || {}));
+        return (
+          <>
+            {filteredTechItems.map(([key, value]) => (
+              <MetadataItem key={key} label={key} value={value ?? null} />
+            ))}
+            {filteredTechItems.length === 0 && searchTerm && (
+              <div className="py-2 text-center text-gray-500 dark:text-gray-400 text-sm">
+                No matching technical metadata found
+              </div>
+            )}
+          </>
+        );
+      case "structured":
+        if (!metadata.structured) {
+          return (
+            <div className="py-2 text-center text-gray-500 dark:text-gray-400 text-sm">
+              No structured data found
+            </div>
+          );
+        }
+        
+        const structuredData: StructuredData = metadata.structured;
+        const hasJsonLd = structuredData.jsonLd && structuredData.jsonLd.length > 0;
+        const hasMicrodata = structuredData.microdata && structuredData.microdata.length > 0;
+        
+        // Filter JSON-LD data
+        const filteredJsonLd = !searchTerm ? structuredData.jsonLd : structuredData.jsonLd.filter(item => {
+          return JSON.stringify(item).toLowerCase().includes(searchTerm.toLowerCase());
+        });
+        
+        // Filter Microdata
+        const filteredMicrodata = !searchTerm ? structuredData.microdata : structuredData.microdata.filter(item => {
+          return (
+            item.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            JSON.stringify(item.properties).toLowerCase().includes(searchTerm.toLowerCase())
+          );
+        });
+        
+        const noResults = searchTerm && filteredJsonLd.length === 0 && filteredMicrodata.length === 0;
+        
+        return (
+          <>
+            {hasJsonLd && filteredJsonLd.length > 0 && (
+              <div className="mb-4">
+                <h3 className="text-sm font-semibold mb-2">JSON-LD</h3>
+                {filteredJsonLd.map((item: any, index: number) => {
+                  if (!item) return null;
+                  return (
+                    <MetadataItem 
+                      key={`jsonld-${index}`}
+                      label={`JSON-LD ${index + 1} (${getJsonLdType(item)})`}
+                      value={item}
+                    />
+                  );
+                })}
+              </div>
+            )}
+            
+            {hasMicrodata && filteredMicrodata.length > 0 && (
+              <div className="mb-4">
+                <h3 className="text-sm font-semibold mb-2">Microdata</h3>
+                {filteredMicrodata.map((item: MicrodataItem, index: number) => {
+                  if (!item) return null;
+                  return (
+                    <MetadataItem 
+                      key={`microdata-${index}`}
+                      label={`Microdata ${index + 1} (${getTypeFromUrl(item.type)})`}
+                      value={item.properties}
+                    />
+                  );
+                })}
+              </div>
+            )}
+            
+            {noResults && (
+              <div className="py-2 text-center text-gray-500 dark:text-gray-400 text-sm">
+                No matching structured data found
+              </div>
+            )}
+          </>
+        );
       default:
         return null;
     }
   };
+
+  // Helper function to get a clean type name from JSON-LD
+  function getJsonLdType(item: any): string {
+    if (!item) return 'Unknown';
+    
+    // Handle arrays of types
+    if (item['@type']) {
+      const type = Array.isArray(item['@type']) 
+        ? item['@type'][0] 
+        : item['@type'];
+      
+      return getTypeFromUrl(type);
+    }
+    
+    // For graph structures
+    if (item['@graph'] && Array.isArray(item['@graph']) && item['@graph'][0]?.['@type']) {
+      return `Graph (${getTypeFromUrl(item['@graph'][0]['@type'])})`;
+    }
+    
+    return 'Generic';
+  }
+
+  // Helper function to get clean type from URL
+  function getTypeFromUrl(type: string): string {
+    if (!type) return 'Unknown';
+    
+    // Extract the last part of the URL or schema
+    // e.g., http://schema.org/Person -> Person, schema:Person -> Person
+    const parts = type.split(/[/#:]/);
+    return parts[parts.length - 1];
+  }
 
   return (
     <div
@@ -295,6 +473,36 @@ const MetadataLayout = ({
               <RefreshIcon />
             </button>
           </div>
+        </div>
+        
+        {/* Search input */}
+        <div className="mt-2 relative">
+          <input
+            ref={searchInputRef}
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm((e.target as HTMLInputElement).value)}
+            placeholder="Search metadata... (Ctrl+F)"
+            className={cn(
+              "w-full px-3 py-1.5 text-sm rounded-md",
+              "bg-gray-100 dark:bg-gray-800",
+              "text-gray-800 dark:text-gray-200",
+              "placeholder-gray-500 dark:placeholder-gray-400",
+              "border border-gray-200 dark:border-gray-700",
+              "focus:outline-none focus:ring-1 focus:ring-purple-500 dark:focus:ring-purple-400"
+            )}
+          />
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm("")}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+              title="Clear search"
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M18 6 6 18M6 6l12 12" />
+              </svg>
+            </button>
+          )}
         </div>
       </div>
 

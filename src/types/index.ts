@@ -47,6 +47,7 @@ export interface MetadataResult {
   opengraph: OpenGraphMetadata;
   twitter: TwitterMetadata;
   technical: TechnicalMetadata;
+  structured?: StructuredData;
   extractedAt: string;
 }
 
@@ -90,6 +91,23 @@ export interface TechnicalMetadata {
   contentSecurityPolicy?: string;
   strictTransportSecurity?: string;
   [key: string]: string | undefined;
+}
+
+/**
+ * Structured data extracted from the page
+ */
+export interface StructuredData {
+  jsonLd: any[];
+  microdata: MicrodataItem[];
+  // rdfa?: any[]; // Future implementation
+}
+
+/**
+ * Microdata item extracted from the page
+ */
+export interface MicrodataItem {
+  type: string;
+  properties: Record<string, string>;
 }
 
 /**
