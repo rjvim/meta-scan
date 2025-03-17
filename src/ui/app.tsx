@@ -242,7 +242,11 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
             <button
               id="position-toggle"
               onClick={togglePositionMenu}
-              className="w-6 h-6 flex items-center justify-center text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 bg-gray-100 dark:bg-gray-700 rounded-full"
+              className={`w-6 h-6 flex items-center justify-center rounded-full ${
+                showPositionMenu
+                  ? "bg-purple-100 dark:bg-purple-700 text-purple-600 dark:text-purple-400"
+                  : "text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 bg-gray-100 dark:bg-gray-700"
+              }`}
               title="Switch Position"
             >
               <PositionIcon />
@@ -257,15 +261,16 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
                     : "bottom-full mb-2"
                 } ${uiState.position.endsWith("right") ? "right-0" : "left-0"}`}
               >
-                <div className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
-                  Current: {uiState.position.replace('-', ' ')}
-                </div>
                 <button
                   onClick={() => {
                     changePosition("top-left");
                     setShowPositionMenu(false);
                   }}
-                  className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left"
+                  className={`flex items-center px-4 py-2 text-sm w-full text-left ${
+                    uiState.position === "top-left"
+                      ? "bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  }`}
                 >
                   <span className="mr-2">
                     <TopLeftIcon />
@@ -277,7 +282,11 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
                     changePosition("top-right");
                     setShowPositionMenu(false);
                   }}
-                  className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left"
+                  className={`flex items-center px-4 py-2 text-sm w-full text-left ${
+                    uiState.position === "top-right"
+                      ? "bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  }`}
                 >
                   <span className="mr-2">
                     <TopRightIcon />
@@ -289,7 +298,11 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
                     changePosition("bottom-left");
                     setShowPositionMenu(false);
                   }}
-                  className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left"
+                  className={`flex items-center px-4 py-2 text-sm w-full text-left ${
+                    uiState.position === "bottom-left"
+                      ? "bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  }`}
                 >
                   <span className="mr-2">
                     <BottomLeftIcon />
@@ -301,7 +314,11 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
                     changePosition("bottom-right");
                     setShowPositionMenu(false);
                   }}
-                  className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left"
+                  className={`flex items-center px-4 py-2 text-sm w-full text-left ${
+                    uiState.position === "bottom-right"
+                      ? "bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  }`}
                 >
                   <span className="mr-2">
                     <BottomRightIcon />
