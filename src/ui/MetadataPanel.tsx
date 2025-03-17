@@ -121,6 +121,7 @@ const MetadataPanel = ({
 }) => {
   const [activeTab, setActiveTab] = useState("general");
   const [showJSON, setShowJSON] = useState(false);
+  const [jsonCopied, setJsonCopied] = useState(false);
 
   if (!metadata) return null;
 
@@ -131,11 +132,28 @@ const MetadataPanel = ({
     { id: "technical", label: "Technical" },
   ];
 
+  // Handle copying JSON to clipboard
+  const handleCopyJSON = () => {
+    if (!metadata) return;
+
+    navigator.clipboard.writeText(JSON.stringify(metadata, null, 2));
+    setJsonCopied(true);
+    setTimeout(() => setJsonCopied(false), 2000);
+  };
+
   const renderTabContent = () => {
     if (showJSON) {
       return (
-        <div className="bg-gray-100 dark:bg-gray-800 p-3 rounded overflow-x-auto text-xs">
-          <pre>{JSON.stringify(metadata, null, 2)}</pre>
+        <div className="bg-gray-100 dark:bg-gray-800 p-3 rounded overflow-x-auto text-xs relative group">
+          <button
+            onClick={handleCopyJSON}
+            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-200 dark:bg-gray-700 p-1.5 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
+            aria-label="Copy JSON"
+            title="Copy JSON to clipboard"
+          >
+            {jsonCopied ? <CheckIcon /> : <CopyIcon />}
+          </button>
+          <pre className="pt-8">{JSON.stringify(metadata, null, 2)}</pre>
         </div>
       );
     }
