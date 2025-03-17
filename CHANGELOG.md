@@ -1,3 +1,15 @@
+# v0.6.0 (Mon Mar 17 2025)
+
+#### 🚀 Enhancement
+
+- Position-dropdown-menu [#30](https://github.com/rjvim/meta-scan/pull/30) ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.5.9 (Mon Mar 17 2025)
 
 #### 🐛 Bug Fix
