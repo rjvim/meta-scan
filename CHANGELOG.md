@@ -1,3 +1,15 @@
+# v0.5.8 (Mon Mar 17 2025)
+
+#### 🐛 Bug Fix
+
+- Add Copy JSON Feature to MetaScan's Metadata Viewer [#28](https://github.com/rjvim/meta-scan/pull/28) ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.5.7 (Sun Mar 16 2025)
 
 #### 🐛 Bug Fix
