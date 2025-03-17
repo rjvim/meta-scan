@@ -1,3 +1,15 @@
+# v0.7.0 (Mon Mar 17 2025)
+
+#### 🚀 Enhancement
+
+- feat: enhance MetaScan with structured data and improved UI [#31](https://github.com/rjvim/meta-scan/pull/31) ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.6.0 (Mon Mar 17 2025)
 
 #### 🚀 Enhancement
