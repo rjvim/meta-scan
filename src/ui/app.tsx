@@ -17,6 +17,7 @@ import {
   BookIcon,
   HelpIcon,
   VersionIcon,
+  PositionIcon,
 } from "./icons";
 import { logger } from "../utils/logger";
 import MetadataLayoutWrapper from "./MetadataLayoutWrapper";
@@ -29,6 +30,7 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
     stateManager.getState()
   );
   const [showSettingsMenu, setShowSettingsMenu] = useState(false);
+  const [showPositionMenu, setShowPositionMenu] = useState(false);
 
   useEffect(() => {
     const unsubscribe = stateManager.subscribe((newState) => {
@@ -81,6 +83,16 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
     setShowSettingsMenu(!showSettingsMenu);
   };
 
+  // Toggle position menu
+  const togglePositionMenu = (e: MouseEvent) => {
+    e.stopPropagation();
+    setShowPositionMenu(!showPositionMenu);
+    // Close settings menu if open to avoid having two menus open at once
+    if (showSettingsMenu) {
+      setShowSettingsMenu(false);
+    }
+  };
+
   // Close settings menu when clicking outside
   useEffect(() => {
     if (!showSettingsMenu) return;
@@ -100,6 +112,26 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
       document.removeEventListener("click", handleClickOutside);
     };
   }, [showSettingsMenu]);
+
+  // Close position menu when clicking outside
+  useEffect(() => {
+    if (!showPositionMenu) return;
+
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      const isClickInside = target.closest(".position-menu") !== null;
+      const isClickOnToggle = target.closest("#position-toggle") !== null;
+
+      if (!isClickInside && !isClickOnToggle) {
+        setShowPositionMenu(false);
+      }
+    };
+
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [showPositionMenu]);
 
   const changePosition = (position: Corner) => {
     setUiState((prev) => ({ ...prev, position }));
@@ -206,59 +238,95 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
           )}
         >
           {/* Position Controls */}
-          <div className="flex gap-1">
+          <div className="relative">
             <button
-              onClick={() => changePosition("top-left")}
-              className={cn(
-                "w-6 h-6 flex items-center justify-center rounded-full",
-                "transition-colors duration-200",
-                uiState.position === "top-left"
-                  ? "bg-purple-600 text-white hover:bg-purple-700"
-                  : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400"
-              )}
-              title="Position top left"
+              id="position-toggle"
+              onClick={togglePositionMenu}
+              className={`w-6 h-6 flex items-center justify-center rounded-full ${
+                showPositionMenu
+                  ? "bg-purple-100 dark:bg-purple-700 text-purple-600 dark:text-purple-400"
+                  : "text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 bg-gray-100 dark:bg-gray-700"
+              }`}
+              title="Switch Position"
             >
-              <TopLeftIcon />
+              <PositionIcon />
             </button>
-            <button
-              onClick={() => changePosition("top-right")}
-              className={cn(
-                "w-6 h-6 flex items-center justify-center rounded-full",
-                "transition-colors duration-200",
-                uiState.position === "top-right"
-                  ? "bg-purple-600 text-white hover:bg-purple-700"
-                  : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400"
-              )}
-              title="Position top right"
-            >
-              <TopRightIcon />
-            </button>
-            <button
-              onClick={() => changePosition("bottom-left")}
-              className={cn(
-                "w-6 h-6 flex items-center justify-center rounded-full",
-                "transition-colors duration-200",
-                uiState.position === "bottom-left"
-                  ? "bg-purple-600 text-white hover:bg-purple-700"
-                  : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400"
-              )}
-              title="Position bottom left"
-            >
-              <BottomLeftIcon />
-            </button>
-            <button
-              onClick={() => changePosition("bottom-right")}
-              className={cn(
-                "w-6 h-6 flex items-center justify-center rounded-full",
-                "transition-colors duration-200",
-                uiState.position === "bottom-right"
-                  ? "bg-purple-600 text-white hover:bg-purple-700"
-                  : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400"
-              )}
-              title="Position bottom right"
-            >
-              <BottomRightIcon />
-            </button>
+
+            {/* Position Dropdown Menu */}
+            {showPositionMenu && (
+              <div
+                className={`absolute w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700 position-menu ${
+                  uiState.position.startsWith("top")
+                    ? "top-full mt-2"
+                    : "bottom-full mb-2"
+                } ${uiState.position.endsWith("right") ? "right-0" : "left-0"}`}
+              >
+                <button
+                  onClick={() => {
+                    changePosition("top-left");
+                    setShowPositionMenu(false);
+                  }}
+                  className={`flex items-center px-4 py-2 text-sm w-full text-left ${
+                    uiState.position === "top-left"
+                      ? "bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  }`}
+                >
+                  <span className="mr-2">
+                    <TopLeftIcon />
+                  </span>
+                  Top Left
+                </button>
+                <button
+                  onClick={() => {
+                    changePosition("top-right");
+                    setShowPositionMenu(false);
+                  }}
+                  className={`flex items-center px-4 py-2 text-sm w-full text-left ${
+                    uiState.position === "top-right"
+                      ? "bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  }`}
+                >
+                  <span className="mr-2">
+                    <TopRightIcon />
+                  </span>
+                  Top Right
+                </button>
+                <button
+                  onClick={() => {
+                    changePosition("bottom-left");
+                    setShowPositionMenu(false);
+                  }}
+                  className={`flex items-center px-4 py-2 text-sm w-full text-left ${
+                    uiState.position === "bottom-left"
+                      ? "bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  }`}
+                >
+                  <span className="mr-2">
+                    <BottomLeftIcon />
+                  </span>
+                  Bottom Left
+                </button>
+                <button
+                  onClick={() => {
+                    changePosition("bottom-right");
+                    setShowPositionMenu(false);
+                  }}
+                  className={`flex items-center px-4 py-2 text-sm w-full text-left ${
+                    uiState.position === "bottom-right"
+                      ? "bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  }`}
+                >
+                  <span className="mr-2">
+                    <BottomRightIcon />
+                  </span>
+                  Bottom Right
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Separator */}
