@@ -1,4 +1,4 @@
-import { useState, useRef } from "preact/hooks";
+import { useState, useRef, useEffect } from "preact/hooks";
 import { cn } from "../utils/cn";
 import type { MetadataResult } from "~/types";
 import { CheckIcon, CopyIcon, JsonIcon, RefreshIcon } from "./icons";
@@ -118,15 +118,24 @@ const MetadataLayout = ({
 }) => {
   const [showJSON, setShowJSON] = useState(false);
   const [jsonCopied, setJsonCopied] = useState(false);
+  const [copyError, setCopyError] = useState(false);
+  const [copyMessage, setCopyMessage] = useState("");
+  const copyTimeoutRef = useRef<number | null>(null);
+  const errorTimeoutRef = useRef<number | null>(null);
+  const jsonTextRef = useRef<HTMLPreElement>(null);
   const cardsContainerRef = useRef<HTMLDivElement>(null);
 
-  const handleCopyJSON = () => {
-    if (!metadata) return;
-    
-    navigator.clipboard.writeText(JSON.stringify(metadata, null, 2));
-    setJsonCopied(true);
-    setTimeout(() => setJsonCopied(false), 2000);
-  };
+  // Clean up timeouts when component unmounts
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) {
+        window.clearTimeout(copyTimeoutRef.current);
+      }
+      if (errorTimeoutRef.current) {
+        window.clearTimeout(errorTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const tabs = [
     { id: "general", label: "General" },
@@ -136,6 +145,79 @@ const MetadataLayout = ({
   ];
 
   if (!metadata) return null;
+
+  // Fallback copy method using document.execCommand
+  const fallbackCopyTextToClipboard = (text: string): boolean => {
+    try {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      
+      // Make the textarea out of viewport
+      textArea.style.position = "fixed";
+      textArea.style.left = "-999999px";
+      textArea.style.top = "-999999px";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      
+      const successful = document.execCommand('copy');
+      document.body.removeChild(textArea);
+      return successful;
+    } catch (err) {
+      console.error('Fallback: Could not copy text: ', err);
+      return false;
+    }
+  };
+
+  const handleCopyJSON = async () => {
+    if (!metadata || jsonCopied) return;
+    
+    // For very large JSON, truncate it for display purposes but copy the full version
+    const jsonString = JSON.stringify(metadata, null, 2);
+    
+    try {
+      // Try using the Clipboard API first
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(jsonString);
+      } else {
+        // Fall back to execCommand if Clipboard API is not available
+        const success = fallbackCopyTextToClipboard(jsonString);
+        if (!success) throw new Error("Fallback copy method failed");
+      }
+      
+      setJsonCopied(true);
+      setCopyError(false);
+      setCopyMessage("JSON copied to clipboard");
+      
+      // Clear any existing timeout
+      if (copyTimeoutRef.current) {
+        window.clearTimeout(copyTimeoutRef.current);
+      }
+      
+      // Set new timeout
+      copyTimeoutRef.current = window.setTimeout(() => {
+        setJsonCopied(false);
+        setCopyMessage("");
+        copyTimeoutRef.current = null;
+      }, 2000);
+    } catch (err) {
+      console.error("Failed to copy JSON:", err);
+      setCopyError(true);
+      setCopyMessage("Failed to copy");
+      
+      // Clear any existing error timeout
+      if (errorTimeoutRef.current) {
+        window.clearTimeout(errorTimeoutRef.current);
+      }
+      
+      // Clear error after 2 seconds
+      errorTimeoutRef.current = window.setTimeout(() => {
+        setCopyError(false);
+        setCopyMessage("");
+        errorTimeoutRef.current = null;
+      }, 2000);
+    }
+  };
 
   // Fix TypeScript errors by ensuring null instead of undefined for metadata values
   const renderTabContent = (tabId: string) => {
@@ -222,13 +304,48 @@ const MetadataLayout = ({
           <div className="bg-gray-100 dark:bg-gray-800 p-3 rounded overflow-x-auto text-xs relative group">
             <button
               onClick={handleCopyJSON}
-              className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-200 dark:bg-gray-700 p-1.5 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
+              className={cn(
+                "absolute top-2 right-2 transition-opacity bg-gray-200 dark:bg-gray-700 p-1.5 rounded-full",
+                "text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600",
+                "focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50",
+                "sm:opacity-0 sm:group-hover:opacity-100",
+                copyError ? "bg-red-200 dark:bg-red-900 text-red-700 dark:text-red-300" : ""
+              )}
               aria-label="Copy JSON"
-              title="Copy JSON to clipboard"
+              title={copyError ? "Failed to copy" : "Copy JSON to clipboard"}
+              tabIndex={0}
             >
-              {jsonCopied ? <CheckIcon /> : <CopyIcon />}
+              {copyError ? (
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M18 6 6 18" />
+                  <path d="m6 6 12 12" />
+                </svg>
+              ) : jsonCopied ? (
+                <CheckIcon />
+              ) : (
+                <CopyIcon />
+              )}
             </button>
-            <pre className="pt-8">{JSON.stringify(metadata, null, 2)}</pre>
+            {/* Accessible status message for screen readers */}
+            {copyMessage && (
+              <div 
+                className="sr-only" 
+                role="status" 
+                aria-live="polite"
+              >
+                {copyMessage}
+              </div>
+            )}
+            <pre ref={jsonTextRef} className="pt-8">{JSON.stringify(metadata, null, 2)}</pre>
           </div>
         </div>
       ) : (
