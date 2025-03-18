@@ -3,27 +3,11 @@ import type { Corner, MetadataResult, MetaScanUIState } from "../types";
 import { extractMetadata } from "../core";
 import { cn } from "../utils/cn";
 import { cleanup, initDOMWatcher } from "../utils/dom-watcher";
-import {
-  SunIcon,
-  MoonIcon,
-  MenuIcon,
-  CloseIcon,
-  TopLeftIcon,
-  TopRightIcon,
-  BottomLeftIcon,
-  BottomRightIcon,
-  InfoIcon,
-  BugIcon,
-  BookIcon,
-  HelpIcon,
-  VersionIcon,
-  PositionIcon,
-} from "./icons";
+import { MenuIcon } from "./icons";
 import { logger } from "../utils/logger";
 import MetadataLayoutWrapper from "./MetadataLayoutWrapper";
 import { stateManager } from "../state";
-
-const version = window.META_SCAN_VERSION || "0.0.0";
+import { version } from '../../package.json';
 
 export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
   const [uiState, setUiState] = useState<MetaScanUIState>(
@@ -224,214 +208,33 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
               metadata={metadata}
               refreshMetadata={refreshMetadata}
               theme={theme}
+              toggleTheme={toggleTheme}
+              togglePanel={togglePanel}
+              showSettingsMenu={showSettingsMenu}
+              toggleSettingsMenu={toggleSettingsMenu}
+              showPositionMenu={showPositionMenu}
+              togglePositionMenu={togglePositionMenu}
+              changePosition={changePosition}
+              uiState={uiState}
+              version={version}
             />
           </div>
         )}
 
-        {/* Control Bar */}
-        <div
-          className={cn(
-            "flex items-center gap-2 p-1.5 rounded-lg shadow-lg self-end",
-            "bg-white dark:bg-gray-800",
-            "text-gray-800 dark:text-gray-200",
-            "transition-colors duration-200"
-          )}
-        >
-          {/* Position Controls */}
-          <div className="relative">
-            <button
-              id="position-toggle"
-              onClick={togglePositionMenu}
-              className={`w-6 h-6 flex items-center justify-center rounded-full ${
-                showPositionMenu
-                  ? "bg-purple-100 dark:bg-purple-700 text-purple-600 dark:text-purple-400"
-                  : "text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 bg-gray-100 dark:bg-gray-700"
-              }`}
-              title="Switch Position"
-            >
-              <PositionIcon />
-            </button>
-
-            {/* Position Dropdown Menu */}
-            {showPositionMenu && (
-              <div
-                className={`absolute w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700 position-menu ${
-                  uiState.position.startsWith("top")
-                    ? "top-full mt-2"
-                    : "bottom-full mb-2"
-                } ${uiState.position.endsWith("right") ? "right-0" : "left-0"}`}
-              >
-                <button
-                  onClick={() => {
-                    changePosition("top-left");
-                    setShowPositionMenu(false);
-                  }}
-                  className={`flex items-center px-4 py-2 text-sm w-full text-left ${
-                    uiState.position === "top-left"
-                      ? "bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300"
-                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  }`}
-                >
-                  <span className="mr-2">
-                    <TopLeftIcon />
-                  </span>
-                  Top Left
-                </button>
-                <button
-                  onClick={() => {
-                    changePosition("top-right");
-                    setShowPositionMenu(false);
-                  }}
-                  className={`flex items-center px-4 py-2 text-sm w-full text-left ${
-                    uiState.position === "top-right"
-                      ? "bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300"
-                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  }`}
-                >
-                  <span className="mr-2">
-                    <TopRightIcon />
-                  </span>
-                  Top Right
-                </button>
-                <button
-                  onClick={() => {
-                    changePosition("bottom-left");
-                    setShowPositionMenu(false);
-                  }}
-                  className={`flex items-center px-4 py-2 text-sm w-full text-left ${
-                    uiState.position === "bottom-left"
-                      ? "bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300"
-                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  }`}
-                >
-                  <span className="mr-2">
-                    <BottomLeftIcon />
-                  </span>
-                  Bottom Left
-                </button>
-                <button
-                  onClick={() => {
-                    changePosition("bottom-right");
-                    setShowPositionMenu(false);
-                  }}
-                  className={`flex items-center px-4 py-2 text-sm w-full text-left ${
-                    uiState.position === "bottom-right"
-                      ? "bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300"
-                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  }`}
-                >
-                  <span className="mr-2">
-                    <BottomRightIcon />
-                  </span>
-                  Bottom Right
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Separator */}
-          <div className="w-px h-4 bg-gray-200 dark:bg-gray-700"></div>
-
-          {/* Help & Support Menu */}
-          <div className="relative">
-            <button
-              id="settings-toggle"
-              onClick={toggleSettingsMenu}
-              className="w-6 h-6 flex items-center justify-center text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 bg-gray-100 dark:bg-gray-700 rounded-full"
-              title="Help & Support"
-            >
-              <HelpIcon />
-            </button>
-
-            {/* Settings Dropdown Menu */}
-            {showSettingsMenu && (
-              <div
-                className={`absolute w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700 settings-menu ${
-                  uiState.position.startsWith("top")
-                    ? "top-full mt-2"
-                    : "bottom-full mb-2"
-                } ${uiState.position.endsWith("right") ? "right-0" : "left-0"}`}
-              >
-                <a
-                  href="https://github.com/rjvim/meta-scan"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  <span className="mr-2">
-                    <InfoIcon />
-                  </span>
-                  About
-                </a>
-                <a
-                  href="https://github.com/rjvim/meta-scan/issues/new"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  <span className="mr-2">
-                    <BugIcon />
-                  </span>
-                  Raise an issue
-                </a>
-                <a
-                  href="https://github.com/rjvim/meta-scan#documentation"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  <span className="mr-2">
-                    <BookIcon />
-                  </span>
-                  Documentation
-                </a>
-                <a
-                  href={`https://github.com/rjvim/meta-scan/releases/tag/v${version}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center px-4 py-2 text-sm text-blue-600 dark:text-blue-400 border-t border-gray-200 dark:border-gray-700 mt-1 hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                  <div className="flex items-center">
-                    <span className="mr-2">
-                      <VersionIcon />
-                    </span>
-                    Version: {version}
-                  </div>
-                </a>
-              </div>
-            )}
-          </div>
-
-          {/* Separator */}
-          <div className="w-px h-4 bg-gray-200 dark:bg-gray-700"></div>
-
-          {/* Theme Toggle */}
-          <button
-            onClick={toggleTheme}
-            className="w-6 h-6 flex items-center justify-center text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 bg-gray-100 dark:bg-gray-700 rounded-full"
-            title={`Theme: ${uiState.theme}`}
-          >
-            {theme === "dark" ? <MoonIcon /> : <SunIcon />}
-          </button>
-
-          {/* Separator */}
-          <div className="w-px h-4 bg-gray-200 dark:bg-gray-700"></div>
-
-          {/* Panel Toggle */}
+        {/* Only show the toggle button when panel is closed */}
+        {!uiState.isOpen && (
           <button
             onClick={togglePanel}
             className={cn(
-              "w-6 h-6 flex items-center justify-center rounded-full",
-              "transition-colors duration-200",
-              uiState.isOpen
-                ? "bg-purple-600 text-white hover:bg-purple-700"
-                : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400"
+              "w-8 h-8 flex items-center justify-center rounded-full",
+              "transition-colors duration-200 shadow-lg",
+              "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400"
             )}
-            title={uiState.isOpen ? "Close panel" : "Open panel"}
+            title="Open MetaScan panel"
           >
-            {uiState.isOpen ? <CloseIcon /> : <MenuIcon />}
+            <MenuIcon />
           </button>
-        </div>
+        )}
       </div>
     </div>
   );
