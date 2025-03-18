@@ -1,7 +1,25 @@
 import { useState, useRef, useEffect } from "preact/hooks";
 import { cn } from "../utils/cn";
-import type { MetadataResult, StructuredData, MicrodataItem } from "~/types";
-import { CheckIcon, CopyIcon, JsonIcon, RefreshIcon } from "./icons";
+import type { MetadataResult, StructuredData, MicrodataItem, Corner, MetaScanUIState } from "~/types";
+import { 
+  CheckIcon, 
+  CopyIcon, 
+  JsonIcon, 
+  SunIcon, 
+  MoonIcon, 
+  CloseIcon, 
+  TopLeftIcon, 
+  TopRightIcon, 
+  BottomLeftIcon, 
+  BottomRightIcon, 
+  InfoIcon, 
+  BugIcon, 
+  BookIcon, 
+  HelpIcon, 
+  VersionIcon, 
+  PositionIcon,
+  RefreshIcon
+} from "./icons";
 import { type ComponentChildren } from "preact";
 
 // Component for metadata item display
@@ -111,10 +129,28 @@ const MetadataLayout = ({
   metadata,
   refreshMetadata,
   theme = "light",
+  toggleTheme,
+  togglePanel,
+  showSettingsMenu,
+  toggleSettingsMenu,
+  showPositionMenu,
+  togglePositionMenu,
+  changePosition,
+  uiState,
+  version,
 }: {
   metadata: MetadataResult | null;
   refreshMetadata: () => void;
   theme?: "light" | "dark";
+  toggleTheme: () => void;
+  togglePanel: () => void;
+  showSettingsMenu: boolean;
+  toggleSettingsMenu: (e: MouseEvent) => void;
+  showPositionMenu: boolean;
+  togglePositionMenu: (e: MouseEvent) => void;
+  changePosition: (position: Corner) => void;
+  uiState: MetaScanUIState;
+  version: string;
 }) => {
   const [showJSON, setShowJSON] = useState(false);
   const [jsonCopied, setJsonCopied] = useState(false);
@@ -451,26 +487,73 @@ const MetadataLayout = ({
       <div className="p-3 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-900 z-10">
         <div className="flex items-center justify-between">
           <h2 className="font-mono text-sm font-bold">MetaScan</h2>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 relative">
+            {/* Position Controls */}
+            <div className="relative">
+              <button
+                id="position-toggle"
+                onClick={togglePositionMenu}
+                className={`w-6 h-6 flex items-center justify-center rounded-full ${
+                  showPositionMenu
+                    ? "bg-purple-100 dark:bg-purple-700 text-purple-600 dark:text-purple-400"
+                    : "text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 bg-gray-100 dark:bg-gray-700"
+                }`}
+                title="Switch Position"
+              >
+                <PositionIcon />
+              </button>
+            </div>
+
+            {/* Help & Support Menu */}
+            <div className="relative">
+              <button
+                id="settings-toggle"
+                onClick={toggleSettingsMenu}
+                className="w-6 h-6 flex items-center justify-center text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 bg-gray-100 dark:bg-gray-700 rounded-full"
+                title="Help & Support"
+              >
+                <HelpIcon />
+              </button>
+            </div>
+
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="w-6 h-6 flex items-center justify-center text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 bg-gray-100 dark:bg-gray-700 rounded-full"
+              title={`Theme: ${theme}`}
+            >
+              {theme === "dark" ? <MoonIcon /> : <SunIcon />}
+            </button>
+
+            {/* JSON Toggle */}
             <button
               onClick={() => setShowJSON(!showJSON)}
-              className={cn(
-                "p-1.5 rounded-full transition-colors",
+              className={`w-6 h-6 flex items-center justify-center rounded-full ${
                 showJSON
-                  ? "bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300"
-                  : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
-              )}
+                  ? "bg-purple-100 dark:bg-purple-700 text-purple-600 dark:text-purple-400"
+                  : "text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 bg-gray-100 dark:bg-gray-700"
+              }`}
               title={showJSON ? "Hide JSON" : "Show JSON"}
             >
               <JsonIcon />
             </button>
+
+            {/* Refresh Button */}
             <button
               onClick={refreshMetadata}
-              className="p-1.5 rounded-full bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-800 transition-colors"
-              aria-label="Refresh Metadata"
-              title="Refresh Metadata"
+              className="w-6 h-6 flex items-center justify-center text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 bg-gray-100 dark:bg-gray-700 rounded-full"
+              title="Refresh metadata"
             >
               <RefreshIcon />
+            </button>
+
+            {/* Panel Toggle */}
+            <button
+              onClick={togglePanel}
+              className="w-6 h-6 flex items-center justify-center bg-purple-600 text-white hover:bg-purple-700 rounded-full"
+              title="Close panel"
+            >
+              <CloseIcon />
             </button>
           </div>
         </div>
@@ -483,14 +566,7 @@ const MetadataLayout = ({
             value={searchTerm}
             onChange={(e) => setSearchTerm((e.target as HTMLInputElement).value)}
             placeholder="Search metadata... (Ctrl+F)"
-            className={cn(
-              "w-full px-3 py-1.5 text-sm rounded-md",
-              "bg-gray-100 dark:bg-gray-800",
-              "text-gray-800 dark:text-gray-200",
-              "placeholder-gray-500 dark:placeholder-gray-400",
-              "border border-gray-200 dark:border-gray-700",
-              "focus:outline-none focus:ring-1 focus:ring-purple-500 dark:focus:ring-purple-400"
-            )}
+            className="w-full px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 dark:focus:ring-purple-400"
           />
           {searchTerm && (
             <button
@@ -498,13 +574,158 @@ const MetadataLayout = ({
               className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
               title="Clear search"
             >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M18 6 6 18M6 6l12 12" />
+              <svg 
+                className="w-4 h-4" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24" 
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           )}
         </div>
       </div>
+
+      {/* Position Dropdown Menu - Positioned absolutely relative to the document */}
+      {showPositionMenu && (
+        <div
+          className="absolute w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700 position-menu"
+          style={{
+            top: "3.5rem",
+            right: "1rem"
+          }}
+        >
+          <button
+            onClick={() => {
+              changePosition("top-left");
+              togglePositionMenu(new MouseEvent('click'));
+            }}
+            className={`flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left ${
+              uiState.position === "top-left"
+                ? "bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300"
+                : ""
+            }`}
+          >
+            <span className="mr-2">
+              <TopLeftIcon />
+            </span>
+            Top Left
+          </button>
+          <button
+            onClick={() => {
+              changePosition("top-right");
+              togglePositionMenu(new MouseEvent('click'));
+            }}
+            className={`flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left ${
+              uiState.position === "top-right"
+                ? "bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300"
+                : ""
+            }`}
+          >
+            <span className="mr-2">
+              <TopRightIcon />
+            </span>
+            Top Right
+          </button>
+          <button
+            onClick={() => {
+              changePosition("bottom-left");
+              togglePositionMenu(new MouseEvent('click'));
+            }}
+            className={`flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left ${
+              uiState.position === "bottom-left"
+                ? "bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300"
+                : ""
+            }`}
+          >
+            <span className="mr-2">
+              <BottomLeftIcon />
+            </span>
+            Bottom Left
+          </button>
+          <button
+            onClick={() => {
+              changePosition("bottom-right");
+              togglePositionMenu(new MouseEvent('click'));
+            }}
+            className={`flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left ${
+              uiState.position === "bottom-right"
+                ? "bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300"
+                : ""
+            }`}
+          >
+            <span className="mr-2">
+              <BottomRightIcon />
+            </span>
+            Bottom Right
+          </button>
+        </div>
+      )}
+
+      {/* Settings Dropdown Menu - Positioned absolutely relative to the document */}
+      {showSettingsMenu && (
+        <div
+          className="absolute w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700 settings-menu"
+          style={{
+            top: "3.5rem",
+            right: "3.5rem"
+          }}
+        >
+          <a
+            href="https://github.com/rjvim/meta-scan"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            <span className="mr-2">
+              <InfoIcon />
+            </span>
+            About
+          </a>
+          <a
+            href="https://github.com/rjvim/meta-scan/issues/new"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            <span className="mr-2">
+              <BugIcon />
+            </span>
+            Raise an issue
+          </a>
+          <a
+            href="https://github.com/rjvim/meta-scan#documentation"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            <span className="mr-2">
+              <BookIcon />
+            </span>
+            Documentation
+          </a>
+          <a
+            href={`https://github.com/rjvim/meta-scan/releases/tag/v${version}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center px-4 py-2 text-sm text-blue-600 dark:text-blue-400 border-t border-gray-200 dark:border-gray-700 mt-1 hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            <div className="flex items-center">
+              <span className="mr-2">
+                <VersionIcon />
+              </span>
+              Version: {version}
+            </div>
+          </a>
+        </div>
+      )}
 
       {/* Content */}
       {showJSON ? (
