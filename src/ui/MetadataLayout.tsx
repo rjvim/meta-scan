@@ -6,16 +6,12 @@ import {
   CopyIcon, 
   JsonIcon, 
   CloseIcon, 
-  TopLeftIcon, 
-  TopRightIcon, 
-  BottomLeftIcon, 
-  BottomRightIcon, 
-  PositionIcon,
   RefreshIcon
 } from "./icons";
 import { type ComponentChildren } from "preact";
 import { SettingsMenu } from "./header/SettingsMenu";
 import { ThemeToggle } from "./header/ThemeToggle";
+import { PositionControl } from "./header/PositionControl";
 
 // Component for metadata item display
 const MetadataItem = ({
@@ -478,24 +474,19 @@ const MetadataLayout = ({
       )}
     >
       {/* Header */}
-      <div className="p-3 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-900 z-10">
+      <div className="p-3 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-900 z-50 space-y-4">
+        {/* Top row with logo and controls */}
         <div className="flex items-center justify-between">
           <h2 className="font-mono text-sm font-bold">MetaScan</h2>
-          <div className="flex items-center space-x-2 relative">
+          <div className="flex items-center space-x-3">
             {/* Position Controls */}
             <div className="relative">
-              <button
-                id="position-toggle"
-                onClick={togglePositionMenu}
-                className={`w-6 h-6 flex items-center justify-center rounded-full ${
-                  showPositionMenu
-                    ? "bg-purple-100 dark:bg-purple-700 text-purple-600 dark:text-purple-400"
-                    : "text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 bg-gray-100 dark:bg-gray-700"
-                }`}
-                title="Switch Position"
-              >
-                <PositionIcon />
-              </button>
+              <PositionControl 
+                showPositionMenu={showPositionMenu}
+                togglePositionMenu={togglePositionMenu}
+                changePosition={changePosition}
+                uiState={uiState}
+              />
             </div>
 
             {/* Settings Menu */}
@@ -524,7 +515,7 @@ const MetadataLayout = ({
             {/* Refresh Button */}
             <button
               onClick={refreshMetadata}
-              className="w-6 h-6 flex items-center justify-center text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 bg-gray-100 dark:bg-gray-700 rounded-full"
+              className="w-6 h-6 flex items-center justify-center text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-600 bg-gray-100 dark:bg-gray-700 rounded-full"
               title="Refresh metadata"
             >
               <RefreshIcon />
@@ -540,9 +531,9 @@ const MetadataLayout = ({
             </button>
           </div>
         </div>
-        
-        {/* Search input */}
-        <div className="mt-2 relative">
+
+        {/* Search row */}
+        <div className="relative">
           <input
             ref={searchInputRef}
             type="text"
@@ -575,82 +566,6 @@ const MetadataLayout = ({
           )}
         </div>
       </div>
-
-      {/* Position Dropdown Menu - Positioned absolutely relative to the document */}
-      {showPositionMenu && (
-        <div
-          className="absolute w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700 position-menu"
-          style={{
-            top: "3.5rem",
-            right: "1rem"
-          }}
-        >
-          <button
-            onClick={() => {
-              changePosition("top-left");
-              togglePositionMenu(new MouseEvent('click'));
-            }}
-            className={`flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left ${
-              uiState.position === "top-left"
-                ? "bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300"
-                : ""
-            }`}
-          >
-            <span className="mr-2">
-              <TopLeftIcon />
-            </span>
-            Top Left
-          </button>
-          <button
-            onClick={() => {
-              changePosition("top-right");
-              togglePositionMenu(new MouseEvent('click'));
-            }}
-            className={`flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left ${
-              uiState.position === "top-right"
-                ? "bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300"
-                : ""
-            }`}
-          >
-            <span className="mr-2">
-              <TopRightIcon />
-            </span>
-            Top Right
-          </button>
-          <button
-            onClick={() => {
-              changePosition("bottom-left");
-              togglePositionMenu(new MouseEvent('click'));
-            }}
-            className={`flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left ${
-              uiState.position === "bottom-left"
-                ? "bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300"
-                : ""
-            }`}
-          >
-            <span className="mr-2">
-              <BottomLeftIcon />
-            </span>
-            Bottom Left
-          </button>
-          <button
-            onClick={() => {
-              changePosition("bottom-right");
-              togglePositionMenu(new MouseEvent('click'));
-            }}
-            className={`flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 w-full text-left ${
-              uiState.position === "bottom-right"
-                ? "bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300"
-                : ""
-            }`}
-          >
-            <span className="mr-2">
-              <BottomRightIcon />
-            </span>
-            Bottom Right
-          </button>
-        </div>
-      )}
 
       {/* Content */}
       {showJSON ? (
