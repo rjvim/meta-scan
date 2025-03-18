@@ -64,17 +64,15 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
   // Toggle settings menu
   const toggleSettingsMenu = (e: MouseEvent) => {
     e.stopPropagation();
+    setShowPositionMenu(false); // Close position menu when settings menu is toggled
     setShowSettingsMenu(!showSettingsMenu);
   };
 
   // Toggle position menu
   const togglePositionMenu = (e: MouseEvent) => {
     e.stopPropagation();
+    setShowSettingsMenu(false); // Close settings menu when position menu is toggled
     setShowPositionMenu(!showPositionMenu);
-    // Close settings menu if open to avoid having two menus open at once
-    if (showSettingsMenu) {
-      setShowSettingsMenu(false);
-    }
   };
 
   // Close settings menu when clicking outside
