@@ -1,3 +1,19 @@
+# v0.8.0 (Tue Mar 18 2025)
+
+#### 🚀 Enhancement
+
+- feat: merge UI controls into metadata layout header [#34](https://github.com/rjvim/meta-scan/pull/34) ([@rjvim](https://github.com/rjvim))
+
+#### 🐛 Bug Fix
+
+- fix: Enhance test page with comprehensive metadata for extraction testing [#32](https://github.com/rjvim/meta-scan/pull/32) ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.7.0 (Mon Mar 17 2025)
 
 #### 🚀 Enhancement
