@@ -5,8 +5,6 @@ import {
   CheckIcon, 
   CopyIcon, 
   JsonIcon, 
-  SunIcon, 
-  MoonIcon, 
   CloseIcon, 
   TopLeftIcon, 
   TopRightIcon, 
@@ -17,6 +15,7 @@ import {
 } from "./icons";
 import { type ComponentChildren } from "preact";
 import { SettingsMenu } from "./header/SettingsMenu";
+import { ThemeToggle } from "./header/ThemeToggle";
 
 // Component for metadata item display
 const MetadataItem = ({
@@ -507,13 +506,7 @@ const MetadataLayout = ({
             />
 
             {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              className="w-6 h-6 flex items-center justify-center text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 bg-gray-100 dark:bg-gray-700 rounded-full"
-              title={`Theme: ${theme}`}
-            >
-              {theme === "dark" ? <MoonIcon /> : <SunIcon />}
-            </button>
+            <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
 
             {/* JSON Toggle */}
             <button
