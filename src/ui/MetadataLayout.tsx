@@ -152,6 +152,8 @@ const MetadataLayout = ({
   uiState: MetaScanUIState;
   version: string;
 }) => {
+  if (!metadata) return null;
+
   const [showJSON, setShowJSON] = useState(false);
   const [jsonCopied, setJsonCopied] = useState(false);
   const [copyError, setCopyError] = useState(false);
@@ -205,9 +207,6 @@ const MetadataLayout = ({
     { id: "structured", label: "Structured Data" },
   ];
 
-  if (!metadata) return null;
-
-  // Fallback copy method using document.execCommand
   const fallbackCopyTextToClipboard = (text: string): boolean => {
     try {
       const textArea = document.createElement("textarea");
