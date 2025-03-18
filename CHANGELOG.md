@@ -1,3 +1,15 @@
+# v0.8.4 (Tue Mar 18 2025)
+
+#### 🐛 Bug Fix
+
+- refactor: improve header components and dropdown behavior [#38](https://github.com/rjvim/meta-scan/pull/38) ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.8.3 (Tue Mar 18 2025)
 
 #### 🐛 Bug Fix
