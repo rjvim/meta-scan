@@ -1,3 +1,15 @@
+# v0.8.3 (Tue Mar 18 2025)
+
+#### 🐛 Bug Fix
+
+- refactor: extract theme toggle into separate component [#37](https://github.com/rjvim/meta-scan/pull/37) ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.8.2 (Tue Mar 18 2025)
 
 #### 🐛 Bug Fix
