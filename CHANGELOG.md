@@ -1,3 +1,15 @@
+# v0.8.2 (Tue Mar 18 2025)
+
+#### 🐛 Bug Fix
+
+- refactor: extract settings menu into separate component [#36](https://github.com/rjvim/meta-scan/pull/36) ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.8.1 (Tue Mar 18 2025)
 
 #### 🐛 Bug Fix
