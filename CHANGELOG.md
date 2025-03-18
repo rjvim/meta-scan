@@ -1,3 +1,15 @@
+# v0.8.1 (Tue Mar 18 2025)
+
+#### 🐛 Bug Fix
+
+- refactor: merge MetadataLayoutWrapper into MetadataLayout [#35](https://github.com/rjvim/meta-scan/pull/35) ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.8.0 (Tue Mar 18 2025)
 
 #### 🚀 Enhancement
