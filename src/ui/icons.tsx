@@ -106,18 +106,27 @@ export const MoonIcon = () => (
 
 export const MenuIcon = () => (
   <svg
-    width="16"
-    height="16"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
+  width={18}
+  height={18}
+  viewBox="0 0 32 32"
+  stroke="currentColor"
+  xmlns="http://www.w3.org/2000/svg"
   >
-    <path d="M12.034 12.681a.498.498 0 0 1 .647-.647l9 3.5a.5.5 0 0 1-.033.943l-3.444 1.068a1 1 0 0 0-.66.66l-1.067 3.443a.5.5 0 0 1-.943.033z" />
-    <path d="M21 11V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h6" />
+  <path d="M27.232 3.993h-.8a.8.8 0 0 0-.681.381l-.002.003-9.75 16.058L6.251 4.377a.8.8 0 0 0-.683-.385h-.8a.8.8 0 0 0-.8.8v22.4c0 .442.358.8.8.801h.928a.8.8 0 0 0 .8-.801V9.605l8.437 13.905a.8.8 0 0 0 .684.387h.736a.8.8 0 0 0 .682-.381l.002-.003 8.467-13.915v17.595c.001.442.359.8.801.801h.928a.803.803 0 0 0 .801-.801v-22.4a.8.8 0 0 0-.801-.8z" />
   </svg>
+  // <svg
+  //   width="16"
+  //   height="16"
+  //   viewBox="0 0 24 24"
+  //   fill="none"
+  //   stroke="currentColor"
+  //   strokeWidth="2"
+  //   strokeLinecap="round"
+  //   strokeLinejoin="round"
+  // >
+  //   <path d="M12.034 12.681a.498.498 0 0 1 .647-.647l9 3.5a.5.5 0 0 1-.033.943l-3.444 1.068a1 1 0 0 0-.66.66l-1.067 3.443a.5.5 0 0 1-.943.033z" />
+  //   <path d="M21 11V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h6" />
+  // </svg>
 );
 
 export const CloseIcon = () => (

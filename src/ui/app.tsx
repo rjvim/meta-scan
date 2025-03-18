@@ -5,7 +5,7 @@ import { cn } from "../utils/cn";
 import { cleanup, initDOMWatcher } from "../utils/dom-watcher";
 import { MenuIcon } from "./icons";
 import { logger } from "../utils/logger";
-import MetadataLayoutWrapper from "./MetadataLayoutWrapper";
+import MetadataLayout from "./MetadataLayout";
 import { stateManager } from "../state";
 import { version } from '../../package.json';
 
@@ -204,7 +204,7 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
             )}
           >
             {loading && <LoadingIndicator />}
-            <MetadataLayoutWrapper
+            <MetadataLayout
               metadata={metadata}
               refreshMetadata={refreshMetadata}
               theme={theme}
