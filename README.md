@@ -1,6 +1,15 @@
 # MetaScan: Lightweight Webpage Metadata Extraction Tool
 
-MetaScan is a lightweight (29.9 kB) client-side JavaScript tool that extracts and visualizes metadata from any webpage via a simple script tag. It provides an intuitive UI to analyze metadata including basic meta tags, Open Graph, Twitter Cards, and technical metadata.
+MetaScan is a lightweight (29.9 kB) client-side JavaScript tool that extracts and visualizes metadata from any webpage via a simple script tag. It provides an intuitive UI to analyze and offer insights into basic meta tags, Open Graph, Twitter Cards, and technical metadata.
+
+## Why Choose MetaScan?
+
+✨ **Immediate Visibility** - Get instant access to all webpage metadata without leaving your site  
+⚡ **Fast Performance** - Minimal footprint (29.9 kB) with zero dependencies  
+🛠️ **Developer Friendly** - Perfect for debugging, testing, and validating metadata implementations  
+🔄 **SEO Insights** - Identify and fix metadata issues that impact search rankings  
+🌗 **Clean UI** - Modern interface with dark/light mode  
+🔒 **Client-Side Only** - No data sent to servers, works offline and respects privacy  
 
 ## Features
 
@@ -11,6 +20,42 @@ MetaScan is a lightweight (29.9 kB) client-side JavaScript tool that extracts an
 - 🎛️ Configurable positioning on any corner of the screen
 - 📋 Copy functionality for metadata values
 - 🧩 Structured data extraction (JSON-LD and Microdata)
+- 🔎 Search and filter functionality across all metadata categories
+- 📱 Mobile-friendly with 5-tap toggle feature
+
+## Who Is MetaScan For?
+
+MetaScan is designed to serve the needs of various professionals working with web content:
+
+### Web Developers
+- **Verify Metadata Implementation** - Instantly check metadata implementation during development
+- **Solve Structured Data Issues** - Resolve structured data problems without external tools
+- **Implement Open Graph and Twitter Card Tags** - Ensure correct implementation of Open Graph and Twitter Card tags
+- **Test Responsive Behavior** - Test metadata responsiveness across all devices
+
+### SEO Specialists
+- **Audit Metadata** - Get complete visibility into metadata completeness and accuracy
+- **Verify Structured Data** - Check JSON-LD and Microdata implementation with a single click
+- **Optimize Social Sharing** - Improve Open Graph and Twitter Card implementations for better engagement
+- **Protect Search Rankings** - Identify metadata issues that could harm search rankings
+
+### Content Managers
+- **Preview Social Sharing** - See how content will appear when shared on social platforms
+- **Ensure Proper Metadata** - Check metadata before content goes live
+- **Maintain Brand Consistency** - Verify metadata consistency across the website
+- **Document Metadata** - Copy metadata for reporting and collaboration
+
+### Technical Marketers
+- **Optimize Landing Pages** - Fine-tune landing pages for better social sharing and SEO impact
+- **Verify Campaign Parameters** - Check campaign tracking parameters and metadata
+- **Ensure Brand Consistency** - Maintain brand consistency across digital properties
+- **Test Metadata Changes** - Validate metadata changes without developer assistance
+
+### QA Testers
+- **Validate Metadata** - Easily validate metadata against project requirements
+- **Detect Errors** - Catch structured data implementation errors before they reach production
+- **Verify Consistency** - Check metadata consistency across different page templates
+- **Streamline Testing** - Integrate metadata validation into existing testing workflows
 
 ## Installation
 
@@ -64,6 +109,32 @@ window.MetaScan.enableOrDisable(true);
 const metadata = window.MetaScan.getMetadata();
 console.log(metadata);
 ```
+
+You can also enable or disable MetaScan without JavaScript by using the 5-tap feature described in the [Mobile-Friendly Features](#mobile-friendly-features) section.
+
+## Mobile-Friendly Features
+
+### 5-Tap Toggle
+
+MetaScan can be enabled or disabled by tapping anywhere on the page 5 times in quick succession (within 3 seconds). This is particularly useful on mobile devices where accessing the console is not practical.
+
+As you tap, a subtle indicator will show your progress toward the 5 taps required to toggle the state. When the sequence is completed, a toast notification will confirm that MetaScan has been enabled or disabled.
+
+#### How to Use the 5-Tap Feature:
+
+1. **Tap anywhere on the page** 5 times within 3 seconds
+2. After every other tap, you'll see a toast notification showing your progress
+3. After the 5th tap, MetaScan will toggle between enabled and disabled states
+4. A confirmation toast will appear showing "MetaScan enabled" or "MetaScan disabled"
+
+#### Troubleshooting:
+
+- Make sure to complete all 5 taps within the 3-second window
+- Tap on any part of the page (not just the document body)
+- If you're having trouble, try tapping on empty areas of the page
+- Check your browser console for log messages (useful for developers)
+
+This feature works as a toggle - if MetaScan is currently enabled, the 5-tap sequence will disable it, and vice versa.
 
 ## Extracted Metadata
 
@@ -134,7 +205,7 @@ export interface MicrodataItem {
 
 ## Structured Data Extraction
 
-MetaScan now extracts structured data from webpages, including:
+MetaScan extracts structured data from webpages, including:
 
 1. **JSON-LD**: Extracts all JSON-LD scripts from the page, which are commonly used for rich search results.
 
@@ -142,9 +213,26 @@ MetaScan now extracts structured data from webpages, including:
 
 This makes MetaScan an invaluable tool for SEO professionals and developers who need to debug structured data implementations.
 
+## Search and Filter Functionality
+
+MetaScan includes a powerful search feature that allows you to quickly find specific metadata:
+
+- **Keyboard Shortcuts**: Press `Ctrl+F` (Windows/Linux) or `Cmd+F` (Mac) to focus the search input
+- **Real-time Filtering**: Results update as you type across all metadata categories
+- **Clear Search**: Use the clear button or press `Escape` to reset the search
+- **No Results Indication**: Clear messaging when search filters out all items
+
+This feature makes it easy to locate specific metadata in content-rich pages.
+
+## UI Improvements
+
+The MetaScan interface has been redesigned for better usability:
+
+- **Integrated Header Controls**: All controls (position, settings, theme toggle, JSON view) are now in a single header
+- **Simplified Layout**: Cleaner component structure with logical separation of concerns
+- **Improved Dropdown Positioning**: Dropdowns now correctly position based on panel location
+- **Enhanced Error Handling**: Robust error handling for structured data extraction with detailed logging
+
 ## License
 
 MIT
-
-..
-..

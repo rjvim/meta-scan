@@ -7,6 +7,7 @@ import { renderUI } from "./ui";
 import { logger } from "./utils/logger";
 import { extractMetadata } from "./core";
 import { stateManager } from "./state";
+import { initTapDetector } from "./utils/tap-detector";
 
 // Default options
 const defaultOptions: MetaScanOptions = {
@@ -40,6 +41,9 @@ export function enableOrDisable(enabled: boolean): void {
     } else {
       // If container exists but is hidden, show it
       container.style.display = "";
+      
+      // Also update the UI state to open the panel
+      stateManager.updateState({ isOpen: true });
     }
 
     // Re-initialize DOM watcher if it was disabled
@@ -57,6 +61,9 @@ export function enableOrDisable(enabled: boolean): void {
     if (container) {
       // Hide UI
       container.style.display = "none";
+      
+      // Also update the UI state to close the panel
+      stateManager.updateState({ isOpen: false });
     }
 
     // Clean up DOM watcher
@@ -73,6 +80,9 @@ export function init(userOptions?: Partial<MetaScanOptions>): void {
   }
 
   logger.info("MetaScan initialized with options:", options);
+  
+  // Initialize the tap detector for mobile usage
+  initTapDetector();
 }
 
 /**
