@@ -136,6 +136,19 @@ As you tap, a subtle indicator will show your progress toward the 5 taps require
 
 This feature works as a toggle - if MetaScan is currently enabled, the 5-tap sequence will disable it, and vice versa.
 
+## Search and Filter Functionality
+
+MetaScan includes a powerful search feature that allows you to quickly find specific metadata:
+
+- **Keyboard Shortcuts**: Press `Ctrl+F` (Windows/Linux) or `Cmd+F` (Mac) to focus the search input
+- **Real-time Filtering**: Results update as you type across all metadata categories
+- **Focused Search Results View**: When searching, the UI switches to a dedicated results view that shows only matching items across all categories
+- **Categorized Results**: Search results are grouped by category (General, Open Graph, Twitter, Technical, Structured Data) for easy navigation
+- **Clear Search**: Use the clear button or press `Escape` to reset the search and return to the card view
+- **No Results Indication**: Clear messaging when search filters out all items
+
+This feature makes it easy to locate specific metadata in content-rich pages and provides a focused view of only the relevant information.
+
 ## Extracted Metadata
 
 MetaScan extracts the following metadata categories based on these interfaces:
@@ -212,17 +225,6 @@ MetaScan extracts structured data from webpages, including:
 2. **Microdata**: Extracts HTML microdata annotations, providing insights into how search engines interpret your content.
 
 This makes MetaScan an invaluable tool for SEO professionals and developers who need to debug structured data implementations.
-
-## Search and Filter Functionality
-
-MetaScan includes a powerful search feature that allows you to quickly find specific metadata:
-
-- **Keyboard Shortcuts**: Press `Ctrl+F` (Windows/Linux) or `Cmd+F` (Mac) to focus the search input
-- **Real-time Filtering**: Results update as you type across all metadata categories
-- **Clear Search**: Use the clear button or press `Escape` to reset the search
-- **No Results Indication**: Clear messaging when search filters out all items
-
-This feature makes it easy to locate specific metadata in content-rich pages.
 
 ## UI Improvements
 

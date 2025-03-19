@@ -115,6 +115,149 @@ const Card = ({
   );
 };
 
+// Component for search results display
+const SearchResults = ({
+  searchTerm,
+  metadata,
+  filterMetadataItems,
+  getJsonLdType,
+  getTypeFromUrl,
+}: {
+  searchTerm: string;
+  metadata: MetadataResult;
+  filterMetadataItems: (items: [string, any][]) => [string, any][];
+  getJsonLdType: (item: any) => string;
+  getTypeFromUrl: (type: string) => string;
+}) => {
+  if (!searchTerm) return null;
+
+  // Get filtered results from each section
+  const generalResults = filterMetadataItems(Object.entries(metadata.general || {}));
+  const ogResults = filterMetadataItems(Object.entries(metadata.opengraph || {}));
+  const twitterResults = filterMetadataItems(Object.entries(metadata.twitter || {}));
+  const technicalResults = filterMetadataItems(Object.entries(metadata.technical || {}));
+  
+  // Get structured data results
+  const structuredData: StructuredData = metadata.structured || { jsonLd: [], microdata: [] };
+  const jsonLdResults = !structuredData.jsonLd ? [] : structuredData.jsonLd.filter(item => {
+    return JSON.stringify(item).toLowerCase().includes(searchTerm.toLowerCase());
+  });
+  
+  const microdataResults = !structuredData.microdata ? [] : structuredData.microdata.filter(item => {
+    return (
+      item.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      JSON.stringify(item.properties).toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
+
+  const hasResults = generalResults.length > 0 || 
+                    ogResults.length > 0 || 
+                    twitterResults.length > 0 || 
+                    technicalResults.length > 0 || 
+                    jsonLdResults.length > 0 || 
+                    microdataResults.length > 0;
+
+  if (!hasResults) {
+    return (
+      <div className="w-full text-center py-8">
+        <div className="text-gray-500 dark:text-gray-400">
+          No results found for "{searchTerm}"
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full space-y-6">
+      <div className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+        Search results for "{searchTerm}"
+      </div>
+
+      {generalResults.length > 0 && (
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+          <h3 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-200">General</h3>
+          <div className="space-y-2">
+            {generalResults.map(([key, value]) => (
+              <MetadataItem key={`general-${key}`} label={key} value={value ?? null} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {ogResults.length > 0 && (
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+          <h3 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-200">Open Graph</h3>
+          <div className="space-y-2">
+            {ogResults.map(([key, value]) => (
+              <MetadataItem key={`og-${key}`} label={`og:${key}`} value={value ?? null} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {twitterResults.length > 0 && (
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+          <h3 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-200">Twitter</h3>
+          <div className="space-y-2">
+            {twitterResults.map(([key, value]) => (
+              <MetadataItem key={`twitter-${key}`} label={`twitter:${key}`} value={value ?? null} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {technicalResults.length > 0 && (
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+          <h3 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-200">Technical</h3>
+          <div className="space-y-2">
+            {technicalResults.map(([key, value]) => (
+              <MetadataItem key={`technical-${key}`} label={key} value={value ?? null} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {(jsonLdResults.length > 0 || microdataResults.length > 0) && (
+        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+          <h3 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-200">Structured Data</h3>
+          
+          {jsonLdResults.length > 0 && (
+            <div className="mb-4">
+              <h4 className="text-xs font-semibold mb-2 text-gray-600 dark:text-gray-300">JSON-LD</h4>
+              {jsonLdResults.map((item: any, index: number) => {
+                if (!item) return null;
+                return (
+                  <MetadataItem 
+                    key={`search-jsonld-${index}`}
+                    label={`JSON-LD ${index + 1} (${getJsonLdType(item)})`}
+                    value={item}
+                  />
+                );
+              })}
+            </div>
+          )}
+          
+          {microdataResults.length > 0 && (
+            <div>
+              <h4 className="text-xs font-semibold mb-2 text-gray-600 dark:text-gray-300">Microdata</h4>
+              {microdataResults.map((item: MicrodataItem, index: number) => {
+                if (!item) return null;
+                return (
+                  <MetadataItem 
+                    key={`search-microdata-${index}`}
+                    label={`Microdata ${index + 1} (${getTypeFromUrl(item.type)})`}
+                    value={item.properties}
+                  />
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
+
 // Main MetadataLayout component
 const MetadataLayout = ({
   metadata,
@@ -616,6 +759,16 @@ const MetadataLayout = ({
             )}
             <pre ref={jsonTextRef} className="pt-8">{JSON.stringify(metadata, null, 2)}</pre>
           </div>
+        </div>
+      ) : searchTerm ? (
+        <div className="p-3 overflow-y-auto max-h-[calc(80vh-120px)]">
+          <SearchResults 
+            searchTerm={searchTerm}
+            metadata={metadata}
+            filterMetadataItems={filterMetadataItems}
+            getJsonLdType={getJsonLdType}
+            getTypeFromUrl={getTypeFromUrl}
+          />
         </div>
       ) : (
         <div
