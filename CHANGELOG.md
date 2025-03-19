@@ -1,3 +1,15 @@
+# v0.10.0 (Wed Mar 19 2025)
+
+#### 🚀 Enhancement
+
+- feat: show only search results when searching [#41](https://github.com/rjvim/meta-scan/pull/41) ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.9.0 (Wed Mar 19 2025)
 
 #### 🚀 Enhancement
