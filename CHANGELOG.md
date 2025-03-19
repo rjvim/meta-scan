@@ -1,3 +1,15 @@
+# v0.9.0 (Wed Mar 19 2025)
+
+#### 🚀 Enhancement
+
+- feat: Add 5-tap toggle feature for mobile users [#39](https://github.com/rjvim/meta-scan/pull/39) ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.8.4 (Tue Mar 18 2025)
 
 #### 🐛 Bug Fix
