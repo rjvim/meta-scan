@@ -11,6 +11,7 @@ MetaScan is a lightweight (29.9 kB) client-side JavaScript tool that extracts an
 - 🎛️ Configurable positioning on any corner of the screen
 - 📋 Copy functionality for metadata values
 - 🧩 Structured data extraction (JSON-LD and Microdata)
+- 📱 Mobile-friendly with 5-tap toggle feature
 
 ## Installation
 
@@ -64,6 +65,32 @@ window.MetaScan.enableOrDisable(true);
 const metadata = window.MetaScan.getMetadata();
 console.log(metadata);
 ```
+
+You can also enable or disable MetaScan without JavaScript by using the 5-tap feature described in the [Mobile-Friendly Features](#mobile-friendly-features) section.
+
+## Mobile-Friendly Features
+
+### 5-Tap Toggle
+
+MetaScan can be enabled or disabled by tapping anywhere on the page 5 times in quick succession (within 3 seconds). This is particularly useful on mobile devices where accessing the console is not practical.
+
+As you tap, a subtle indicator will show your progress toward the 5 taps required to toggle the state. When the sequence is completed, a toast notification will confirm that MetaScan has been enabled or disabled.
+
+#### How to Use the 5-Tap Feature:
+
+1. **Tap anywhere on the page** 5 times within 3 seconds
+2. After every other tap, you'll see a toast notification showing your progress
+3. After the 5th tap, MetaScan will toggle between enabled and disabled states
+4. A confirmation toast will appear showing "MetaScan enabled" or "MetaScan disabled"
+
+#### Troubleshooting:
+
+- Make sure to complete all 5 taps within the 3-second window
+- Tap on any part of the page (not just the document body)
+- If you're having trouble, try tapping on empty areas of the page
+- Check your browser console for log messages (useful for developers)
+
+This feature works as a toggle - if MetaScan is currently enabled, the 5-tap sequence will disable it, and vice versa.
 
 ## Extracted Metadata
 
@@ -145,6 +172,3 @@ This makes MetaScan an invaluable tool for SEO professionals and developers who 
 ## License
 
 MIT
-
-..
-..
