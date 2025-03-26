@@ -1,3 +1,15 @@
+# v0.10.1 (Wed Mar 26 2025)
+
+#### 🐛 Bug Fix
+
+- refactor: remove Toast notifications from tap detector [#43](https://github.com/rjvim/meta-scan/pull/43) ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.10.0 (Wed Mar 19 2025)
 
 #### 🚀 Enhancement
