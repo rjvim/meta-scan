@@ -4,7 +4,6 @@
 import { enableOrDisable } from "..";
 import { stateManager } from "../state";
 import { logger } from "./logger";
-import { showToast } from "../ui/components/Toast";
 
 // Configuration
 const TAP_COUNT_THRESHOLD = 5;
@@ -44,14 +43,6 @@ export function handleTap(): boolean {
   // Increment tap count
   tapCount++;
   
-  // Show a subtle indicator for taps after the first one
-  if (tapCount > 1 && tapCount < TAP_COUNT_THRESHOLD) {
-    // Only show the indicator every other tap to avoid too many notifications
-    if (tapCount % 2 === 0) {
-      showToast(`${TAP_COUNT_THRESHOLD - tapCount} more taps to toggle MetaScan`, "info", 1000);
-    }
-  }
-  
   // Set a timeout to reset the counter if the sequence isn't completed
   if (tapTimeoutId === null) {
     tapTimeoutId = window.setTimeout(() => {
@@ -67,9 +58,6 @@ export function handleTap(): boolean {
     
     // Log the action
     logger.info(`MetaScan: 5-tap sequence detected, ${newState ? 'enabling' : 'disabling'} MetaScan`);
-    
-    // Show a toast notification
-    showToast(`MetaScan ${newState ? 'enabled' : 'disabled'}`, newState ? 'success' : 'info', 2000);
     
     // Reset the counter
     resetTapCounter();
