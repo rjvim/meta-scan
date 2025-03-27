@@ -1,3 +1,15 @@
+# v0.11.0 (Thu Mar 27 2025)
+
+#### 🚀 Enhancement
+
+- feat: implement instant search with debouncing and highlighting [#48](https://github.com/rjvim/meta-scan/pull/48) ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.10.2 (Thu Mar 27 2025)
 
 #### 🐛 Bug Fix
