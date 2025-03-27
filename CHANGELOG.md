@@ -1,3 +1,15 @@
+# v0.10.2 (Thu Mar 27 2025)
+
+#### 🐛 Bug Fix
+
+- Fix JSON view scrolling and add proper metadata prefixes [#47](https://github.com/rjvim/meta-scan/pull/47) ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.10.1 (Wed Mar 26 2025)
 
 #### 🐛 Bug Fix
