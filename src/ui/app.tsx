@@ -146,7 +146,7 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
     const isTop = uiState.position.startsWith("top");
     return cn(
       "absolute w-[400px] max-w-[90vw]",
-      isTop ? "top-full mt-2" : "bottom-full mb-2",
+      isTop ? "top-full" : "bottom-full mb-2",
       uiState.position.endsWith("right") ? "right-0" : "left-0"
     );
   };
