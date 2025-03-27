@@ -413,6 +413,34 @@ const MetadataLayout = ({
     }
   };
 
+  // Format metadata with proper prefixes
+  const formatMetadataForJSON = (metadata: MetadataResult) => {
+    const formattedMetadata = {
+      general: metadata.general || {},
+      opengraph: {} as Record<string, any>,
+      twitter: {} as Record<string, any>,
+      technical: metadata.technical || {},
+      structured: metadata.structured || {},
+      extractedAt: metadata.extractedAt
+    };
+    
+    // Format OpenGraph metadata with og: prefix
+    if (metadata.opengraph) {
+      Object.entries(metadata.opengraph).forEach(([key, value]) => {
+        formattedMetadata.opengraph[`og:${key}`] = value;
+      });
+    }
+    
+    // Format Twitter metadata with twitter: prefix
+    if (metadata.twitter) {
+      Object.entries(metadata.twitter).forEach(([key, value]) => {
+        formattedMetadata.twitter[`twitter:${key}`] = value;
+      });
+    }
+    
+    return formattedMetadata;
+  };
+
   // Filter metadata items based on search term
   const filterMetadataItems = (items: [string, any][]): [string, any][] => {
     if (!searchTerm) return items;
@@ -440,7 +468,6 @@ const MetadataLayout = ({
     });
   };
 
-  // Fix TypeScript errors by ensuring null instead of undefined for metadata values
   const renderTabContent = (tabId: string) => {
     switch (tabId) {
       case "general":
@@ -712,7 +739,7 @@ const MetadataLayout = ({
 
       {/* Content */}
       {showJSON ? (
-        <div className="p-3">
+        <div className="p-3 overflow-y-auto max-h-[calc(80vh-160px)]">
           <div className="bg-gray-100 dark:bg-gray-800 p-3 rounded overflow-x-auto text-xs relative group">
             <button
               onClick={handleCopyJSON}
@@ -747,7 +774,6 @@ const MetadataLayout = ({
                 <CopyIcon />
               )}
             </button>
-            {/* Accessible status message for screen readers */}
             {copyMessage && (
               <div 
                 className="sr-only" 
@@ -757,11 +783,11 @@ const MetadataLayout = ({
                 {copyMessage}
               </div>
             )}
-            <pre ref={jsonTextRef} className="pt-8">{JSON.stringify(metadata, null, 2)}</pre>
+            <pre ref={jsonTextRef} className="pt-8">{JSON.stringify(formatMetadataForJSON(metadata), null, 2)}</pre>
           </div>
         </div>
       ) : searchTerm ? (
-        <div className="p-3 overflow-y-auto max-h-[calc(80vh-120px)]">
+        <div className="p-3 overflow-y-auto max-h-[calc(80vh-160px)]">
           <SearchResults 
             searchTerm={searchTerm}
             metadata={metadata}
