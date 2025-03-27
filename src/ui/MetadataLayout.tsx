@@ -12,16 +12,21 @@ import { type ComponentChildren } from "preact";
 import { SettingsMenu } from "./header/SettingsMenu";
 import { ThemeToggle } from "./header/ThemeToggle";
 import { PositionControl } from "./header/PositionControl";
+import { SearchInput } from "./components/SearchInput";
+import { SearchHighlighter } from "./components/SearchHighlighter";
+import { useCallback } from "preact/hooks";
 
 // Component for metadata item display
 const MetadataItem = ({
   label,
   value,
   copyable = true,
+  searchTerm = "",
 }: {
   label: string;
   value: string | number | object | null;
   copyable?: boolean;
+  searchTerm?: string;
 }) => {
   const [copied, setCopied] = useState(false);
 
@@ -38,7 +43,12 @@ const MetadataItem = ({
     <div className=" pb-2 group">
       <div className="flex items-center justify-between mb-1">
         <div className="text-xs font-semibold text-gray-500 dark:text-gray-400">
-          {label}
+          {searchTerm ? (
+            <SearchHighlighter 
+              text={label} 
+              searchTerm={searchTerm} 
+            />
+          ) : label}
         </div>
         {copyable && (
           <button
@@ -56,6 +66,12 @@ const MetadataItem = ({
           <pre className="whitespace-pre-wrap">
             {JSON.stringify(value, null, 2)}
           </pre>
+        ) : searchTerm ? (
+          <SearchHighlighter 
+            text={String(value)} 
+            searchTerm={searchTerm} 
+            className="whitespace-pre-wrap"
+          />
         ) : (
           String(value)
         )}
@@ -178,7 +194,7 @@ const SearchResults = ({
           <h3 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-200">General</h3>
           <div className="space-y-2">
             {generalResults.map(([key, value]) => (
-              <MetadataItem key={`general-${key}`} label={key} value={value ?? null} />
+              <MetadataItem key={`general-${key}`} label={key} value={value ?? null} searchTerm={searchTerm} />
             ))}
           </div>
         </div>
@@ -189,7 +205,7 @@ const SearchResults = ({
           <h3 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-200">Open Graph</h3>
           <div className="space-y-2">
             {ogResults.map(([key, value]) => (
-              <MetadataItem key={`og-${key}`} label={`og:${key}`} value={value ?? null} />
+              <MetadataItem key={`og-${key}`} label={`og:${key}`} value={value ?? null} searchTerm={searchTerm} />
             ))}
           </div>
         </div>
@@ -200,7 +216,7 @@ const SearchResults = ({
           <h3 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-200">Twitter</h3>
           <div className="space-y-2">
             {twitterResults.map(([key, value]) => (
-              <MetadataItem key={`twitter-${key}`} label={`twitter:${key}`} value={value ?? null} />
+              <MetadataItem key={`twitter-${key}`} label={`twitter:${key}`} value={value ?? null} searchTerm={searchTerm} />
             ))}
           </div>
         </div>
@@ -211,7 +227,7 @@ const SearchResults = ({
           <h3 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-200">Technical</h3>
           <div className="space-y-2">
             {technicalResults.map(([key, value]) => (
-              <MetadataItem key={`technical-${key}`} label={key} value={value ?? null} />
+              <MetadataItem key={`technical-${key}`} label={key} value={value ?? null} searchTerm={searchTerm} />
             ))}
           </div>
         </div>
@@ -231,6 +247,7 @@ const SearchResults = ({
                     key={`search-jsonld-${index}`}
                     label={`JSON-LD ${index + 1} (${getJsonLdType(item)})`}
                     value={item}
+                    searchTerm={searchTerm}
                   />
                 );
               })}
@@ -247,6 +264,7 @@ const SearchResults = ({
                     key={`search-microdata-${index}`}
                     label={`Microdata ${index + 1} (${getTypeFromUrl(item.type)})`}
                     value={item.properties}
+                    searchTerm={searchTerm}
                   />
                 );
               })}
@@ -293,6 +311,7 @@ const MetadataLayout = ({
   const [copyError, setCopyError] = useState(false);
   const [copyMessage, setCopyMessage] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const copyTimeoutRef = useRef<number | null>(null);
   const errorTimeoutRef = useRef<number | null>(null);
   const jsonTextRef = useRef<HTMLPreElement>(null);
@@ -443,10 +462,10 @@ const MetadataLayout = ({
   };
 
   // Filter metadata items based on search term
-  const filterMetadataItems = (items: [string, any][]): [string, any][] => {
-    if (!searchTerm) return items;
+  const filterMetadataItems = useCallback((items: [string, any][]): [string, any][] => {
+    if (!debouncedSearchTerm) return items;
     
-    const lowerSearchTerm = searchTerm.toLowerCase();
+    const lowerSearchTerm = debouncedSearchTerm.toLowerCase();
     return items.filter(([key, value]) => {
       // Search in keys
       if (key.toLowerCase().includes(lowerSearchTerm)) return true;
@@ -467,28 +486,28 @@ const MetadataLayout = ({
       
       return false;
     });
-  };
+  }, [debouncedSearchTerm]);
 
   const renderTabContent = (tabId: string) => {
     switch (tabId) {
       case "general":
         return filterMetadataItems(Object.entries(metadata.general || {})).map(([key, value]) => (
-          <MetadataItem key={key} label={key} value={value ?? null} />
+          <MetadataItem key={key} label={key} value={value ?? null} searchTerm={debouncedSearchTerm} />
         ));
       case "opengraph":
         const filteredOgItems = filterMetadataItems(Object.entries(metadata.opengraph || {}));
         return (
           <>
-            {!searchTerm && metadata.opengraph?.image && (
+            {!debouncedSearchTerm && metadata.opengraph?.image && (
               <MetadataImage
                 src={metadata.opengraph.image || null}
                 alt={metadata.opengraph.title || metadata.general?.title || ""}
               />
             )}
             {filteredOgItems.map(([key, value]) => (
-              <MetadataItem key={key} label={`og:${key}`} value={value ?? null} />
+              <MetadataItem key={key} label={`og:${key}`} value={value ?? null} searchTerm={debouncedSearchTerm} />
             ))}
-            {filteredOgItems.length === 0 && searchTerm && (
+            {filteredOgItems.length === 0 && debouncedSearchTerm && (
               <div className="py-2 text-center text-gray-500 dark:text-gray-400 text-sm">
                 No matching Open Graph metadata found
               </div>
@@ -499,16 +518,16 @@ const MetadataLayout = ({
         const filteredTwitterItems = filterMetadataItems(Object.entries(metadata.twitter || {}));
         return (
           <>
-            {!searchTerm && metadata.twitter?.image && (
+            {!debouncedSearchTerm && metadata.twitter?.image && (
               <MetadataImage
                 src={metadata.twitter.image || null}
                 alt={metadata.twitter.title || metadata.general?.title || ""}
               />
             )}
             {filteredTwitterItems.map(([key, value]) => (
-              <MetadataItem key={key} label={`twitter:${key}`} value={value ?? null} />
+              <MetadataItem key={key} label={`twitter:${key}`} value={value ?? null} searchTerm={debouncedSearchTerm} />
             ))}
-            {filteredTwitterItems.length === 0 && searchTerm && (
+            {filteredTwitterItems.length === 0 && debouncedSearchTerm && (
               <div className="py-2 text-center text-gray-500 dark:text-gray-400 text-sm">
                 No matching Twitter metadata found
               </div>
@@ -520,9 +539,9 @@ const MetadataLayout = ({
         return (
           <>
             {filteredTechItems.map(([key, value]) => (
-              <MetadataItem key={key} label={key} value={value ?? null} />
+              <MetadataItem key={key} label={key} value={value ?? null} searchTerm={debouncedSearchTerm} />
             ))}
-            {filteredTechItems.length === 0 && searchTerm && (
+            {filteredTechItems.length === 0 && debouncedSearchTerm && (
               <div className="py-2 text-center text-gray-500 dark:text-gray-400 text-sm">
                 No matching technical metadata found
               </div>
@@ -543,19 +562,19 @@ const MetadataLayout = ({
         const hasMicrodata = structuredData.microdata && structuredData.microdata.length > 0;
         
         // Filter JSON-LD data
-        const filteredJsonLd = !searchTerm ? structuredData.jsonLd : structuredData.jsonLd.filter(item => {
-          return JSON.stringify(item).toLowerCase().includes(searchTerm.toLowerCase());
+        const filteredJsonLd = !debouncedSearchTerm ? structuredData.jsonLd : structuredData.jsonLd.filter(item => {
+          return JSON.stringify(item).toLowerCase().includes(debouncedSearchTerm.toLowerCase());
         });
         
         // Filter Microdata
-        const filteredMicrodata = !searchTerm ? structuredData.microdata : structuredData.microdata.filter(item => {
+        const filteredMicrodata = !debouncedSearchTerm ? structuredData.microdata : structuredData.microdata.filter(item => {
           return (
-            item.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            JSON.stringify(item.properties).toLowerCase().includes(searchTerm.toLowerCase())
+            item.type.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+            JSON.stringify(item.properties).toLowerCase().includes(debouncedSearchTerm.toLowerCase())
           );
         });
         
-        const noResults = searchTerm && filteredJsonLd.length === 0 && filteredMicrodata.length === 0;
+        const noResults = debouncedSearchTerm && filteredJsonLd.length === 0 && filteredMicrodata.length === 0;
         
         return (
           <>
@@ -569,6 +588,7 @@ const MetadataLayout = ({
                       key={`jsonld-${index}`}
                       label={`JSON-LD ${index + 1} (${getJsonLdType(item)})`}
                       value={item}
+                      searchTerm={debouncedSearchTerm}
                     />
                   );
                 })}
@@ -585,6 +605,7 @@ const MetadataLayout = ({
                       key={`microdata-${index}`}
                       label={`Microdata ${index + 1} (${getTypeFromUrl(item.type)})`}
                       value={item.properties}
+                      searchTerm={debouncedSearchTerm}
                     />
                   );
                 })}
@@ -705,36 +726,13 @@ const MetadataLayout = ({
 
         {/* Search row */}
         <div className="relative">
-          <input
-            ref={searchInputRef}
-            type="text"
+          <SearchInput
             value={searchTerm}
-            onChange={(e) => setSearchTerm((e.target as HTMLInputElement).value)}
+            onChange={setSearchTerm}
+            onSearch={setDebouncedSearchTerm}
             placeholder="Search metadata... (Ctrl+F)"
-            className="w-full px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md focus:outline-none focus:ring-1 focus:ring-purple-500 dark:focus:ring-purple-400"
+            className="w-full"
           />
-          {searchTerm && (
-            <button
-              onClick={() => setSearchTerm("")}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-              title="Clear search"
-            >
-              <svg 
-                className="w-4 h-4" 
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24" 
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth={2} 
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          )}
         </div>
       </div>
 
@@ -787,10 +785,10 @@ const MetadataLayout = ({
             <pre ref={jsonTextRef} className="pt-8">{JSON.stringify(formatMetadataForJSON(metadata), null, 2)}</pre>
           </div>
         </div>
-      ) : searchTerm ? (
+      ) : debouncedSearchTerm ? (
         <div className="p-3 overflow-y-auto max-h-[calc(80vh-160px)]">
           <SearchResults 
-            searchTerm={searchTerm}
+            searchTerm={debouncedSearchTerm}
             metadata={metadata}
             filterMetadataItems={filterMetadataItems}
             getJsonLdType={getJsonLdType}
