@@ -366,8 +366,9 @@ const MetadataLayout = ({
   const handleCopyJSON = async () => {
     if (!metadata || jsonCopied) return;
     
-    // For very large JSON, truncate it for display purposes but copy the full version
-    const jsonString = JSON.stringify(metadata, null, 2);
+    // Format metadata with proper prefixes before copying
+    const formattedMetadata = formatMetadataForJSON(metadata);
+    const jsonString = JSON.stringify(formattedMetadata, null, 2);
     
     try {
       // Try using the Clipboard API first
