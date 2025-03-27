@@ -1,74 +1,44 @@
-import { useState, useRef, useCallback, useEffect } from "preact/hooks";
+import { useState } from "preact/hooks";
+import { type Ref } from "preact";
 import { cn } from "../../utils/cn";
-import { debounce } from "../../utils/debounce";
 
 interface SearchInputProps {
   value: string;
   onChange: (value: string) => void;
-  onSearch: (value: string) => void;
   placeholder?: string;
   className?: string;
 }
 
-export function SearchInput({
+export const SearchInput = ({
   value,
   onChange,
-  onSearch,
   placeholder = "Search...",
   className = "",
-}: SearchInputProps) {
+  ref,
+}: SearchInputProps & { ref?: Ref<HTMLInputElement> }) => {
   const [isSearching, setIsSearching] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  // Create a debounced search function
-  const debouncedSearch = useCallback(
-    debounce((searchValue: string) => {
-      onSearch(searchValue);
-      setIsSearching(false);
-    }, 300),
-    [onSearch]
-  );
 
   // Handle input change
   const handleChange = (e: Event) => {
     const newValue = (e.target as HTMLInputElement).value;
     onChange(newValue);
     setIsSearching(true);
-    debouncedSearch(newValue);
+    setTimeout(() => setIsSearching(false), 300);
   };
 
   // Clear search
   const handleClear = () => {
     onChange("");
-    onSearch("");
     setIsSearching(false);
-    inputRef.current?.focus();
+    if (ref && 'current' in ref && ref.current) {
+      ref.current.focus();
+    }
   };
-
-  // Add keyboard shortcut for search (Ctrl+F or Cmd+F)
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
-        e.preventDefault(); 
-        inputRef.current?.focus();
-      }
-      
-      if (e.key === 'Escape' && value) {
-        handleClear();
-        e.preventDefault();
-      }
-    };
-    
-    document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [value]);
 
   return (
     <div className={cn("relative", className)}>
       <input
-        ref={inputRef}
+        ref={ref}
         type="text"
         value={value}
         onChange={handleChange}
@@ -99,15 +69,10 @@ export function SearchInput({
             stroke="currentColor" 
             viewBox="0 0 24 24" 
           >
-            <path 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              strokeWidth={2} 
-              d="M6 18L18 6M6 6l12 12"
-            />
+            <path d="M18 6L6 18M6 6l12 12" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
       )}
     </div>
   );
-}
+};

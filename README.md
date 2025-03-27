@@ -10,7 +10,7 @@ MetaScan is a lightweight (29.9 kB) client-side JavaScript tool that extracts an
 🔄 **SEO Insights** - Identify and fix metadata issues that impact search rankings  
 🌗 **Clean UI** - Modern interface with dark/light mode  
 🔒 **Client-Side Only** - No data sent to servers, works offline and respects privacy  
-🔍 **Enhanced Search** - Powerful search functionality across all metadata categories
+🔍 **Enhanced Search** - Powerful search functionality across all metadata categories with prefix support (og:, twitter:, meta:)
 
 ## Features
 
@@ -21,7 +21,7 @@ MetaScan is a lightweight (29.9 kB) client-side JavaScript tool that extracts an
 - 🎛️ Configurable positioning on any corner of the screen
 - 📋 Copy functionality for metadata values
 - 🧩 Structured data extraction (JSON-LD and Microdata)
-- 🔎 Advanced search and filter functionality with dedicated results view
+- 🔎 Advanced search with prefix support and dedicated results view
 - 📱 Mobile-friendly with 5-tap toggle feature
 - 🔄 Integrated UI controls in a streamlined header
 
@@ -138,19 +138,21 @@ As you tap, a subtle indicator will show your progress toward the 5 taps require
 
 This feature works as a toggle - if MetaScan is currently enabled, the 5-tap sequence will disable it, and vice versa.
 
-## Search and Filter Functionality
+## Search Functionality
 
-MetaScan includes a powerful search feature that allows you to quickly find specific metadata:
+MetaScan provides a powerful search feature that helps you quickly find metadata across all categories:
 
-- **Keyboard Shortcuts**: Press `Ctrl+F` (Windows/Linux) or `Cmd+F` (Mac) to focus the search input
-- **Real-time Filtering**: Results update as you type across all metadata categories
-- **Focused Search Results View**: When searching, the UI switches to a dedicated results view that shows only matching items across all categories
-- **Categorized Results**: Search results are grouped by category (General, Open Graph, Twitter, Technical, Structured Data) for easy navigation
-- **Clear Search**: Use the clear button or press `Escape` to reset the search and return to the card view
-- **No Results Indication**: Clear messaging when search filters out all items
-- **Visual Highlighting**: Search terms are highlighted in the results for better visibility
+#### Prefix Support
+- Use `og:` to search OpenGraph metadata (e.g., `og:title`, `og:image`)
+- Use `twitter:` to search Twitter Card metadata (e.g., `twitter:card`)
+- Use `meta:` to search technical metadata (e.g., `meta:viewport`)
 
-This feature makes it easy to locate specific metadata in content-rich pages and provides a focused view of only the relevant information.
+#### Search Features
+- Case-insensitive search across all metadata categories
+- Search by prefix, key, or value
+- Real-time results with debounced updates
+- Keyboard shortcuts (Ctrl+F/Cmd+F to focus, Esc to clear)
+- Clear visual feedback with loading indicators
 
 ## Extracted Metadata
 

@@ -141,17 +141,17 @@ const SearchResults = ({
 }: {
   searchTerm: string;
   metadata: MetadataResult;
-  filterMetadataItems: (items: [string, any][]) => [string, any][];
+  filterMetadataItems: (items: [string, any][], section?: string) => [string, any][];
   getJsonLdType: (item: any) => string;
   getTypeFromUrl: (type: string) => string;
 }) => {
   if (!searchTerm) return null;
 
   // Get filtered results from each section
-  const generalResults = filterMetadataItems(Object.entries(metadata.general || {}));
-  const ogResults = filterMetadataItems(Object.entries(metadata.opengraph || {}));
-  const twitterResults = filterMetadataItems(Object.entries(metadata.twitter || {}));
-  const technicalResults = filterMetadataItems(Object.entries(metadata.technical || {}));
+  const generalResults = filterMetadataItems(Object.entries(metadata.general || {}), "general");
+  const ogResults = filterMetadataItems(Object.entries(metadata.opengraph || {}), "opengraph");
+  const twitterResults = filterMetadataItems(Object.entries(metadata.twitter || {}), "twitter");
+  const technicalResults = filterMetadataItems(Object.entries(metadata.technical || {}), "technical");
   
   // Get structured data results
   const structuredData: StructuredData = metadata.structured || { jsonLd: [], microdata: [] };
@@ -352,6 +352,15 @@ const MetadataLayout = ({
     };
   }, [searchTerm]);
 
+  // Add debounce effect for search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300); // 300ms delay
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
   const tabs = [
     { id: "general", label: "General" },
     { id: "opengraph", label: "Open Graph" },
@@ -462,12 +471,26 @@ const MetadataLayout = ({
   };
 
   // Filter metadata items based on search term
-  const filterMetadataItems = useCallback((items: [string, any][]): [string, any][] => {
+  const filterMetadataItems = useCallback((items: [string, any][], section?: string): [string, any][] => {
     if (!debouncedSearchTerm) return items;
     
     const lowerSearchTerm = debouncedSearchTerm.toLowerCase();
     return items.filter(([key, value]) => {
-      // Search in keys
+      // Get the formatted key with prefix
+      let formattedKey = key;
+      if (section === 'opengraph') {
+        formattedKey = `og:${key}`;
+      } else if (section === 'twitter') {
+        formattedKey = `twitter:${key}`;
+      } else if (section === 'technical') {
+        // Technical metadata might have meta: prefix
+        formattedKey = key.startsWith('meta:') ? key : `meta:${key}`;
+      }
+      
+      // Search in formatted keys
+      if (formattedKey.toLowerCase().includes(lowerSearchTerm)) return true;
+      
+      // Search in original keys (without prefix)
       if (key.toLowerCase().includes(lowerSearchTerm)) return true;
       
       // Search in string values
@@ -491,11 +514,11 @@ const MetadataLayout = ({
   const renderTabContent = (tabId: string) => {
     switch (tabId) {
       case "general":
-        return filterMetadataItems(Object.entries(metadata.general || {})).map(([key, value]) => (
+        return filterMetadataItems(Object.entries(metadata.general || {}), "general").map(([key, value]) => (
           <MetadataItem key={key} label={key} value={value ?? null} searchTerm={debouncedSearchTerm} />
         ));
       case "opengraph":
-        const filteredOgItems = filterMetadataItems(Object.entries(metadata.opengraph || {}));
+        const filteredOgItems = filterMetadataItems(Object.entries(metadata.opengraph || {}), "opengraph");
         return (
           <>
             {!debouncedSearchTerm && metadata.opengraph?.image && (
@@ -515,7 +538,7 @@ const MetadataLayout = ({
           </>
         );
       case "twitter":
-        const filteredTwitterItems = filterMetadataItems(Object.entries(metadata.twitter || {}));
+        const filteredTwitterItems = filterMetadataItems(Object.entries(metadata.twitter || {}), "twitter");
         return (
           <>
             {!debouncedSearchTerm && metadata.twitter?.image && (
@@ -535,7 +558,7 @@ const MetadataLayout = ({
           </>
         );
       case "technical":
-        const filteredTechItems = filterMetadataItems(Object.entries(metadata.technical || {}));
+        const filteredTechItems = filterMetadataItems(Object.entries(metadata.technical || {}), "technical");
         return (
           <>
             {filteredTechItems.map(([key, value]) => (
@@ -697,7 +720,7 @@ const MetadataLayout = ({
               className={`w-6 h-6 flex items-center justify-center rounded-full ${
                 showJSON
                   ? "bg-purple-100 dark:bg-purple-700 text-purple-600 dark:text-purple-400"
-                  : "text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-400 bg-gray-100 dark:bg-gray-700"
+                  : "text-gray-600 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-600 bg-gray-100 dark:bg-gray-700"
               }`}
               title={showJSON ? "Hide JSON" : "Show JSON"}
             >
@@ -729,9 +752,9 @@ const MetadataLayout = ({
           <SearchInput
             value={searchTerm}
             onChange={setSearchTerm}
-            onSearch={setDebouncedSearchTerm}
             placeholder="Search metadata... (Ctrl+F)"
             className="w-full"
+            ref={searchInputRef}
           />
         </div>
       </div>
