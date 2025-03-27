@@ -1,6 +1,6 @@
 # MetaScan: Lightweight Webpage Metadata Extraction Tool
 
-MetaScan is a lightweight (29.9 kB) client-side JavaScript tool that extracts and visualizes metadata from any webpage via a simple script tag. It provides an intuitive UI to analyze and offer insights into basic meta tags, Open Graph, Twitter Cards, and technical metadata.
+MetaScan is a lightweight (29.9 kB) client-side JavaScript tool that extracts and visualizes metadata from any webpage via a simple script tag. It provides an intuitive UI to analyze and offer insights into basic meta tags, Open Graph, Twitter Cards, technical metadata, and structured data.
 
 ## Why Choose MetaScan?
 
@@ -10,6 +10,7 @@ MetaScan is a lightweight (29.9 kB) client-side JavaScript tool that extracts an
 🔄 **SEO Insights** - Identify and fix metadata issues that impact search rankings  
 🌗 **Clean UI** - Modern interface with dark/light mode  
 🔒 **Client-Side Only** - No data sent to servers, works offline and respects privacy  
+🔍 **Enhanced Search** - Powerful search functionality across all metadata categories with prefix support (og:, twitter:, meta:)
 
 ## Features
 
@@ -20,8 +21,9 @@ MetaScan is a lightweight (29.9 kB) client-side JavaScript tool that extracts an
 - 🎛️ Configurable positioning on any corner of the screen
 - 📋 Copy functionality for metadata values
 - 🧩 Structured data extraction (JSON-LD and Microdata)
-- 🔎 Search and filter functionality across all metadata categories
+- 🔎 Advanced search with prefix support and dedicated results view
 - 📱 Mobile-friendly with 5-tap toggle feature
+- 🔄 Integrated UI controls in a streamlined header
 
 ## Who Is MetaScan For?
 
@@ -136,18 +138,21 @@ As you tap, a subtle indicator will show your progress toward the 5 taps require
 
 This feature works as a toggle - if MetaScan is currently enabled, the 5-tap sequence will disable it, and vice versa.
 
-## Search and Filter Functionality
+## Search Functionality
 
-MetaScan includes a powerful search feature that allows you to quickly find specific metadata:
+MetaScan provides a powerful search feature that helps you quickly find metadata across all categories:
 
-- **Keyboard Shortcuts**: Press `Ctrl+F` (Windows/Linux) or `Cmd+F` (Mac) to focus the search input
-- **Real-time Filtering**: Results update as you type across all metadata categories
-- **Focused Search Results View**: When searching, the UI switches to a dedicated results view that shows only matching items across all categories
-- **Categorized Results**: Search results are grouped by category (General, Open Graph, Twitter, Technical, Structured Data) for easy navigation
-- **Clear Search**: Use the clear button or press `Escape` to reset the search and return to the card view
-- **No Results Indication**: Clear messaging when search filters out all items
+#### Prefix Support
+- Use `og:` to search OpenGraph metadata (e.g., `og:title`, `og:image`)
+- Use `twitter:` to search Twitter Card metadata (e.g., `twitter:card`)
+- Use `meta:` to search technical metadata (e.g., `meta:viewport`)
 
-This feature makes it easy to locate specific metadata in content-rich pages and provides a focused view of only the relevant information.
+#### Search Features
+- Case-insensitive search across all metadata categories
+- Search by prefix, key, or value
+- Real-time results with debounced updates
+- Keyboard shortcuts (Ctrl+F/Cmd+F to focus, Esc to clear)
+- Clear visual feedback with loading indicators
 
 ## Extracted Metadata
 
@@ -234,6 +239,19 @@ The MetaScan interface has been redesigned for better usability:
 - **Simplified Layout**: Cleaner component structure with logical separation of concerns
 - **Improved Dropdown Positioning**: Dropdowns now correctly position based on panel location
 - **Enhanced Error Handling**: Robust error handling for structured data extraction with detailed logging
+- **Dedicated Search Results View**: When searching, the UI shows only matching results across all categories
+- **Improved Search Experience**: Search highlighting and keyboard shortcuts for better usability
+- **Streamlined Component Structure**: Modular code organization for better maintainability
+
+## Code Architecture
+
+MetaScan has been refactored for better maintainability and extensibility:
+
+- **Modular Components**: UI elements split into logical, reusable components
+- **Separation of Concerns**: Clear distinction between UI components, utility functions, and business logic
+- **Improved Error Handling**: Comprehensive try/catch blocks with detailed error logging
+- **Enhanced Type Safety**: Proper TypeScript annotations throughout the codebase
+- **Optimized Search**: Efficient search implementation with debouncing for better performance
 
 ## License
 
