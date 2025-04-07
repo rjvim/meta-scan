@@ -9,10 +9,18 @@ interface ThemeToggleProps {
 export const ThemeToggle = ({ theme, toggleTheme }: ThemeToggleProps) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const isAnimatingRef = useRef(false);
+  const timeoutRef = useRef<number>();
 
   const handleToggleTheme = () => {
     if (isAnimatingRef.current) return;
+    
+    // Clear any pending timeouts
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    
     isAnimatingRef.current = true;
+    buttonRef.current?.setAttribute('disabled', 'true');
     const button = buttonRef.current;
     if (!button) {
       toggleTheme();
@@ -28,7 +36,7 @@ export const ThemeToggle = ({ theme, toggleTheme }: ThemeToggleProps) => {
     const sheet = new CSSStyleSheet();
     sheet.replaceSync(`
       ::view-transition-group(root) {
-        animation-duration: 750ms;
+        animation-duration: 1200ms;
         animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
       }
 
@@ -42,11 +50,11 @@ export const ThemeToggle = ({ theme, toggleTheme }: ThemeToggleProps) => {
       ::view-transition-new(root) {
         mask: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -50 100 100"><defs><filter id="blur"><feGaussianBlur stdDeviation="5"/></filter></defs><circle cx="0" cy="0" r="25" fill="white" filter="url(%23blur)"/></svg>') 0 0 / 100% 100% no-repeat;
         mask-position: ${x}px ${y}px;
-        animation: maskScale 750ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        animation: maskScale 1200ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
       }
 
       ::view-transition-old(root) {
-        animation: maskScale 750ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        animation: maskScale 1200ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
       }
 
       @keyframes maskScale {
@@ -71,13 +79,15 @@ export const ThemeToggle = ({ theme, toggleTheme }: ThemeToggleProps) => {
         toggleTheme();
       }).finished.finally(() => {
         isAnimatingRef.current = false;
+        buttonRef.current?.removeAttribute('disabled');
       });
     } else {
       toggleTheme();
       // For non-supporting browsers, release the lock after animation duration
-      setTimeout(() => {
+      timeoutRef.current = window.setTimeout(() => {
         isAnimatingRef.current = false;
-      }, 750);
+        buttonRef.current?.removeAttribute('disabled');
+      }, 1200);
     }
   };
 
