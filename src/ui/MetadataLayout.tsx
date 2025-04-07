@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "preact/hooks";
 import { cn } from "../utils/cn";
-import type { MetadataResult, StructuredData, MicrodataItem, Corner, MetaScanUIState, MissingTag } from "~/types";
+import type { MetadataResult, StructuredData, MicrodataItem, Corner, MetaScanUIState } from "~/types";
 import { 
   CheckIcon, 
   CopyIcon, 
@@ -25,20 +25,30 @@ const fieldOrder = {
 
 // Helper to format display labels from standardized keys
 const formatKeyForDisplay = (key: string): string => {
-  // Remove prefixes for display
-  let displayKey = key;
-  if (displayKey.startsWith('meta:')) displayKey = displayKey.replace('meta:', '');
-  if (displayKey.startsWith('link:')) displayKey = displayKey.replace('link:', '');
-  if (displayKey.startsWith('html:')) displayKey = displayKey.replace('html:', '');
-  if (displayKey.startsWith('header:')) displayKey = displayKey.replace('header:', '');
-  if (displayKey.startsWith('og:')) displayKey = displayKey.replace('og:', '');
-  if (displayKey.startsWith('twitter:')) displayKey = displayKey.replace('twitter:', '');
-  
-  // Format remaining text: capitalize first letter of each word, replace hyphens with spaces
-  return displayKey
-    .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+  try {
+    // Handle null or undefined keys
+    if (!key) return '';
+    
+    // Remove prefixes for display
+    let displayKey = key;
+    const prefixes = ['meta:', 'link:', 'html:', 'header:', 'og:', 'twitter:'];
+    
+    for (const prefix of prefixes) {
+      if (displayKey.startsWith(prefix)) {
+        displayKey = displayKey.replace(prefix, '');
+        break; // Stop after first match to avoid multiple replacements
+      }
+    }
+    
+    // Format remaining text: capitalize first letter of each word, replace hyphens with spaces
+    return displayKey
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  } catch (error) {
+    console.warn(`Error formatting key: ${key}`, error);
+    return key; // Return original key if formatting fails
+  }
 };
 
 // Helper to sort metadata entries according to predefined order
@@ -710,8 +720,21 @@ const MetadataLayout = ({
           );
         }
 
+        // Collect all missing tags from all categories
+        const allMissingTags = [
+          ...metadata.missing.general,
+          ...metadata.missing.opengraph,
+          ...metadata.missing.twitter,
+          ...metadata.missing.technical
+        ];
+        
+        // Group by importance
+        const criticalTags = allMissingTags.filter(tag => tag.importance === 'critical');
+        const mediumTags = allMissingTags.filter(tag => tag.importance === 'medium');
+        const lowTags = allMissingTags.filter(tag => tag.importance === 'low');
+
         return (
-          <div className="space-y-4">
+          <>
             <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-md mb-4">
               <p className="text-xs text-gray-600 dark:text-gray-400">
                 This panel shows metadata tags that are missing from the page but are recommended for better SEO and sharing.
@@ -726,11 +749,66 @@ const MetadataLayout = ({
               </div>
             )}
             
-            {renderMissingTagsSection(metadata.missing.general, "General")}
-            {renderMissingTagsSection(metadata.missing.opengraph, "Open Graph")}
-            {renderMissingTagsSection(metadata.missing.twitter, "Twitter Card")}
-            {renderMissingTagsSection(metadata.missing.technical, "Technical")}
-          </div>
+            {criticalTags.length > 0 && (
+              <div className="mb-5">
+                <div className="flex items-center mb-2">
+                  <div className="w-2 h-2 bg-red-500 rounded-full mr-2"></div>
+                  <h3 className="text-sm font-semibold text-red-800 dark:text-red-200">Critical Priority</h3>
+                </div>
+                <div className="bg-red-50 dark:bg-red-900/20 rounded-md p-3 border-l-2 border-red-500">
+                  <ul className="list-disc pl-5 space-y-2">
+                    {criticalTags.map((tag, index) => (
+                      <li key={index} className="text-sm text-gray-700 dark:text-gray-300">
+                        {tag.key}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
+            
+            {mediumTags.length > 0 && (
+              <div className="mb-5">
+                <div className="flex items-center mb-2">
+                  <div className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></div>
+                  <h3 className="text-sm font-semibold text-yellow-800 dark:text-yellow-200">Medium Priority</h3>
+                </div>
+                <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-md p-3 border-l-2 border-yellow-500">
+                  <ul className="list-disc pl-5 space-y-2">
+                    {mediumTags.map((tag, index) => (
+                      <li key={index} className="text-sm text-gray-700 dark:text-gray-300">
+                        {tag.key}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
+            
+            {lowTags.length > 0 && (
+              <div className="mb-5">
+                <div className="flex items-center mb-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                  <h3 className="text-sm font-semibold text-blue-800 dark:text-blue-200">Low Priority</h3>
+                </div>
+                <div className="bg-blue-50 dark:bg-blue-900/20 rounded-md p-3 border-l-2 border-blue-500">
+                  <ul className="list-disc pl-5 space-y-2">
+                    {lowTags.map((tag, index) => (
+                      <li key={index} className="text-sm text-gray-700 dark:text-gray-300">
+                        {tag.key}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
+            
+            {criticalTags.length === 0 && mediumTags.length === 0 && lowTags.length === 0 && (
+              <div className="py-2 text-center text-gray-500 dark:text-gray-400 text-sm">
+                No missing metadata tags found matching your search.
+              </div>
+            )}
+          </>
         );
         
       default:
@@ -738,37 +816,7 @@ const MetadataLayout = ({
     }
   };
   
-  // Helper to render missing tags section
-  const renderMissingTagsSection = (tags: MissingTag[], category: string) => {
-    if (!tags || tags.length === 0) return null;
-    
-    return (
-      <div className="mb-4">
-        <h3 className="text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300">{category}</h3>
-        <div className="space-y-2">
-          {tags.map((tag, index) => {
-            const importanceColor = {
-              critical: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-              medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-              low: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-            }[tag.importance];
-            
-            return (
-              <div key={index} className="p-2 rounded-md bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-                <div className="flex justify-between items-start">
-                  <span className="font-medium text-xs">{formatKeyForDisplay(tag.key)}</span>
-                  <span className={`text-xs px-2 py-0.5 rounded ${importanceColor}`}>
-                    {tag.importance}
-                  </span>
-                </div>
-                <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">{tag.description}</p>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-  };
+
 
   // Helper function to get a clean type name from JSON-LD
   function getJsonLdType(item: any): string {

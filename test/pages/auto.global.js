@@ -1,0 +1,1 @@
+../../dist/auto.global.js
