@@ -1,3 +1,15 @@
+# v0.12.0 (Mon Apr 07 2025)
+
+#### 🚀 Enhancement
+
+- feat: enhance missing metadata tags display [#56](https://github.com/rjvim/meta-scan/pull/56) ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.11.2 (Mon Apr 07 2025)
 
 #### 🐛 Bug Fix
