@@ -155,6 +155,23 @@ MetaScan provides a powerful search feature that helps you quickly find metadata
 - Keyboard shortcuts (Ctrl+F/Cmd+F to focus, Esc to clear)
 - Clear visual feedback with loading indicators
 
+## Missing Metadata Tags
+
+MetaScan helps identify missing metadata with an improved display:
+
+#### Tag Display Features
+- Compact table format for better visibility
+- Standardized keys shown in monospace font (e.g., `og:title`, `meta:description`)
+- Color-coded importance levels with emoji indicators (🔴 Critical, 🟡 Medium, 🔵 Low)
+- Consistent label formatting across all categories
+- Grouped by category (General, Open Graph, Twitter Card, Technical)
+
+#### Missing Tag Detection
+- Identifies missing required metadata based on best practices
+- Shows standardized key names for easy implementation
+- Provides clear descriptions of why each tag is important
+- Helps maintain metadata consistency across pages
+
 ## Extracted Metadata
 
 MetaScan extracts the following metadata categories based on these interfaces:
