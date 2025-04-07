@@ -1,129 +1,64 @@
-/* Panel Animation */
-.panel-enter {
+/* Panel Animation Styles */
+.meta-scan-panel {
   opacity: 0;
-  transform: scale(0.8);
-  transform-origin: bottom right;
-  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: transform, opacity;
-  backface-visibility: hidden;
-  -webkit-font-smoothing: antialiased;
+  transform: scale(0.95);
+  transition: opacity 300ms ease-out, transform 300ms ease-out;
+  transform-origin: var(--panel-origin, top right);
 }
 
-.panel-enter-active {
+.meta-scan-panel.active {
   opacity: 1;
   transform: scale(1);
 }
 
-.panel-exit {
-  opacity: 1;
-  transform: scale(1);
-  transform-origin: bottom right;
-  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: transform, opacity;
-  backface-visibility: hidden;
-  -webkit-font-smoothing: antialiased;
-}
-
-.panel-exit-active {
+.meta-scan-panel.closing {
   opacity: 0;
-  transform: scale(0.8);
+  transform: scale(0.95);
 }
 
-/* Theme Toggle Animation */
+/* Keyframes for mask scaling */
 @keyframes maskScale {
   0% {
     mask-size: 0px;
-    mask-position: var(--mask-position-x) var(--mask-position-y);
+    mask-position: center;
+  }
+  100% {
+    mask-size: 2000px;
+    mask-position: center;
+  }
+}
+
+/* Keyframes for mask scaling */
+@keyframes maskScaleOld {
+  0% {
+    mask-size: 0px;
+    mask-position: 55.58593940734863px 342px;
   }
   100% {
     mask-size: 10240px;
-    mask-position: calc(var(--mask-position-x) - 5120px) calc(var(--mask-position-y) - 5120px);
+    mask-position: -5064.414060592651px -4778px;
   }
 }
 
-:root {
-  --mask-position-x: 50%;
-  --mask-position-y: 50%;
-}
-
-.theme-transition-container {
-  view-transition-name: root;
-}
-
-::view-transition-group(root) {
-  animation-duration: 750ms;
-}
-
+/* Transition styles for new theme */
 ::view-transition-new(root) {
-  mask: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -50 100 100"><circle cx="0" cy="0" r="25" fill="white"/></svg>') 0 0 / 100% 100% no-repeat;
-  mask-position: var(--mask-position-x) var(--mask-position-y);
-  animation: maskScale 750ms ease-in-out;
-  transform-origin: var(--mask-position-x) var(--mask-position-y);
+  mask: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -50 100 100"><defs><filter id="blur"><feGaussianBlur stdDeviation="5"/></filter></defs><circle cx="0" cy="0" r="25" fill="white" filter="url(%23blur)"/></svg>') 0 0 / 100% 100% no-repeat;
+  mask-position: 55.58593940734863px 342px;
+  animation: maskScaleOld 750ms ease-in-out;
+  transform-origin: 55.58593940734863px 342px;
 }
 
-::view-transition-old(root) {
-  animation: maskScale 750ms ease-in-out;
-  transform-origin: var(--mask-position-x) var(--mask-position-y);
+/* Transition styles for old theme */
+::view-transition-old(root),
+.dark::view-transition-old(root) {
+  animation: maskScaleOld 750ms ease-in-out;
+  transform-origin: 55.58593940734863px 342px;
   z-index: -1;
 }
 
-/* Toggle Button Animation */
-@keyframes toggle-pulse {
-  0% {
-    transform: scale(1) translateY(0);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  }
-  50% {
-    transform: scale(1.08) translateY(-1px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-  }
-  100% {
-    transform: scale(1) translateY(0);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  }
-}
-
-/* Theme Toggle Button Animation */
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-    filter: brightness(1);
-  }
-  50% {
-    transform: scale(1.12);
-    filter: brightness(1.1);
-  }
-  100% {
-    transform: scale(1);
-    filter: brightness(1);
-  }
-}
-
-.pulse {
-  animation: pulse 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: transform, filter;
-  backface-visibility: hidden;
-}
-
-.toggle-button {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: transform, box-shadow;
-  backface-visibility: hidden;
-  transform: translateZ(0);
-}
-
-.toggle-button:active {
-  transform: scale(0.92) translateZ(0);
-}
-
-.toggle-button:hover {
-  transform: translateY(-1px) translateZ(0);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-}
-
-.toggle-button-active {
-  animation: toggle-pulse 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: transform, box-shadow;
-  backface-visibility: hidden;
-  transform: translateZ(0);
+/* Transition styles for the container */
+.container {
+  mask: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -50 100 100"><defs><filter id="blur"><feGaussianBlur stdDeviation="5"/></filter></defs><circle cx="0" cy="0" r="25" fill="white" filter="url(%23blur)"/></svg>') center / 100% 100% no-repeat;
+  animation: maskScale 2000ms ease-in-out;
+  transform-origin: center;
 }

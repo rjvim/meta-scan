@@ -52,12 +52,22 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
 
   const toggleTheme = () => {
     const nextTheme = theme === "dark" ? "light" : "dark";
-    // Start the view transition
-    document.startViewTransition(() => {
+    // Use View Transitions API if available
+    if ('startViewTransition' in document) {
+      // @ts-ignore - TypeScript might not recognize startViewTransition
+      document.startViewTransition(() => {
+        requestAnimationFrame(() => {
+          setUiState((prev) => ({ ...prev, theme: nextTheme }));
+          setTheme(nextTheme);
+          stateManager.updateState({ theme: nextTheme });
+        });
+      });
+    } else {
+      // Fallback for browsers without View Transitions API
       setUiState((prev) => ({ ...prev, theme: nextTheme }));
       setTheme(nextTheme);
       stateManager.updateState({ theme: nextTheme });
-    });
+    }
   };
 
   const panelRef = useRef<HTMLDivElement>(null);
@@ -65,16 +75,17 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
 
   const togglePanel = () => {
     if (uiState.isOpen) {
-      // If panel is open, start closing animation
+      // Start closing animation
       setIsClosing(true);
+      
       // Wait for animation to complete before updating state
       setTimeout(() => {
         setUiState((prev) => ({ ...prev, isOpen: false }));
         stateManager.updateState({ isOpen: false });
         setIsClosing(false);
-      }, 350); // Match animation duration with a little buffer (300ms + 50ms buffer)
+      }, 300);
     } else {
-      // If panel is closed, open immediately
+      // Open panel immediately
       setUiState((prev) => ({ ...prev, isOpen: true }));
       stateManager.updateState({ isOpen: true });
     }
@@ -163,12 +174,24 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
   
   
 
+  // Get panel position origin for animation
+  const getPanelOrigin = () => {
+    const positionMap = {
+      "top-left": "top left",
+      "top-right": "top right",
+      "bottom-left": "bottom left",
+      "bottom-right": "bottom right",
+    };
+    return positionMap[uiState.position] || "top right";
+  };
+
+  // Get panel position classes
   const getPanelPositionClasses = () => {
-    const isTop = uiState.position.startsWith("top");
+    const isTop = uiState.position.includes("top");
     return cn(
       "absolute w-[400px] max-w-[90vw]",
-      isTop ? "top-full" : "bottom-full mb-2",
-      uiState.position.endsWith("right") ? "right-0" : "left-0"
+      isTop ? "top-full mt-2" : "bottom-full mb-2",
+      uiState.position.includes("right") ? "right-0" : "left-0"
     );
   };
 
@@ -213,19 +236,16 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
 
   return (
     <div className={cn("fixed z-50", getContainerPositionClasses())}>
-      <div className={cn("flex flex-col theme-transition-container", theme === "dark" ? "dark" : "")}>
+      <div className={cn("flex flex-col meta-scan-container", theme === "dark" ? "dark" : "")}>
         {(uiState.isOpen || isClosing) && (
           <div
             ref={panelRef}
             className={cn(
               "relative rounded-lg shadow-xl overflow-hidden bg-white dark:bg-gray-800",
-              !isClosing && uiState.isOpen ? "panel-enter panel-enter-active" : "panel-exit panel-exit-active",
+              "meta-scan-panel", !isClosing && uiState.isOpen ? "active" : "closing",
               getPanelPositionClasses()
             )}
-            style={{
-              backfaceVisibility: "hidden",
-              WebkitFontSmoothing: "antialiased"
-            }}
+            style={{ '--panel-origin': getPanelOrigin() } as any}
           >
             {loading && <LoadingIndicator />}
             <MetadataLayout
