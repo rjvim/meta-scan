@@ -52,9 +52,12 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
 
   const toggleTheme = () => {
     const nextTheme = theme === "dark" ? "light" : "dark";
-    setUiState((prev) => ({ ...prev, theme: nextTheme }));
-    setTheme(nextTheme);
-    stateManager.updateState({ theme: nextTheme });
+    // Start the view transition
+    document.startViewTransition(() => {
+      setUiState((prev) => ({ ...prev, theme: nextTheme }));
+      setTheme(nextTheme);
+      stateManager.updateState({ theme: nextTheme });
+    });
   };
 
   const panelRef = useRef<HTMLDivElement>(null);
@@ -69,7 +72,7 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
         setUiState((prev) => ({ ...prev, isOpen: false }));
         stateManager.updateState({ isOpen: false });
         setIsClosing(false);
-      }, 300); // Match animation duration
+      }, 350); // Match animation duration with a little buffer (300ms + 50ms buffer)
     } else {
       // If panel is closed, open immediately
       setUiState((prev) => ({ ...prev, isOpen: true }));
@@ -158,16 +161,7 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
     return positionMap[uiState.position];
   };
   
-  // Get transform origin based on position
-  const getTransformOrigin = () => {
-    const positionMap = {
-      "top-left": "top left",
-      "top-right": "top right",
-      "bottom-left": "bottom left",
-      "bottom-right": "bottom right",
-    };
-    return positionMap[uiState.position];
-  };
+  
 
   const getPanelPositionClasses = () => {
     const isTop = uiState.position.startsWith("top");
@@ -224,15 +218,13 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
           <div
             ref={panelRef}
             className={cn(
-              "relative rounded-lg shadow-xl overflow-hidden",
-              isClosing ? "panel-exit panel-exit-active" : "panel-enter panel-enter-active",
+              "relative rounded-lg shadow-xl overflow-hidden bg-white dark:bg-gray-800",
+              !isClosing && uiState.isOpen ? "panel-enter panel-enter-active" : "panel-exit panel-exit-active",
               getPanelPositionClasses()
             )}
             style={{
-              animationName: isClosing ? 'panel-exit' : 'panel-enter',
-              animationDuration: '300ms',
-              animationFillMode: 'forwards',
-              transformOrigin: getTransformOrigin()
+              backfaceVisibility: "hidden",
+              WebkitFontSmoothing: "antialiased"
             }}
           >
             {loading && <LoadingIndicator />}
@@ -257,9 +249,9 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
           onClick={togglePanel}
           className={cn(
             "w-8 h-8 flex items-center justify-center rounded-full",
-            "transition-colors duration-200 shadow-lg",
+            "shadow-lg toggle-button",
             "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400",
-            uiState.isOpen ? "bg-purple-600 text-white hover:bg-purple-700" : ""
+            uiState.isOpen ? "bg-purple-600 text-white hover:bg-purple-700 toggle-button-active" : ""
           )}
           title={uiState.isOpen ? "Close MetaScan panel" : "Open MetaScan panel"}
         >

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "preact/hooks";
 import { cn } from "../utils/cn";
-import type { MetadataResult, StructuredData, MicrodataItem, Corner, MetaScanUIState } from "~/types";
+import type { MetadataResult, StructuredData, MicrodataItem, Corner, MetaScanUIState, MissingTag } from "~/types";
 import { 
   CheckIcon, 
   CopyIcon, 
@@ -14,6 +14,52 @@ import { PositionControl } from "./header/PositionControl";
 import { SearchInput } from "./components/SearchInput";
 import { SearchHighlighter } from "./components/SearchHighlighter";
 import { useCallback } from "preact/hooks";
+
+// Define the order of fields for each category
+const fieldOrder = {
+  general: ["title", "meta:description", "meta:author", "meta:keywords", "meta:theme-color", "link:favicon"],
+  opengraph: ["og:title", "og:description", "og:image", "og:url", "og:type", "og:site_name"],
+  twitter: ["twitter:title", "twitter:description", "twitter:image", "twitter:card", "twitter:site", "twitter:creator"],
+  technical: ["meta:viewport", "meta:charset", "link:canonical", "meta:robots", "html:lang", "meta:content-security-policy", "header:strict-transport-security"]
+};
+
+// Helper to format display labels from standardized keys
+const formatKeyForDisplay = (key: string): string => {
+  // Remove prefixes for display
+  let displayKey = key;
+  if (displayKey.startsWith('meta:')) displayKey = displayKey.replace('meta:', '');
+  if (displayKey.startsWith('link:')) displayKey = displayKey.replace('link:', '');
+  if (displayKey.startsWith('html:')) displayKey = displayKey.replace('html:', '');
+  if (displayKey.startsWith('header:')) displayKey = displayKey.replace('header:', '');
+  if (displayKey.startsWith('og:')) displayKey = displayKey.replace('og:', '');
+  if (displayKey.startsWith('twitter:')) displayKey = displayKey.replace('twitter:', '');
+  
+  // Format remaining text: capitalize first letter of each word, replace hyphens with spaces
+  return displayKey
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
+// Helper to sort metadata entries according to predefined order
+const sortMetadataEntries = (entries: [string, any][], category: keyof typeof fieldOrder): [string, any][] => {
+  return [...entries].sort((a, b) => {
+    const orderA = fieldOrder[category].indexOf(a[0]);
+    const orderB = fieldOrder[category].indexOf(b[0]);
+    
+    // If both keys are in the predefined order, sort by that order
+    if (orderA !== -1 && orderB !== -1) {
+      return orderA - orderB;
+    }
+    
+    // If only one key is in the predefined order, prioritize it
+    if (orderA !== -1) return -1;
+    if (orderB !== -1) return 1;
+    
+    // For keys not in the predefined order, sort alphabetically
+    return a[0].localeCompare(b[0]);
+  });
+};
 
 // Component for metadata item display
 const MetadataItem = ({
@@ -39,8 +85,8 @@ const MetadataItem = ({
   if (!value) return null;
 
   return (
-    <div className=" pb-2 group">
-      <div className="flex items-center justify-between mb-1">
+    <div className="mb-4 last:mb-0 group">
+      <div className="flex items-center justify-between mb-2">
         <div className="text-xs font-semibold text-gray-500 dark:text-gray-400">
           {searchTerm ? (
             <SearchHighlighter 
@@ -109,13 +155,13 @@ const Card = ({
   title,
   children,
 }: {
-  title: string;
+  title: string | ComponentChildren;
   children: ComponentChildren;
 }) => {
   return (
     <div
       className={cn(
-        "flex-shrink-0 w-[350px] rounded-lg overflow-hidden shadow-md transition-all duration-300 transform",
+        "flex-shrink-0 w-[350px] rounded-lg overflow-hidden shadow-md transition-all duration-300",
         "bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700",
         "hover:shadow-lg"
       )}
@@ -146,11 +192,23 @@ const SearchResults = ({
 }) => {
   if (!searchTerm) return null;
 
-  // Get filtered results from each section
-  const generalResults = filterMetadataItems(Object.entries(metadata.general || {}), "general");
-  const ogResults = filterMetadataItems(Object.entries(metadata.opengraph || {}), "opengraph");
-  const twitterResults = filterMetadataItems(Object.entries(metadata.twitter || {}), "twitter");
-  const technicalResults = filterMetadataItems(Object.entries(metadata.technical || {}), "technical");
+  // Get filtered results from each section and sort them consistently
+  const generalResults = sortMetadataEntries(
+    filterMetadataItems(Object.entries(metadata.general || {})),
+    "general"
+  );
+  const ogResults = sortMetadataEntries(
+    filterMetadataItems(Object.entries(metadata.opengraph || {})),
+    "opengraph"
+  );
+  const twitterResults = sortMetadataEntries(
+    filterMetadataItems(Object.entries(metadata.twitter || {})),
+    "twitter"
+  );
+  const technicalResults = sortMetadataEntries(
+    filterMetadataItems(Object.entries(metadata.technical || {})),
+    "technical"
+  );
   
   // Get structured data results
   const structuredData: StructuredData = metadata.structured || { jsonLd: [], microdata: [] };
@@ -193,7 +251,7 @@ const SearchResults = ({
           <h3 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-200">General</h3>
           <div className="space-y-2">
             {generalResults.map(([key, value]) => (
-              <MetadataItem key={`general-${key}`} label={key} value={value ?? null} searchTerm={searchTerm} />
+              <MetadataItem key={`general-${key}`} label={formatKeyForDisplay(key)} value={value ?? null} searchTerm={searchTerm} />
             ))}
           </div>
         </div>
@@ -204,7 +262,7 @@ const SearchResults = ({
           <h3 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-200">Open Graph</h3>
           <div className="space-y-2">
             {ogResults.map(([key, value]) => (
-              <MetadataItem key={`og-${key}`} label={`og:${key}`} value={value ?? null} searchTerm={searchTerm} />
+              <MetadataItem key={`og-${key}`} label={formatKeyForDisplay(key)} value={value ?? null} searchTerm={searchTerm} />
             ))}
           </div>
         </div>
@@ -215,7 +273,7 @@ const SearchResults = ({
           <h3 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-200">Twitter</h3>
           <div className="space-y-2">
             {twitterResults.map(([key, value]) => (
-              <MetadataItem key={`twitter-${key}`} label={`twitter:${key}`} value={value ?? null} searchTerm={searchTerm} />
+              <MetadataItem key={`twitter-${key}`} label={formatKeyForDisplay(key)} value={value ?? null} searchTerm={searchTerm} />
             ))}
           </div>
         </div>
@@ -226,7 +284,7 @@ const SearchResults = ({
           <h3 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-200">Technical</h3>
           <div className="space-y-2">
             {technicalResults.map(([key, value]) => (
-              <MetadataItem key={`technical-${key}`} label={key} value={value ?? null} searchTerm={searchTerm} />
+              <MetadataItem key={`technical-${key}`} label={formatKeyForDisplay(key)} value={value ?? null} searchTerm={searchTerm} />
             ))}
           </div>
         </div>
@@ -364,7 +422,10 @@ const MetadataLayout = ({
     { id: "twitter", label: "Twitter" },
     { id: "technical", label: "Technical" },
     { id: "structured", label: "Structured Data" },
+    { id: "missing", label: "Missing Tags", badge: metadata.missing?.hasCritical ? "critical" : undefined },
   ];
+  
+
 
   const fallbackCopyTextToClipboard = (text: string): boolean => {
     try {
@@ -439,56 +500,27 @@ const MetadataLayout = ({
     }
   };
 
-  // Format metadata with proper prefixes
+  // Format metadata for JSON export
   const formatMetadataForJSON = (metadata: MetadataResult) => {
-    const formattedMetadata = {
-      general: metadata.general || {},
-      opengraph: {} as Record<string, any>,
-      twitter: {} as Record<string, any>,
-      technical: metadata.technical || {},
-      structured: metadata.structured || {},
-      extractedAt: metadata.extractedAt
-    };
+    // Create a deep copy to avoid modifying the original
+    const formattedMetadata = JSON.parse(JSON.stringify(metadata));
     
-    // Format OpenGraph metadata with og: prefix
-    if (metadata.opengraph) {
-      Object.entries(metadata.opengraph).forEach(([key, value]) => {
-        formattedMetadata.opengraph[`og:${key}`] = value;
-      });
-    }
-    
-    // Format Twitter metadata with twitter: prefix
-    if (metadata.twitter) {
-      Object.entries(metadata.twitter).forEach(([key, value]) => {
-        formattedMetadata.twitter[`twitter:${key}`] = value;
-      });
-    }
-    
+    // Keys are already standardized, so we don't need to add prefixes anymore
     return formattedMetadata;
   };
 
   // Filter metadata items based on search term
-  const filterMetadataItems = useCallback((items: [string, any][], section?: string): [string, any][] => {
+  const filterMetadataItems = useCallback((items: [string, any][]): [string, any][] => {
     if (!debouncedSearchTerm) return items;
     
     const lowerSearchTerm = debouncedSearchTerm.toLowerCase();
     return items.filter(([key, value]) => {
-      // Get the formatted key with prefix
-      let formattedKey = key;
-      if (section === 'opengraph') {
-        formattedKey = `og:${key}`;
-      } else if (section === 'twitter') {
-        formattedKey = `twitter:${key}`;
-      } else if (section === 'technical') {
-        // Technical metadata might have meta: prefix
-        formattedKey = key.startsWith('meta:') ? key : `meta:${key}`;
-      }
-      
-      // Search in formatted keys
-      if (formattedKey.toLowerCase().includes(lowerSearchTerm)) return true;
-      
-      // Search in original keys (without prefix)
+      // Search in the original key
       if (key.toLowerCase().includes(lowerSearchTerm)) return true;
+      
+      // Search in the display key (without prefix)
+      const displayKey = formatKeyForDisplay(key);
+      if (displayKey.toLowerCase().includes(lowerSearchTerm)) return true;
       
       // Search in string values
       if (typeof value === 'string' && value.toLowerCase().includes(lowerSearchTerm)) return true;
@@ -506,28 +538,46 @@ const MetadataLayout = ({
       
       return false;
     });
-  }, [debouncedSearchTerm]);
+  }, [debouncedSearchTerm, formatKeyForDisplay]);
+
+
 
   const renderTabContent = (tabId: string) => {
     switch (tabId) {
       case "general":
-        return filterMetadataItems(Object.entries(metadata.general || {}), "general").map(([key, value]) => (
-          <MetadataItem key={key} label={key} value={value ?? null} searchTerm={debouncedSearchTerm} />
-        ));
-      case "opengraph":
-        const filteredOgItems = filterMetadataItems(Object.entries(metadata.opengraph || {}), "opengraph");
+        const generalEntries = sortMetadataEntries(
+          filterMetadataItems(Object.entries(metadata.general || {})), 
+          "general"
+        );
         return (
           <>
-            {!debouncedSearchTerm && metadata.opengraph?.image && (
+            {generalEntries.map(([key, value]) => (
+              <MetadataItem key={key} label={formatKeyForDisplay(key)} value={value ?? null} searchTerm={debouncedSearchTerm} />
+            ))}
+            {generalEntries.length === 0 && debouncedSearchTerm && (
+              <div className="py-2 text-center text-gray-500 dark:text-gray-400 text-sm">
+                No matching general metadata found
+              </div>
+            )}
+          </>
+        );
+      case "opengraph":
+        const ogEntries = sortMetadataEntries(
+          filterMetadataItems(Object.entries(metadata.opengraph || {})),
+          "opengraph"
+        );
+        return (
+          <>
+            {!debouncedSearchTerm && metadata.opengraph?.["og:image"] && (
               <MetadataImage
-                src={metadata.opengraph.image || null}
-                alt={metadata.opengraph.title || metadata.general?.title || ""}
+                src={metadata.opengraph["og:image"] || null}
+                alt={metadata.opengraph["og:title"] || metadata.general?.title || ""}
               />
             )}
-            {filteredOgItems.map(([key, value]) => (
-              <MetadataItem key={key} label={`og:${key}`} value={value ?? null} searchTerm={debouncedSearchTerm} />
+            {ogEntries.map(([key, value]) => (
+              <MetadataItem key={key} label={formatKeyForDisplay(key)} value={value ?? null} searchTerm={debouncedSearchTerm} />
             ))}
-            {filteredOgItems.length === 0 && debouncedSearchTerm && (
+            {ogEntries.length === 0 && debouncedSearchTerm && (
               <div className="py-2 text-center text-gray-500 dark:text-gray-400 text-sm">
                 No matching Open Graph metadata found
               </div>
@@ -535,19 +585,22 @@ const MetadataLayout = ({
           </>
         );
       case "twitter":
-        const filteredTwitterItems = filterMetadataItems(Object.entries(metadata.twitter || {}), "twitter");
+        const twitterEntries = sortMetadataEntries(
+          filterMetadataItems(Object.entries(metadata.twitter || {})),
+          "twitter"
+        );
         return (
           <>
-            {!debouncedSearchTerm && metadata.twitter?.image && (
+            {!debouncedSearchTerm && metadata.twitter?.["twitter:image"] && (
               <MetadataImage
-                src={metadata.twitter.image || null}
-                alt={metadata.twitter.title || metadata.general?.title || ""}
+                src={metadata.twitter["twitter:image"] || null}
+                alt={metadata.twitter["twitter:title"] || metadata.general?.title || ""}
               />
             )}
-            {filteredTwitterItems.map(([key, value]) => (
-              <MetadataItem key={key} label={`twitter:${key}`} value={value ?? null} searchTerm={debouncedSearchTerm} />
+            {twitterEntries.map(([key, value]) => (
+              <MetadataItem key={key} label={formatKeyForDisplay(key)} value={value ?? null} searchTerm={debouncedSearchTerm} />
             ))}
-            {filteredTwitterItems.length === 0 && debouncedSearchTerm && (
+            {twitterEntries.length === 0 && debouncedSearchTerm && (
               <div className="py-2 text-center text-gray-500 dark:text-gray-400 text-sm">
                 No matching Twitter metadata found
               </div>
@@ -555,13 +608,16 @@ const MetadataLayout = ({
           </>
         );
       case "technical":
-        const filteredTechItems = filterMetadataItems(Object.entries(metadata.technical || {}), "technical");
+        const technicalEntries = sortMetadataEntries(
+          filterMetadataItems(Object.entries(metadata.technical || {})),
+          "technical"
+        );
         return (
           <>
-            {filteredTechItems.map(([key, value]) => (
-              <MetadataItem key={key} label={key} value={value ?? null} searchTerm={debouncedSearchTerm} />
+            {technicalEntries.map(([key, value]) => (
+              <MetadataItem key={key} label={formatKeyForDisplay(key)} value={value ?? null} searchTerm={debouncedSearchTerm} />
             ))}
-            {filteredTechItems.length === 0 && debouncedSearchTerm && (
+            {technicalEntries.length === 0 && debouncedSearchTerm && (
               <div className="py-2 text-center text-gray-500 dark:text-gray-400 text-sm">
                 No matching technical metadata found
               </div>
@@ -639,9 +695,79 @@ const MetadataLayout = ({
             )}
           </>
         );
+      case "missing":
+        if (!metadata.missing || 
+            (metadata.missing.general.length === 0 && 
+             metadata.missing.opengraph.length === 0 && 
+             metadata.missing.twitter.length === 0 && 
+             metadata.missing.technical.length === 0)) {
+          return (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center text-gray-500 dark:text-gray-400 text-sm">
+                No missing metadata tags detected.
+              </div>
+            </div>
+          );
+        }
+
+        return (
+          <div className="space-y-4">
+            <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-md mb-4">
+              <p className="text-xs text-gray-600 dark:text-gray-400">
+                This panel shows metadata tags that are missing from the page but are recommended for better SEO and sharing.
+              </p>
+            </div>
+            
+            {metadata.missing.hasCritical && (
+              <div className="bg-red-50 dark:bg-red-900/30 p-3 rounded-md mb-4 border border-red-200 dark:border-red-800">
+                <p className="text-xs text-red-700 dark:text-red-300 font-medium">
+                  Critical tags are missing! These tags are essential for proper SEO and social sharing.  
+                </p>
+              </div>
+            )}
+            
+            {renderMissingTagsSection(metadata.missing.general, "General")}
+            {renderMissingTagsSection(metadata.missing.opengraph, "Open Graph")}
+            {renderMissingTagsSection(metadata.missing.twitter, "Twitter Card")}
+            {renderMissingTagsSection(metadata.missing.technical, "Technical")}
+          </div>
+        );
+        
       default:
         return null;
     }
+  };
+  
+  // Helper to render missing tags section
+  const renderMissingTagsSection = (tags: MissingTag[], category: string) => {
+    if (!tags || tags.length === 0) return null;
+    
+    return (
+      <div className="mb-4">
+        <h3 className="text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300">{category}</h3>
+        <div className="space-y-2">
+          {tags.map((tag, index) => {
+            const importanceColor = {
+              critical: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+              medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+              low: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+            }[tag.importance];
+            
+            return (
+              <div key={index} className="p-2 rounded-md bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+                <div className="flex justify-between items-start">
+                  <span className="font-medium text-xs">{formatKeyForDisplay(tag.key)}</span>
+                  <span className={`text-xs px-2 py-0.5 rounded ${importanceColor}`}>
+                    {tag.importance}
+                  </span>
+                </div>
+                <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">{tag.description}</p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
   };
 
   // Helper function to get a clean type name from JSON-LD
@@ -811,12 +937,22 @@ const MetadataLayout = ({
         <div
           ref={cardsContainerRef}
           className={cn(
-            "p-3 flex gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600"
+            "p-3 flex gap-4 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600"
           )}
           style={{ scrollbarWidth: "thin" }}
         >
           {tabs.map((tab) => (
-            <Card key={tab.id} title={tab.label}>
+            <Card 
+              key={tab.id} 
+              title={
+                <div className="flex items-center">
+                  {tab.label}
+                  {tab.badge === "critical" && (
+                    <span className="ml-2 w-2 h-2 bg-red-500 rounded-full inline-block"></span>
+                  )}
+                </div>
+              }
+            >
               {renderTabContent(tab.id)}
             </Card>
           ))}
@@ -826,6 +962,11 @@ const MetadataLayout = ({
       {/* Footer */}
       <div className="p-3 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400 text-center">
         Data extracted at {new Date(metadata.extractedAt).toLocaleTimeString()}
+        {metadata.missing?.hasCritical && (
+          <span className="ml-2 text-red-500 dark:text-red-400 font-medium">
+            • Critical tags missing
+          </span>
+        )}
       </div>
     </div>
   );

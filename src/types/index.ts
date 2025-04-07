@@ -43,6 +43,10 @@ export type MetadataCategory =
  * Main metadata extraction result
  */
 export interface MetadataResult {
+  /**
+   * Missing metadata tags that should be present
+   */
+  missing?: MissingMetadata;
   general: GeneralMetadata;
   opengraph: OpenGraphMetadata;
   twitter: TwitterMetadata;
@@ -52,45 +56,68 @@ export interface MetadataResult {
 }
 
 export interface GeneralMetadata {
-  title?: string;
-  description?: string;
-  author?: string;
-  keywords?: string[];
-  favicons?: string[];
-  themeColor?: string;
-  manifestUrl?: string;
+  "title"?: string;
+  "meta:description"?: string;
+  "meta:author"?: string;
+  "meta:keywords"?: string[];
+  "link:favicon"?: string[];
+  "meta:theme-color"?: string;
+  "link:manifest"?: string;
   [key: string]: string | string[] | undefined;
 }
 
 export interface OpenGraphMetadata {
-  title?: string;
-  description?: string;
-  image?: string;
-  url?: string;
-  type?: string;
-  siteName?: string;
+  "og:title"?: string;
+  "og:description"?: string;
+  "og:image"?: string;
+  "og:url"?: string;
+  "og:type"?: string;
+  "og:site_name"?: string;
   [key: string]: string | undefined;
 }
 
 export interface TwitterMetadata {
-  card?: string;
-  site?: string;
-  creator?: string;
-  title?: string;
-  description?: string;
-  image?: string;
+  "twitter:card"?: string;
+  "twitter:site"?: string;
+  "twitter:creator"?: string;
+  "twitter:title"?: string;
+  "twitter:description"?: string;
+  "twitter:image"?: string;
   [key: string]: string | undefined;
 }
 
 export interface TechnicalMetadata {
-  viewport?: string;
-  canonical?: string;
-  robots?: string;
-  language?: string;
-  charset?: string;
-  contentSecurityPolicy?: string;
-  strictTransportSecurity?: string;
+  "meta:viewport"?: string;
+  "link:canonical"?: string;
+  "meta:robots"?: string;
+  "html:lang"?: string;
+  "meta:charset"?: string;
+  "meta:content-security-policy"?: string;
+  "header:strict-transport-security"?: string;
   [key: string]: string | undefined;
+}
+
+/**
+ * Structured data extracted from the page
+ */
+/**
+ * Missing metadata tags with their importance level
+ */
+export interface MissingMetadata {
+  general: MissingTag[];
+  opengraph: MissingTag[];
+  twitter: MissingTag[];
+  technical: MissingTag[];
+  hasCritical: boolean; // Whether there are any critical missing tags
+}
+
+/**
+ * Represents a missing metadata tag
+ */
+export interface MissingTag {
+  key: string;
+  importance: 'critical' | 'medium' | 'low';
+  description: string;
 }
 
 /**
