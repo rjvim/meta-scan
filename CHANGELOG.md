@@ -1,3 +1,15 @@
+# v0.11.2 (Mon Apr 07 2025)
+
+#### 🐛 Bug Fix
+
+- Refactor metadata extraction with standardized keys and add missing tags detection [#53](https://github.com/rjvim/meta-scan/pull/53) ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.11.1 (Mon Apr 07 2025)
 
 #### 🐛 Bug Fix
