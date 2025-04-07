@@ -1,11 +1,11 @@
 # MetaScan: Lightweight Webpage Metadata Extraction Tool
 
-MetaScan is a lightweight (29.9 kB) client-side JavaScript tool that extracts and visualizes metadata from any webpage via a simple script tag. It provides an intuitive UI to analyze and offer insights into basic meta tags, Open Graph, Twitter Cards, technical metadata, and structured data.
+MetaScan is a lightweight (31.2 kB) client-side JavaScript tool that extracts and visualizes metadata from any webpage via a simple script tag. It provides an intuitive UI to analyze and offer insights into basic meta tags, Open Graph, Twitter Cards, technical metadata, and structured data.
 
 ## Why Choose MetaScan?
 
 ✨ **Immediate Visibility** - Get instant access to all webpage metadata without leaving your site  
-⚡ **Fast Performance** - Minimal footprint (29.9 kB) with zero dependencies  
+⚡ **Fast Performance** - Minimal footprint (31.2 kB) with zero dependencies  
 🛠️ **Developer Friendly** - Perfect for debugging, testing, and validating metadata implementations  
 🔄 **SEO Insights** - Identify and fix metadata issues that impact search rankings  
 🌗 **Clean UI** - Modern interface with dark/light mode  
@@ -250,11 +250,16 @@ The MetaScan interface has been redesigned for better usability:
 
 MetaScan has been refactored for better maintainability and extensibility:
 
-- **Modular Components**: UI elements split into logical, reusable components
+- **Modular Components**: UI elements split into logical, reusable components:
+  - Base UI components (MetadataItem, MetadataImage, Card)
+  - Tab content components (GeneralTab, OpenGraphTab, TwitterTab, etc.)
+  - Header components (MetadataHeader, PositionControl, SettingsMenu)
+  - Search components with keyboard shortcuts
 - **Separation of Concerns**: Clear distinction between UI components, utility functions, and business logic
 - **Improved Error Handling**: Comprehensive try/catch blocks with detailed error logging
 - **Enhanced Type Safety**: Proper TypeScript annotations throughout the codebase
 - **Optimized Search**: Efficient search implementation with debouncing for better performance
+- **Standardized Metadata**: Consistent key prefixes and field ordering across all categories
 
 ## License
 

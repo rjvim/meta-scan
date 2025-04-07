@@ -2,7 +2,7 @@
  * Core functionality for metadata extraction
  */
 import { logger } from "~/utils/logger";
-import type { MetadataResult, StructuredData } from "../types";
+import type { MetadataResult, StructuredData, MissingMetadata, MissingTag } from "../types";
 
 /**
  * Extract metadata from the current page
@@ -10,6 +10,81 @@ import type { MetadataResult, StructuredData } from "../types";
  *
  * @returns The extracted metadata object
  */
+/**
+ * Schema for expected metadata tags with their importance levels
+ */
+const METADATA_SCHEMA = {
+  general: [
+    { key: "title", importance: "critical", description: "Page title" },
+    { key: "meta:description", importance: "critical", description: "Page description" },
+    { key: "meta:keywords", importance: "medium", description: "Page keywords" },
+    { key: "link:favicon", importance: "low", description: "Favicon" },
+  ],
+  opengraph: [
+    { key: "og:title", importance: "critical", description: "OG title" },
+    { key: "og:description", importance: "critical", description: "OG description" },
+    { key: "og:image", importance: "critical", description: "OG image" },
+    { key: "og:url", importance: "medium", description: "OG URL" },
+    { key: "og:type", importance: "medium", description: "OG type" },
+    { key: "og:site_name", importance: "low", description: "OG site name" },
+  ],
+  twitter: [
+    { key: "twitter:title", importance: "medium", description: "Twitter title" },
+    { key: "twitter:description", importance: "medium", description: "Twitter description" },
+    { key: "twitter:image", importance: "medium", description: "Twitter image" },
+    { key: "twitter:card", importance: "medium", description: "Twitter card type" },
+    { key: "twitter:site", importance: "low", description: "Twitter site account" },
+    { key: "twitter:creator", importance: "low", description: "Twitter content creator" },
+  ],
+  technical: [
+    { key: "meta:viewport", importance: "critical", description: "Viewport settings" },
+    { key: "link:canonical", importance: "medium", description: "Canonical URL" },
+    { key: "meta:robots", importance: "medium", description: "Robots directives" },
+    { key: "html:lang", importance: "medium", description: "Page language" },
+  ]
+};
+
+/**
+ * Detect missing metadata based on the schema
+ */
+function detectMissingMetadata(metadata: MetadataResult): MissingMetadata {
+  const missing: MissingMetadata = {
+    general: [],
+    opengraph: [],
+    twitter: [],
+    technical: [],
+    hasCritical: false
+  };
+
+  // Check each category against the schema
+  Object.keys(METADATA_SCHEMA).forEach((category) => {
+    const schema = METADATA_SCHEMA[category as keyof typeof METADATA_SCHEMA];
+    const data = metadata[category as keyof typeof METADATA_SCHEMA];
+
+    schema.forEach((item) => {
+      // Check if the key exists and has a value
+      const value = data[item.key as keyof typeof data];
+      if (value === undefined || value === null || value === '' || 
+          (Array.isArray(value) && value.length === 0)) {
+        const missingTag: MissingTag = {
+          key: item.key,
+          importance: item.importance as 'critical' | 'medium' | 'low',
+          description: item.description
+        };
+        const categoryArray = missing[category as keyof typeof missing] as MissingTag[];
+        categoryArray.push(missingTag);
+        
+        // Track if there are any critical missing tags
+        if (item.importance === 'critical') {
+          missing.hasCritical = true;
+        }
+      }
+    });
+  });
+
+  return missing;
+}
+
 export function extractMetadata(): MetadataResult {
   logger.info("Extracting metadata from page");
 
@@ -18,41 +93,44 @@ export function extractMetadata(): MetadataResult {
 
   const metadata: MetadataResult = {
     general: {
-      title: document.title,
-      description: getMetaContent("description"),
-      author: getMetaContent("author"),
-      keywords: getMetaContentAsList("keywords"),
-      favicons: extractFavicons(),
-      themeColor: getMetaContent("theme-color"),
+      "title": document.title,
+      "meta:description": getMetaContent("description"),
+      "meta:author": getMetaContent("author"),
+      "meta:keywords": getMetaContentAsList("keywords"),
+      "link:favicon": extractFavicons(),
+      "meta:theme-color": getMetaContent("theme-color"),
     },
     opengraph: {
-      title: getMetaProperty("og:title"),
-      description: getMetaProperty("og:description"),
-      image: getMetaProperty("og:image"),
-      url: getMetaProperty("og:url"),
-      type: getMetaProperty("og:type"),
-      siteName: getMetaProperty("og:site_name"),
+      "og:title": getMetaProperty("og:title"),
+      "og:description": getMetaProperty("og:description"),
+      "og:image": getMetaProperty("og:image"),
+      "og:url": getMetaProperty("og:url"),
+      "og:type": getMetaProperty("og:type"),
+      "og:site_name": getMetaProperty("og:site_name"),
     },
     twitter: {
-      card: getMetaName("twitter:card"),
-      site: getMetaName("twitter:site"),
-      creator: getMetaName("twitter:creator"),
-      title: getMetaName("twitter:title"),
-      description: getMetaName("twitter:description"),
-      image: getMetaName("twitter:image"),
+      "twitter:title": getMetaName("twitter:title"),
+      "twitter:description": getMetaName("twitter:description"),
+      "twitter:image": getMetaName("twitter:image"),
+      "twitter:card": getMetaName("twitter:card"),
+      "twitter:site": getMetaName("twitter:site"),
+      "twitter:creator": getMetaName("twitter:creator"),
     },
     technical: {
-      viewport: getMetaContent("viewport"),
-      charset: document.characterSet,
-      canonical: getLinkHref("canonical"),
-      robots: getMetaContent("robots"),
-      language: document.documentElement.lang || undefined,
-      contentSecurityPolicy: getMetaHttpEquiv("Content-Security-Policy"),
-      strictTransportSecurity: extractSecurityHeaders(),
+      "meta:viewport": getMetaContent("viewport"),
+      "meta:charset": document.characterSet,
+      "link:canonical": getLinkHref("canonical"),
+      "meta:robots": getMetaContent("robots"),
+      "html:lang": document.documentElement.lang || undefined,
+      "meta:content-security-policy": getMetaHttpEquiv("Content-Security-Policy"),
+      "header:strict-transport-security": extractSecurityHeaders(),
     },
     structured: structuredData,
     extractedAt: new Date().toISOString(),
   };
+  
+  // Detect missing metadata
+  metadata.missing = detectMissingMetadata(metadata);
 
   logger.info("Metadata extracted:", metadata);
   return metadata;
