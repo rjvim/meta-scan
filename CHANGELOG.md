@@ -1,3 +1,15 @@
+# v0.11.1 (Mon Apr 07 2025)
+
+#### 🐛 Bug Fix
+
+- Add animations for panel toggle and theme switching [#52](https://github.com/rjvim/meta-scan/pull/52) ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.11.0 (Thu Mar 27 2025)
 
 #### 🚀 Enhancement
