@@ -1,13 +1,14 @@
-import { useState, useEffect } from "preact/hooks";
+import { useState, useEffect, useRef } from "preact/hooks";
 import type { Corner, MetadataResult, MetaScanUIState } from "../types";
 import { extractMetadata } from "../core";
 import { cn } from "../utils/cn";
 import { cleanup, initDOMWatcher } from "../utils/dom-watcher";
-import { MenuIcon } from "./icons";
+import { MenuIcon, CloseIcon } from "./icons";
 import { logger } from "../utils/logger";
 import MetadataLayout from "./MetadataLayout";
 import { stateManager } from "../state";
 import { version } from '../../package.json';
+import "./animations.css";
 
 export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
   const [uiState, setUiState] = useState<MetaScanUIState>(
@@ -56,9 +57,24 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
     stateManager.updateState({ theme: nextTheme });
   };
 
+  const panelRef = useRef<HTMLDivElement>(null);
+  const [isClosing, setIsClosing] = useState(false);
+
   const togglePanel = () => {
-    setUiState((prev) => ({ ...prev, isOpen: !prev.isOpen }));
-    stateManager.updateState({ isOpen: !uiState.isOpen });
+    if (uiState.isOpen) {
+      // If panel is open, start closing animation
+      setIsClosing(true);
+      // Wait for animation to complete before updating state
+      setTimeout(() => {
+        setUiState((prev) => ({ ...prev, isOpen: false }));
+        stateManager.updateState({ isOpen: false });
+        setIsClosing(false);
+      }, 300); // Match animation duration
+    } else {
+      // If panel is closed, open immediately
+      setUiState((prev) => ({ ...prev, isOpen: true }));
+      stateManager.updateState({ isOpen: true });
+    }
   };
 
   // Toggle settings menu
@@ -141,6 +157,17 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
     };
     return positionMap[uiState.position];
   };
+  
+  // Get transform origin based on position
+  const getTransformOrigin = () => {
+    const positionMap = {
+      "top-left": "top left",
+      "top-right": "top right",
+      "bottom-left": "bottom left",
+      "bottom-right": "bottom right",
+    };
+    return positionMap[uiState.position];
+  };
 
   const getPanelPositionClasses = () => {
     const isTop = uiState.position.startsWith("top");
@@ -192,14 +219,21 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
 
   return (
     <div className={cn("fixed z-50", getContainerPositionClasses())}>
-      <div className={cn("flex flex-col", theme === "dark" ? "dark" : "")}>
-        {uiState.isOpen && (
+      <div className={cn("flex flex-col theme-transition-container", theme === "dark" ? "dark" : "")}>
+        {(uiState.isOpen || isClosing) && (
           <div
+            ref={panelRef}
             className={cn(
               "relative rounded-lg shadow-xl overflow-hidden",
-              "transition-all duration-300 ease-in-out",
+              isClosing ? "panel-exit panel-exit-active" : "panel-enter panel-enter-active",
               getPanelPositionClasses()
             )}
+            style={{
+              animationName: isClosing ? 'panel-exit' : 'panel-enter',
+              animationDuration: '300ms',
+              animationFillMode: 'forwards',
+              transformOrigin: getTransformOrigin()
+            }}
           >
             {loading && <LoadingIndicator />}
             <MetadataLayout
@@ -207,7 +241,6 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
               refreshMetadata={refreshMetadata}
               theme={theme}
               toggleTheme={toggleTheme}
-              togglePanel={togglePanel}
               showSettingsMenu={showSettingsMenu}
               toggleSettingsMenu={toggleSettingsMenu}
               showPositionMenu={showPositionMenu}
@@ -219,20 +252,19 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
           </div>
         )}
 
-        {/* Only show the toggle button when panel is closed */}
-        {!uiState.isOpen && (
-          <button
-            onClick={togglePanel}
-            className={cn(
-              "w-8 h-8 flex items-center justify-center rounded-full",
-              "transition-colors duration-200 shadow-lg",
-              "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400"
-            )}
-            title="Open MetaScan panel"
-          >
-            <MenuIcon />
-          </button>
-        )}
+        {/* Toggle button */}
+        <button
+          onClick={togglePanel}
+          className={cn(
+            "w-8 h-8 flex items-center justify-center rounded-full",
+            "transition-colors duration-200 shadow-lg",
+            "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400",
+            uiState.isOpen ? "bg-purple-600 text-white hover:bg-purple-700" : ""
+          )}
+          title={uiState.isOpen ? "Close MetaScan panel" : "Open MetaScan panel"}
+        >
+          {uiState.isOpen ? <CloseIcon /> : <MenuIcon />}
+        </button>
       </div>
     </div>
   );

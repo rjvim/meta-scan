@@ -131,8 +131,8 @@ export const MenuIcon = () => (
 
 export const CloseIcon = () => (
   <svg
-    width="14"
-    height="14"
+    width={18}
+    height={18}
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"

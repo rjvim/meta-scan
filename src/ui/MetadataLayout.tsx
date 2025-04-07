@@ -5,7 +5,6 @@ import {
   CheckIcon, 
   CopyIcon, 
   JsonIcon, 
-  CloseIcon, 
   RefreshIcon
 } from "./icons";
 import { type ComponentChildren } from "preact";
@@ -282,7 +281,6 @@ const MetadataLayout = ({
   refreshMetadata,
   theme = "light",
   toggleTheme,
-  togglePanel,
   showSettingsMenu,
   toggleSettingsMenu,
   showPositionMenu,
@@ -295,7 +293,6 @@ const MetadataLayout = ({
   refreshMetadata: () => void;
   theme?: "light" | "dark";
   toggleTheme: () => void;
-  togglePanel: () => void;
   showSettingsMenu: boolean;
   toggleSettingsMenu: (e: MouseEvent) => void;
   showPositionMenu: boolean;
@@ -685,6 +682,7 @@ const MetadataLayout = ({
         "bg-white dark:bg-gray-900",
         "text-black dark:text-white",
         "transition-colors duration-200",
+        "theme-transition-container",
         theme === "dark" ? "dark" : ""
       )}
     >
@@ -734,15 +732,6 @@ const MetadataLayout = ({
               title="Refresh metadata"
             >
               <RefreshIcon />
-            </button>
-
-            {/* Panel Toggle */}
-            <button
-              onClick={togglePanel}
-              className="w-6 h-6 flex items-center justify-center bg-purple-600 text-white hover:bg-purple-700 rounded-full"
-              title="Close panel"
-            >
-              <CloseIcon />
             </button>
           </div>
         </div>

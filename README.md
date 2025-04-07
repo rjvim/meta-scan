@@ -17,13 +17,14 @@ MetaScan is a lightweight (29.9 kB) client-side JavaScript tool that extracts an
 - 🚀 Zero-dependency with minimal footprint
 - 🔌 Simple installation with a single script tag
 - 🔍 Comprehensive metadata extraction for SEO and debugging
-- 🎨 Clean, modern UI with dark/light mode support
+- 🎨 Clean, modern UI with dark/light mode support and smooth theme transition animations
 - 🎛️ Configurable positioning on any corner of the screen
 - 📋 Copy functionality for metadata values
 - 🧩 Structured data extraction (JSON-LD and Microdata)
 - 🔎 Advanced search with prefix support and dedicated results view
 - 📱 Mobile-friendly with 5-tap toggle feature
 - 🔄 Integrated UI controls in a streamlined header
+- ✨ Smooth animations for panel opening/closing and theme switching
 
 ## Who Is MetaScan For?
 
@@ -242,6 +243,8 @@ The MetaScan interface has been redesigned for better usability:
 - **Dedicated Search Results View**: When searching, the UI shows only matching results across all categories
 - **Improved Search Experience**: Search highlighting and keyboard shortcuts for better usability
 - **Streamlined Component Structure**: Modular code organization for better maintainability
+- **Smooth Animations**: Polished animations for panel opening/closing and theme switching
+- **Adaptive Animations**: Position-aware animations that adapt to the panel's corner position
 
 ## Code Architecture
 
