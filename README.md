@@ -157,14 +157,15 @@ MetaScan provides a powerful search feature that helps you quickly find metadata
 
 ## Missing Metadata Tags
 
-MetaScan helps identify missing metadata with an improved display:
+MetaScan helps identify missing metadata with an enhanced priority-based display:
 
 #### Tag Display Features
-- Compact table format for better visibility
-- Standardized keys shown in monospace font (e.g., `og:title`, `meta:description`)
-- Color-coded importance levels with emoji indicators (🔴 Critical, 🟡 Medium, 🔵 Low)
-- Consistent label formatting across all categories
-- Grouped by category (General, Open Graph, Twitter Card, Technical)
+- Priority-based organization (Critical, Medium, Low) for better focus on important issues
+- Clean, visual design with color-coded sections and left border accents
+- Bullet-point lists for improved readability
+- Standardized tag names (e.g., `og:title`, `meta:description`)
+- Visual indicators for each priority level
+- Consistent styling with the rest of the UI
 
 #### Missing Tag Detection
 - Identifies missing required metadata based on best practices
@@ -255,6 +256,7 @@ The MetaScan interface has been redesigned for better usability:
 
 - **Integrated Header Controls**: All controls (position, settings, theme toggle, JSON view) are now in a single header with improved Button and Dropdown components
 - **Simplified Layout**: Cleaner component structure with logical separation of concerns and standardized metadata display
+- **Enhanced Missing Tags Panel**: Reorganized missing tags by priority level with visual improvements and color-coded sections
 - **Improved Dropdown Positioning**: Enhanced dropdown positioning with better panel location awareness
 - **Enhanced Error Handling**: Robust error handling for structured data extraction with detailed logging
 - **Dedicated Search Results View**: When searching, the UI shows only matching results across all categories
