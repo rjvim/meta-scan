@@ -1,6 +1,6 @@
 # MetaScan: Lightweight Webpage Metadata Extraction Tool
 
-MetaScan is a lightweight (31.2 kB) client-side JavaScript tool that extracts and visualizes metadata from any webpage via a simple script tag. It provides an intuitive UI to analyze and offer insights into basic meta tags, Open Graph, Twitter Cards, technical metadata, and structured data.
+MetaScan is a lightweight (31.2 kB) client-side JavaScript tool that extracts and visualizes metadata from any webpage via a simple script tag. It provides an intuitive UI with standardized metadata formatting to analyze and offer insights into basic meta tags, Open Graph, Twitter Cards, technical metadata, and structured data.
 
 ## Why Choose MetaScan?
 
@@ -16,15 +16,15 @@ MetaScan is a lightweight (31.2 kB) client-side JavaScript tool that extracts an
 
 - 🚀 Zero-dependency with minimal footprint
 - 🔌 Simple installation with a single script tag
-- 🔍 Comprehensive metadata extraction for SEO and debugging
+- 🔍 Comprehensive metadata extraction with standardized keys and missing tag detection
 - 🎨 Clean, modern UI with dark/light mode support and smooth theme transition animations
-- 🎛️ Configurable positioning on any corner of the screen
-- 📋 Copy functionality for metadata values
+- 🎛️ Configurable positioning on any corner of the screen with improved dropdown positioning
+- 📋 Copy functionality for metadata values with standardized formatting
 - 🧩 Structured data extraction (JSON-LD and Microdata)
 - 🔎 Advanced search with prefix support and dedicated results view
-- 📱 Mobile-friendly with 5-tap toggle feature
-- 🔄 Integrated UI controls in a streamlined header
-- ✨ Smooth animations for panel opening/closing and theme switching
+- 📱 Mobile-friendly with 5-tap toggle feature and improved animations
+- 🔄 Integrated UI controls with enhanced component structure
+- ✨ Smooth animations for panel opening/closing and theme switching with improved transitions
 
 ## Who Is MetaScan For?
 
@@ -236,30 +236,38 @@ This makes MetaScan an invaluable tool for SEO professionals and developers who 
 
 The MetaScan interface has been redesigned for better usability:
 
-- **Integrated Header Controls**: All controls (position, settings, theme toggle, JSON view) are now in a single header
-- **Simplified Layout**: Cleaner component structure with logical separation of concerns
-- **Improved Dropdown Positioning**: Dropdowns now correctly position based on panel location
+- **Integrated Header Controls**: All controls (position, settings, theme toggle, JSON view) are now in a single header with improved Button and Dropdown components
+- **Simplified Layout**: Cleaner component structure with logical separation of concerns and standardized metadata display
+- **Improved Dropdown Positioning**: Enhanced dropdown positioning with better panel location awareness
 - **Enhanced Error Handling**: Robust error handling for structured data extraction with detailed logging
 - **Dedicated Search Results View**: When searching, the UI shows only matching results across all categories
 - **Improved Search Experience**: Search highlighting and keyboard shortcuts for better usability
-- **Streamlined Component Structure**: Modular code organization for better maintainability
-- **Smooth Animations**: Polished animations for panel opening/closing and theme switching
-- **Adaptive Animations**: Position-aware animations that adapt to the panel's corner position
+- **Streamlined Component Structure**: Modular code organization with reusable Button and Dropdown components
+- **Smooth Animations**: Polished animations with improved theme toggle transitions
+- **Adaptive Animations**: Position-aware animations that adapt to the panel's corner position with enhanced transitions
 
 ## Code Architecture
 
 MetaScan has been refactored for better maintainability and extensibility:
 
 - **Modular Components**: UI elements split into logical, reusable components:
-  - Base UI components (MetadataItem, MetadataImage, Card)
+  - Base UI components (Button, Dropdown, MetadataItem, MetadataImage, Card)
   - Tab content components (GeneralTab, OpenGraphTab, TwitterTab, etc.)
   - Header components (MetadataHeader, PositionControl, SettingsMenu)
   - Search components with keyboard shortcuts
 - **Separation of Concerns**: Clear distinction between UI components, utility functions, and business logic
-- **Improved Error Handling**: Comprehensive try/catch blocks with detailed error logging
+- **Improved Error Handling**: Comprehensive try/catch blocks with detailed error logging and fallback behavior
 - **Enhanced Type Safety**: Proper TypeScript annotations throughout the codebase
 - **Optimized Search**: Efficient search implementation with debouncing for better performance
-- **Standardized Metadata**: Consistent key prefixes and field ordering across all categories
+- **Standardized Metadata**: 
+  - Consistent key prefixes (meta:, og:, twitter:) across all categories
+  - Standardized field ordering and display formatting
+  - Improved missing tags detection with standardized keys
+  - Enhanced metadata extraction with better error handling
+- **Animation System**:
+  - Improved theme toggle transitions
+  - Enhanced dropdown positioning and animations
+  - Position-aware panel animations
 
 ## License
 

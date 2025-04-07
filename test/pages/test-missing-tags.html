@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Include MetaScan -->
+    <script src="/dist/auto.global.js" data-auto-enable="true"></script>
+    <!-- Minimal metadata to test missing tags -->
+    <title>MetaScan Test Page</title>
+    <meta charset="utf-8">
+    
+    <!-- Only include some OpenGraph tags -->
+    <meta property="og:title" content="MetaScan Test Page">
+    <meta property="og:description" content="A test page for MetaScan with intentionally missing metadata">
+    
+    <!-- Missing important tags:
+         - meta description
+         - meta keywords
+         - og:type
+         - og:image
+         - All Twitter Card tags
+         - robots
+         - viewport
+         - canonical
+    -->
+</head>
+<body>
+    <h1>MetaScan Test Page</h1>
+    <p>This page is designed to test the missing metadata detection in MetaScan.</p>
+    <p>It has intentionally missing tags to verify the new UI improvements.</p>
+    
+    <h2>Expected Missing Tags:</h2>
+    <ul>
+        <li>General:
+            <ul>
+                <li>meta:description (critical)</li>
+                <li>meta:keywords (medium)</li>
+            </ul>
+        </li>
+        <li>Open Graph:
+            <ul>
+                <li>og:type (medium)</li>
+                <li>og:image (medium)</li>
+            </ul>
+        </li>
+        <li>Twitter Card:
+            <ul>
+                <li>twitter:title (medium)</li>
+                <li>twitter:description (medium)</li>
+                <li>twitter:image (medium)</li>
+                <li>twitter:card (medium)</li>
+                <li>twitter:site (low)</li>
+            </ul>
+        </li>
+        <li>Technical:
+            <ul>
+                <li>meta:viewport (critical)</li>
+                <li>meta:robots (medium)</li>
+                <li>link:canonical (medium)</li>
+            </ul>
+        </li>
+    </ul>
+</body>
+</html>

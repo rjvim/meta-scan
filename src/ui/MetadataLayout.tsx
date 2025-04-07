@@ -25,20 +25,30 @@ const fieldOrder = {
 
 // Helper to format display labels from standardized keys
 const formatKeyForDisplay = (key: string): string => {
-  // Remove prefixes for display
-  let displayKey = key;
-  if (displayKey.startsWith('meta:')) displayKey = displayKey.replace('meta:', '');
-  if (displayKey.startsWith('link:')) displayKey = displayKey.replace('link:', '');
-  if (displayKey.startsWith('html:')) displayKey = displayKey.replace('html:', '');
-  if (displayKey.startsWith('header:')) displayKey = displayKey.replace('header:', '');
-  if (displayKey.startsWith('og:')) displayKey = displayKey.replace('og:', '');
-  if (displayKey.startsWith('twitter:')) displayKey = displayKey.replace('twitter:', '');
-  
-  // Format remaining text: capitalize first letter of each word, replace hyphens with spaces
-  return displayKey
-    .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+  try {
+    // Handle null or undefined keys
+    if (!key) return '';
+    
+    // Remove prefixes for display
+    let displayKey = key;
+    const prefixes = ['meta:', 'link:', 'html:', 'header:', 'og:', 'twitter:'];
+    
+    for (const prefix of prefixes) {
+      if (displayKey.startsWith(prefix)) {
+        displayKey = displayKey.replace(prefix, '');
+        break; // Stop after first match to avoid multiple replacements
+      }
+    }
+    
+    // Format remaining text: capitalize first letter of each word, replace hyphens with spaces
+    return displayKey
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  } catch (error) {
+    console.warn(`Error formatting key: ${key}`, error);
+    return key; // Return original key if formatting fails
+  }
 };
 
 // Helper to sort metadata entries according to predefined order
@@ -747,21 +757,22 @@ const MetadataLayout = ({
         <h3 className="text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300">{category}</h3>
         <div className="space-y-2">
           {tags.map((tag, index) => {
-            const importanceColor = {
-              critical: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-              medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-              low: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+            const importanceClass = {
+              critical: 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-200',
+              medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-200',
+              low: 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-200',
             }[tag.importance];
             
             return (
-              <div key={index} className="p-2 rounded-md bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+              <div key={index} className="p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
                 <div className="flex justify-between items-start">
-                  <span className="font-medium text-xs">{formatKeyForDisplay(tag.key)}</span>
-                  <span className={`text-xs px-2 py-0.5 rounded ${importanceColor}`}>
+                  <span className="font-medium">{formatKeyForDisplay(tag.key)}</span>
+                  <span className={`text-xs px-2 py-0.5 rounded ${importanceClass}`}>
                     {tag.importance}
                   </span>
                 </div>
-                <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">{tag.description}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{tag.description}</p>
+                <code className="text-xs text-gray-500 dark:text-gray-400 mt-1">{tag.key}</code>
               </div>
             );
           })}
