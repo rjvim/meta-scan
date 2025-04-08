@@ -115,3 +115,16 @@
 .meta-scan-hidden {
   display: none !important;
 }
+
+/* MetadataLayout styles */
+.metadata-layout {
+  max-height: 80vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.metadata-layout-content {
+  flex-grow: 1;
+  overflow-y: auto;
+}

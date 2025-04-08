@@ -176,26 +176,30 @@ export const SocialPreviewTabs = ({ metadata }: { metadata: MetadataResult }) =>
   ];
   
   return (
-    <div className="social-preview-container">
-      <div className="tab-container flex border-b border-gray-200 dark:border-gray-700 mb-4">
-        {platforms.map(platform => (
-          <button
-            key={platform.id}
-            className={cn(
-              "px-4 py-2 text-sm font-medium",
-              activePlatform === platform.id
-                ? "border-b-2 border-purple-500 dark:border-purple-400 text-purple-600 dark:text-purple-400"
-                : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-            )}
-            onClick={() => setActivePlatform(platform.id as any)}
-          >
-            {platform.label}
-          </button>
-        ))}
+    <div className="social-preview-container p-4">
+      <div className="overflow-x-auto pb-2">
+        <div className="tab-container flex min-w-max border-b border-gray-200 dark:border-gray-700 mb-4">
+          {platforms.map(platform => (
+            <button
+              key={platform.id}
+              className={cn(
+                "px-4 py-2 text-sm font-medium whitespace-nowrap",
+                activePlatform === platform.id
+                  ? "border-b-2 border-purple-500 dark:border-purple-400 text-purple-600 dark:text-purple-400"
+                  : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+              )}
+              onClick={() => setActivePlatform(platform.id as any)}
+            >
+              {platform.label}
+            </button>
+          ))}
+        </div>
       </div>
       
-      <div className="preview-container flex justify-center py-4">
-        <SocialPreview metadata={metadata} platform={activePlatform} />
+      <div className="preview-container flex justify-center py-4 overflow-hidden">
+        <div className="max-w-full overflow-x-auto">
+          <SocialPreview metadata={metadata} platform={activePlatform} />
+        </div>
       </div>
     </div>
   );

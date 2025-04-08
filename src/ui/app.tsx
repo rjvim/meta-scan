@@ -5,7 +5,7 @@ import { cn } from "../utils/cn";
 import { cleanup, initDOMWatcher } from "../utils/dom-watcher";
 import { MenuIcon, CloseIcon } from "./icons";
 import { logger } from "../utils/logger";
-import MetadataLayout from "./MetadataLayout";
+import { MetascanFeaturesWrapper } from "./MetascanFeaturesWrapper";
 import { stateManager } from "../state";
 import { version } from '../../package.json';
 import "./animations.css";
@@ -248,7 +248,7 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
             style={{ '--panel-origin': getPanelOrigin() } as any}
           >
             {loading && <LoadingIndicator />}
-            <MetadataLayout
+            <MetascanFeaturesWrapper
               metadata={metadata}
               refreshMetadata={refreshMetadata}
               theme={theme}

@@ -1,6 +1,7 @@
 /**
  * Types for metadata validation system
  */
+import type { MetadataResult } from "./index";
 
 export interface ValidationRule {
   id: string;

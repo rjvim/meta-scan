@@ -1,7 +1,8 @@
 import { h } from "preact";
 import { useState, useEffect } from "preact/hooks";
 import { cn } from "../../utils/cn";
-import type { MetadataResult, ValidationResult, HistoricalEntry } from "../../types";
+import type { MetadataResult } from "../../types";
+import type { ValidationResult, HistoricalEntry } from "../../types/validation";
 import { validateMetadata } from "../../core/validator";
 
 interface HistoricalTrackingProps {
@@ -118,10 +119,12 @@ export const HistoricalTracking = ({ currentMetadata, currentUrl }: HistoricalTr
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-48">
-        <div className="flex flex-col items-center">
-          <div className="w-8 h-8 border-2 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
-          <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">Loading history...</p>
+      <div className="historical-tracking h-full flex flex-col overflow-hidden">
+        <div className="flex justify-center items-center h-48">
+          <div className="flex flex-col items-center">
+            <div className="w-8 h-8 border-2 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
+            <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">Loading history...</p>
+          </div>
         </div>
       </div>
     );
@@ -151,8 +154,11 @@ export const HistoricalTracking = ({ currentMetadata, currentUrl }: HistoricalTr
   }
   
   return (
-    <div className="historical-tracking">
-      <div className="flex flex-col md:flex-row gap-6">
+    <div className="historical-tracking h-full flex flex-col overflow-hidden">
+      <div className="flex-shrink-0 py-3 px-4 mb-2 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+        <h3 className="text-sm font-medium">Historical Metadata Changes</h3>
+      </div>
+      <div className="flex flex-col md:flex-row gap-6 p-4 flex-1 overflow-auto">
         {/* Timeline */}
         <div className="md:w-1/3">
           <h3 className="text-sm font-medium mb-3">History Timeline</h3>

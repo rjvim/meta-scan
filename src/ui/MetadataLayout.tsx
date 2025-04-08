@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "preact/hooks";
 import { cn } from "../utils/cn";
 import type { MetadataResult, StructuredData, MicrodataItem, Corner, MetaScanUIState } from "~/types";
+import type { ValidationResult } from "../types/validation";
 import { 
   CheckIcon, 
   CopyIcon, 
@@ -14,6 +15,15 @@ import { PositionControl } from "./header/PositionControl";
 import { SearchInput } from "./components/SearchInput";
 import { SearchHighlighter } from "./components/SearchHighlighter";
 import { useCallback } from "preact/hooks";
+import { CompetitorAnalysis } from "./components/CompetitorAnalysis";
+import { HistoricalTracking } from "./components/HistoricalTracking";
+import { SeoRecommendations } from "./components/SeoRecommendations";
+import { BulkAnalysis } from "./components/BulkAnalysis";
+import { SeoToolIntegrations } from "./components/SeoToolIntegrations";
+import { AdvancedSearch } from "./components/AdvancedSearch";
+
+// Comment out the missing import for SocialPreviewTabs
+// import { SocialPreviewTabs } from "./components/SocialPreviewTabs";
 
 // Define the order of fields for each category
 const fieldOrder = {
@@ -356,6 +366,9 @@ const MetadataLayout = ({
   changePosition,
   uiState,
   version,
+  validation,
+  urls,
+  currentUrl,
 }: {
   metadata: MetadataResult | null;
   refreshMetadata: () => void;
@@ -368,6 +381,9 @@ const MetadataLayout = ({
   changePosition: (position: Corner) => void;
   uiState: MetaScanUIState;
   version: string;
+  validation: ValidationResult;
+  urls: string[];
+  currentUrl: string;
 }) => {
   if (!metadata) return null;
 
@@ -382,6 +398,12 @@ const MetadataLayout = ({
   const jsonTextRef = useRef<HTMLPreElement>(null);
   const cardsContainerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  const [showAdvancedFeatures, setShowAdvancedFeatures] = useState(false);
+
+  const toggleAdvancedFeatures = () => {
+    setShowAdvancedFeatures(!showAdvancedFeatures);
+  };
 
   // Clean up timeouts when component unmounts
   useEffect(() => {
@@ -550,8 +572,6 @@ const MetadataLayout = ({
     });
   }, [debouncedSearchTerm, formatKeyForDisplay]);
 
-
-
   const renderTabContent = (tabId: string) => {
     switch (tabId) {
       case "general":
@@ -682,7 +702,7 @@ const MetadataLayout = ({
             )}
             
             {hasMicrodata && filteredMicrodata.length > 0 && (
-              <div className="mb-4">
+              <div>
                 <h3 className="text-sm font-semibold mb-2">Microdata</h3>
                 {filteredMicrodata.map((item: MicrodataItem, index: number) => {
                   if (!item) return null;
@@ -849,6 +869,46 @@ const MetadataLayout = ({
     return parts[parts.length - 1];
   }
 
+  const handleConnect = (toolName: string) => {
+    console.log(`Connecting to ${toolName}`);
+    // Implement connection logic here
+  };
+
+  const handleSearch = (query: string, mode: string) => {
+    console.log(`Searching for ${query} in ${mode} mode`);
+    // Implement search logic here
+  };
+
+  const AdvancedFeatures = ({ metadata, validation, urls, currentUrl, version }: { metadata: MetadataResult; validation: ValidationResult; urls: string[]; currentUrl: string; version: string }) => (
+    <div className="advanced-features space-y-4">
+      <Card title="Advanced Features">
+        <div>Explore advanced features here.</div>
+      </Card>
+      <Card title="Social Preview">
+        {/* <SocialPreviewTabs metadata={metadata} /> */}
+        <div>No Social Preview available.</div>
+      </Card>
+      <Card title="Competitor Analysis">
+        <CompetitorAnalysis currentMetadata={metadata} currentUrl={currentUrl} />
+      </Card>
+      <Card title="Historical Tracking">
+        <HistoricalTracking currentMetadata={metadata} currentUrl={currentUrl} />
+      </Card>
+      <Card title="SEO Recommendations">
+        <SeoRecommendations validation={validation} version={version} />
+      </Card>
+      <Card title="Bulk Analysis">
+        <BulkAnalysis urls={urls} />
+      </Card>
+      <Card title="SEO Tool Integrations">
+        <SeoToolIntegrations onConnect={handleConnect} />
+      </Card>
+      <Card title="Advanced Search">
+        <AdvancedSearch onSearch={handleSearch} />
+      </Card>
+    </div>
+  );
+
   return (
     <div
       className={cn(
@@ -857,7 +917,8 @@ const MetadataLayout = ({
         "text-black dark:text-white",
         "transition-colors duration-200",
         "theme-transition-container",
-        theme === "dark" ? "dark" : ""
+        theme === "dark" ? "dark" : "",
+        "metadata-layout"
       )}
     >
       {/* Header */}
@@ -875,7 +936,6 @@ const MetadataLayout = ({
                 uiState={uiState}
               />
             </div>
-
             {/* Settings Menu */}
             <SettingsMenu 
               showSettingsMenu={showSettingsMenu}
@@ -907,6 +967,17 @@ const MetadataLayout = ({
             >
               <RefreshIcon />
             </button>
+
+            <button
+              onClick={toggleAdvancedFeatures}
+              className="flex items-center justify-center w-6 h-6 bg-gray-400 text-white rounded-full"
+              disabled
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-4 h-4">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v6m-6-6h12M5.25 9V5.25C5.25 4.007 6.257 3 7.5 3h9c1.243 0 2.25 1.007 2.25 2.25V9M4.5 9h15" />
+              </svg>
+            </button>
+
           </div>
         </div>
 
@@ -985,7 +1056,8 @@ const MetadataLayout = ({
         <div
           ref={cardsContainerRef}
           className={cn(
-            "p-3 flex gap-4 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600"
+            "p-3 flex gap-4 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600",
+            "metadata-layout-content"
           )}
           style={{ scrollbarWidth: "thin" }}
         >
@@ -1004,6 +1076,9 @@ const MetadataLayout = ({
               {renderTabContent(tab.id)}
             </Card>
           ))}
+          {showAdvancedFeatures && (
+            <AdvancedFeatures metadata={metadata} validation={validation} urls={urls} currentUrl={currentUrl} version={version} />
+          )}
         </div>
       )}
 

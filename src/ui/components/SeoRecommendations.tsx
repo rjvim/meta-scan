@@ -1,230 +1,149 @@
-import { h } from "preact";
+/** @jsx h */
+// @ts-ignore - h is used by JSX
+import { h, JSX } from "preact";
 import { useState } from "preact/hooks";
 import { cn } from "../../utils/cn";
-import type { ValidationResult, ValidationRuleResult } from "../../types";
+import type { ValidationResult, ValidationRuleResult } from "../../types/validation"; // Correct import path
 
-interface SeoRecommendationsProps {
+// Define local types based on usage
+type CategoryId = 'critical' | 'important' | 'optimization';
+interface CategoryRecommendations {
+  critical: ValidationRuleResult[];
+  important: ValidationRuleResult[];
+  optimization: ValidationRuleResult[];
+}
+
+export interface SeoRecommendationsProps {
   validation: ValidationResult;
+  version?: string;
 }
 
-interface RecommendationCategory {
-  id: string;
-  label: string;
-  description: string;
-  icon: string;
-}
-
-const categories: RecommendationCategory[] = [
-  {
-    id: "critical",
-    label: "Critical Issues",
-    description: "High-priority issues that significantly impact SEO",
-    icon: "⚠️"
-  },
-  {
-    id: "important",
-    label: "Important Improvements",
-    description: "Recommended changes to improve SEO performance",
-    icon: "⚡"
-  },
-  {
-    id: "optimization",
-    label: "Optimizations",
-    description: "Optional enhancements for better results",
-    icon: "✨"
+export const SeoRecommendations = ({
+  validation,
+  version
+}: SeoRecommendationsProps): JSX.Element => {
+  if (!validation) {
+    return <div>No validation data available</div>;
   }
-];
 
-export const SeoRecommendations = ({ validation }: SeoRecommendationsProps) => {
-  const [selectedCategory, setSelectedCategory] = useState<string>("critical");
-  
-  // Categorize recommendations based on weight and status
-  const categorizeRecommendations = () => {
-    const failed = validation.rules.filter(rule => !rule.passed);
-    
+  const [selectedCategory, setSelectedCategory] = useState<CategoryId>('critical');
+
+  // Categorize recommendations based on failed rules (use ValidationRuleResult)
+  const categorizeRecommendations = (): CategoryRecommendations => {
+    if (!validation.rules) return { critical: [], important: [], optimization: [] }; 
+    const failedRules = validation.rules.filter((rule) => !rule.passed);
     return {
-      critical: failed.filter(rule => rule.weight >= 9),
-      important: failed.filter(rule => rule.weight >= 7 && rule.weight < 9),
-      optimization: failed.filter(rule => rule.weight < 7)
+      critical: failedRules.filter((rule) => rule.weight >= 9),
+      important: failedRules.filter((rule) => rule.weight >= 7 && rule.weight < 9),
+      optimization: failedRules.filter((rule) => rule.weight < 7)
     };
   };
-  
+
   const recommendations = categorizeRecommendations();
-  
-  // Get recommendations for current category
-  const getCurrentRecommendations = () => {
-    return recommendations[selectedCategory as keyof typeof recommendations] || [];
+
+  const getCurrentRecommendations = (): ValidationRuleResult[] => {
+    return recommendations[selectedCategory] || [];
   };
-  
-  // Calculate completion percentage
-  const getCompletionPercentage = (categoryId: string): number => {
-    const total = validation.rules.filter(rule => {
-      if (categoryId === "critical") return rule.weight >= 9;
-      if (categoryId === "important") return rule.weight >= 7 && rule.weight < 9;
-      return rule.weight < 7;
-    }).length;
-    
-    const completed = total - recommendations[categoryId as keyof typeof recommendations].length;
-    
-    return total > 0 ? Math.round((completed / total) * 100) : 100;
-  };
-  
-  // Get priority label
-  const getPriorityLabel = (weight: number): string => {
-    if (weight >= 9) return "High Priority";
-    if (weight >= 7) return "Medium Priority";
-    return "Low Priority";
-  };
-  
-  // Get priority color
+
   const getPriorityColor = (weight: number): string => {
-    if (weight >= 9) return "text-red-600 dark:text-red-400";
-    if (weight >= 7) return "text-yellow-600 dark:text-yellow-400";
-    return "text-blue-600 dark:text-blue-400";
+    if (weight >= 9) return 'text-red-500';
+    if (weight >= 7) return 'text-yellow-500';
+    return 'text-blue-500';
   };
-  
-  const currentRecommendations = getCurrentRecommendations();
-  
+
+  const getPriorityLabel = (weight: number): string => {
+    if (weight >= 9) return 'Critical';
+    if (weight >= 7) return 'Important';
+    return 'Optimization';
+  };
+
   return (
-    <div className="seo-recommendations">
-      {/* Category Tabs */}
-      <div className="flex space-x-4 mb-6">
-        {categories.map(category => {
-          const percentage = getCompletionPercentage(category.id);
-          const count = recommendations[category.id as keyof typeof recommendations].length;
-          
-          return (
-            <button
-              key={category.id}
-              onClick={() => setSelectedCategory(category.id)}
-              className={cn(
-                "flex-1 p-4 rounded-lg border transition-all text-left",
-                selectedCategory === category.id
-                  ? "border-purple-500 bg-purple-50 dark:bg-purple-900/20"
-                  : "border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
-              )}
-            >
-              <div className="flex items-start justify-between">
-                <div>
-                  <span className="text-2xl mb-2">{category.icon}</span>
-                  <h3 className="text-sm font-medium text-gray-900 dark:text-white">
-                    {category.label}
-                  </h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    {count} issue{count !== 1 ? 's' : ''} found
-                  </p>
-                </div>
-                <div className="flex flex-col items-end">
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">
-                    {percentage}%
-                  </span>
-                  <div className="w-12 h-1 bg-gray-200 dark:bg-gray-700 rounded-full mt-1">
-                    <div
-                      className="h-1 bg-purple-600 rounded-full"
-                      style={{ width: `${percentage}%` }}
-                    ></div>
-                  </div>
-                </div>
-              </div>
-            </button>
-          );
-        })}
+    <div className="seo-recommendations h-full flex flex-col bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+        <div>
+          <h2 className="text-lg font-medium text-gray-900 dark:text-white">SEO Recommendations</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Improve your website's SEO score</p>
+        </div>
       </div>
-      
+
+      {/* Category Tabs */}
+      <div className="flex border-b border-gray-200 dark:border-gray-700">
+        {Object.entries(recommendations).map(([category, rules]) => (
+          <button
+            key={category}
+            onClick={() => setSelectedCategory(category as CategoryId)}
+            className={cn(
+              'flex-1 py-3 px-4 text-sm font-medium',
+              selectedCategory === category
+                ? 'text-blue-600 border-b-2 border-blue-600 dark:text-blue-400 dark:border-blue-400'
+                : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+            )}
+          >
+            {category.charAt(0).toUpperCase() + category.slice(1)}
+            <span className="ml-2 text-gray-400 dark:text-gray-500">{rules.length}</span>
+          </button>
+        ))}
+      </div>
+
       {/* Recommendations List */}
-      <div className="recommendations-list space-y-4">
-        {currentRecommendations.length > 0 ? (
-          currentRecommendations.map((rule, index) => (
-            <div
-              key={rule.id}
-              className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
-            >
-              <div className="flex items-start justify-between">
-                <div>
-                  <h4 className="text-sm font-medium text-gray-900 dark:text-white">
-                    {rule.description}
-                  </h4>
-                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    {rule.recommendation}
-                  </p>
-                  <div className="mt-2">
-                    <span className={cn(
-                      "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
-                      getPriorityColor(rule.weight)
-                    )}>
-                      {getPriorityLabel(rule.weight)}
-                    </span>
+      <div className="flex-1 overflow-auto p-4">
+        {getCurrentRecommendations().length > 0 ? (
+          <div className="space-y-4">
+            {getCurrentRecommendations().map((rule: ValidationRuleResult) => (
+              <div key={rule.id} className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-900 dark:text-white">{rule.id}</h4>
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{rule.message}</p>
                   </div>
-                </div>
-                <div className="ml-4">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                    Score Impact
+                  <span className={cn('text-sm font-medium', getPriorityColor(rule.weight))}>
+                    {getPriorityLabel(rule.weight)}
                   </span>
-                  <p className="text-lg font-medium text-gray-900 dark:text-white">
-                    +{rule.weight}
-                  </p>
                 </div>
               </div>
-              
-              {/* Current Status */}
-              <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  Current Status:
-                </span>
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                  {rule.message}
-                </p>
-              </div>
-            </div>
-          ))
+            ))}
+          </div>
         ) : (
-          <div className="text-center py-8">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-100 dark:bg-green-900 mb-4">
-              <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <h3 className="text-sm font-medium text-gray-900 dark:text-white">
-              All {selectedCategory} issues resolved!
-            </h3>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              Great job! Your metadata is looking good for this category.
-            </p>
+          <div className="text-center py-12">
+            <p className="text-gray-500 dark:text-gray-400">No {selectedCategory} issues found</p>
           </div>
         )}
       </div>
-      
+
       {/* Overall Score */}
-      <div className="mt-8 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+      <div className="p-4 bg-gray-50 dark:bg-gray-800 flex-shrink-0 border-t border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-sm font-medium text-gray-900 dark:text-white">
-              Overall SEO Score
-            </h3>
+            <h3 className="text-sm font-medium text-gray-900 dark:text-white">Overall SEO Score</h3>
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              {validation.passedRules} of {validation.totalRules} checks passed
+              {validation.passedRules || 0} of {validation.totalRules || 0} checks passed
             </p>
           </div>
           <div className="text-right">
-            <span className="text-2xl font-bold text-gray-900 dark:text-white">
-              {validation.percentage}%
-            </span>
+            <span className="text-2xl font-bold text-gray-900 dark:text-white">{validation.percentage || 0}%</span>
           </div>
         </div>
         <div className="mt-3">
           <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
             <div
               className={cn(
-                "h-2 rounded-full",
-                validation.percentage >= 80 ? "bg-green-500" :
-                validation.percentage >= 60 ? "bg-yellow-500" :
-                "bg-red-500"
+                'h-2 rounded-full',
+                (validation.percentage || 0) >= 80 ? 'bg-green-500' :
+                (validation.percentage || 0) >= 60 ? 'bg-yellow-500' :
+                'bg-red-500'
               )}
-              style={{ width: `${validation.percentage}%` }}
+              style={{ width: `${validation.percentage || 0}%` }}
             ></div>
           </div>
         </div>
       </div>
+
+      {version && (
+        <div className="p-2 text-xs text-gray-500 dark:text-gray-400 text-center border-t border-gray-200 dark:border-gray-700">
+          Version {version}
+        </div>
+      )}
     </div>
   );
-};
+}

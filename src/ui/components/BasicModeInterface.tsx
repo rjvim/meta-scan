@@ -1,12 +1,24 @@
 import { h } from "preact";
+import type { MetadataResult, Corner, MetaScanUIState } from "../../types";
+import MetadataLayout from "../MetadataLayout";
 
-export const BasicModeInterface = () => {
-  return (
-    <div className="basic-mode p-4">
-      <h2 className="text-xl font-bold text-gray-900 dark:text-white">Basic Mode</h2>
-      <p className="text-gray-600 dark:text-gray-300 mt-2">
-        This is the basic view of MetaScan. Advanced features are disabled.
-      </p>
-    </div>
-  );
+interface BasicModeInterfaceProps {
+  metadata: MetadataResult;
+  refreshMetadata: () => void;
+  theme: "light" | "dark";
+  toggleTheme: () => void;
+  showSettingsMenu: boolean;
+  toggleSettingsMenu: (e: MouseEvent) => void;
+  showPositionMenu: boolean;
+  togglePositionMenu: (e: MouseEvent) => void;
+  changePosition: (position: Corner) => void;
+  uiState: MetaScanUIState;
+  version: string;
+  isAdvancedMode: boolean;
+  setIsAdvancedMode: (mode: boolean) => void;
+}
+
+export const BasicModeInterface = (props: BasicModeInterfaceProps) => {
+  // Pass all props directly to the original MetadataLayout component
+  return <MetadataLayout {...props} />;
 };

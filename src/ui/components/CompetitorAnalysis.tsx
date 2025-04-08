@@ -1,7 +1,9 @@
+/** @jsx h */
 import { h } from "preact";
-import { useState, useEffect } from "preact/hooks";
+import { useState } from "preact/hooks";
 import { cn } from "../../utils/cn";
-import type { MetadataResult, ValidationResult, CompetitorMetadata } from "../../types";
+import type { MetadataResult } from "../../types";
+import type { ValidationResult, CompetitorMetadata } from "../../types/validation";
 import { validateMetadata, getScoreGrade } from "../../core/validator";
 
 interface CompetitorAnalysisProps {
@@ -162,9 +164,9 @@ export const CompetitorAnalysis = ({ currentMetadata, currentUrl }: CompetitorAn
   const tableData = getComparisonData();
   
   return (
-    <div className="competitor-analysis">
+    <div className="competitor-analysis h-full flex flex-col overflow-hidden">
       {/* Add competitor form */}
-      <div className="mb-6 bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+      <div className="flex-shrink-0 py-3 px-4 mb-2 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
         <h3 className="text-sm font-medium mb-2">Add Competitor</h3>
         <div className="flex gap-2">
           <div className="flex-grow">
@@ -194,9 +196,9 @@ export const CompetitorAnalysis = ({ currentMetadata, currentUrl }: CompetitorAn
       </div>
       
       {/* Comparison table */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead className="bg-gray-50 dark:bg-gray-800">
+      <div className="overflow-x-auto overflow-y-auto flex-1 p-4">
+        <table className="min-w-full min-w-[800px] divide-y divide-gray-200 dark:divide-gray-700">
+          <thead className="bg-gray-50 dark:bg-gray-800 sticky top-0 z-10">
             <tr>
               <th scope="col" className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Domain
@@ -242,47 +244,47 @@ export const CompetitorAnalysis = ({ currentMetadata, currentUrl }: CompetitorAn
                   </div>
                 </td>
                 <td className="px-3 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium">
-                    <div className="w-16 bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                  <div className="text-sm font-medium flex flex-col">
+                    <div className="w-full max-w-[100px] bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                       <div 
-                        className={`h-1.5 rounded-full ${site.general >= 80 ? 'bg-green-500' : site.general >= 60 ? 'bg-yellow-500' : 'bg-red-500'}`}
+                        className={`h-2 rounded-full ${site.general >= 80 ? 'bg-green-500' : site.general >= 60 ? 'bg-yellow-500' : 'bg-red-500'}`}
                         style={{ width: `${site.general}%` }}
                       ></div>
                     </div>
-                    <span className="text-xs text-gray-500 dark:text-gray-400 mt-1">{site.general}%</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 mt-1 block">{site.general}%</span>
                   </div>
                 </td>
                 <td className="px-3 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium">
-                    <div className="w-16 bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                  <div className="text-sm font-medium flex flex-col">
+                    <div className="w-full max-w-[100px] bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                       <div 
-                        className={`h-1.5 rounded-full ${site.opengraph >= 80 ? 'bg-green-500' : site.opengraph >= 60 ? 'bg-yellow-500' : 'bg-red-500'}`}
+                        className={`h-2 rounded-full ${site.opengraph >= 80 ? 'bg-green-500' : site.opengraph >= 60 ? 'bg-yellow-500' : 'bg-red-500'}`}
                         style={{ width: `${site.opengraph}%` }}
                       ></div>
                     </div>
-                    <span className="text-xs text-gray-500 dark:text-gray-400 mt-1">{site.opengraph}%</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 mt-1 block">{site.opengraph}%</span>
                   </div>
                 </td>
                 <td className="px-3 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium">
-                    <div className="w-16 bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                  <div className="text-sm font-medium flex flex-col">
+                    <div className="w-full max-w-[100px] bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                       <div 
-                        className={`h-1.5 rounded-full ${site.twitter >= 80 ? 'bg-green-500' : site.twitter >= 60 ? 'bg-yellow-500' : 'bg-red-500'}`}
+                        className={`h-2 rounded-full ${site.twitter >= 80 ? 'bg-green-500' : site.twitter >= 60 ? 'bg-yellow-500' : 'bg-red-500'}`}
                         style={{ width: `${site.twitter}%` }}
                       ></div>
                     </div>
-                    <span className="text-xs text-gray-500 dark:text-gray-400 mt-1">{site.twitter}%</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 mt-1 block">{site.twitter}%</span>
                   </div>
                 </td>
                 <td className="px-3 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium">
-                    <div className="w-16 bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                  <div className="text-sm font-medium flex flex-col">
+                    <div className="w-full max-w-[100px] bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                       <div 
-                        className={`h-1.5 rounded-full ${site.technical >= 80 ? 'bg-green-500' : site.technical >= 60 ? 'bg-yellow-500' : 'bg-red-500'}`}
+                        className={`h-2 rounded-full ${site.technical >= 80 ? 'bg-green-500' : site.technical >= 60 ? 'bg-yellow-500' : 'bg-red-500'}`}
                         style={{ width: `${site.technical}%` }}
                       ></div>
                     </div>
-                    <span className="text-xs text-gray-500 dark:text-gray-400 mt-1">{site.technical}%</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 mt-1 block">{site.technical}%</span>
                   </div>
                 </td>
                 <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
