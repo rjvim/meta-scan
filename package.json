@@ -1,6 +1,6 @@
 {
   "name": "meta-scan",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "description": "A lightweight, client-side JavaScript tool for extracting and visualizing webpage metadata",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
