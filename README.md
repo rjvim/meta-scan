@@ -288,6 +288,23 @@ MetaScan has been refactored for better maintainability and extensibility:
   - Enhanced dropdown positioning and animations
   - Position-aware panel animations
 
+## Recent Updates
+
+### Overview
+MetaScan is a browser extension designed to extract and display metadata from web pages. It supports structured data extraction, including JSON-LD and Microdata, and provides a user-friendly interface for viewing and analyzing metadata.
+
+### Advanced Features Toggle
+- Added a toggle button to switch between Advanced and Basic modes, with a lock icon to indicate when the button is disabled.
+
+### UI Enhancements
+- Updated button styles for consistency across the application.
+
+### Metadata Extraction
+- Enhanced extraction capabilities with additional OpenGraph and Twitter card properties, favicon extraction, and language detection.
+
+### Standardized Metadata Schema
+- Implemented standardized keys and consistent field ordering for improved user experience.
+
 ## License
 
 MIT
