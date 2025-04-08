@@ -852,7 +852,7 @@ const MetadataLayout = ({
   return (
     <div
       className={cn(
-        "overflow-hidden max-h-[80vh]",
+        "overflow-hidden max-h-[80vh] flex flex-col", // Added flex layout
         "bg-white dark:bg-gray-900",
         "text-black dark:text-white",
         "transition-colors duration-200",
@@ -860,8 +860,8 @@ const MetadataLayout = ({
         theme === "dark" ? "dark" : ""
       )}
     >
-      {/* Header */}
-      <div className="p-3 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-900 z-50 space-y-4">
+      {/* Header - Fixed at top with flex-shrink-0 */}
+      <div className="p-3 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-900 z-50 space-y-4 flex-shrink-0">
         {/* Top row with logo and controls */}
         <div className="flex items-center justify-between">
           <h2 className="font-mono text-sm font-bold">MetaScan</h2>
@@ -922,9 +922,10 @@ const MetadataLayout = ({
         </div>
       </div>
 
-      {/* Content */}
+      {/* Content area - Scrollable with flex-grow */}
+      <div className="flex-1 overflow-auto min-h-0">
       {showJSON ? (
-        <div className="p-3 overflow-y-auto max-h-[calc(80vh-160px)]">
+        <div className="p-3 overflow-y-auto">
           <div className="bg-gray-100 dark:bg-gray-800 p-3 rounded overflow-x-auto text-xs relative group">
             <button
               onClick={handleCopyJSON}
@@ -972,7 +973,7 @@ const MetadataLayout = ({
           </div>
         </div>
       ) : debouncedSearchTerm ? (
-        <div className="p-3 overflow-y-auto max-h-[calc(80vh-160px)]">
+        <div className="p-3 overflow-y-auto">
           <SearchResults 
             searchTerm={debouncedSearchTerm}
             metadata={metadata}
@@ -1006,9 +1007,10 @@ const MetadataLayout = ({
           ))}
         </div>
       )}
+      </div>
 
-      {/* Footer */}
-      <div className="p-3 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400 text-center">
+      {/* Footer - Fixed at bottom */}
+      <div className="p-3 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400 text-center flex-shrink-0 bg-white dark:bg-gray-900">
         Data extracted at {new Date(metadata.extractedAt).toLocaleTimeString()}
         {metadata.missing?.hasCritical && (
           <span className="ml-2 text-red-500 dark:text-red-400 font-medium">
