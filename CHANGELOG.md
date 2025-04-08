@@ -1,3 +1,15 @@
+# v0.12.1 (Tue Apr 08 2025)
+
+#### 🐛 Bug Fix
+
+- Improve layout with flex container for better scrolling and fixed header/footer [#58](https://github.com/rjvim/meta-scan/pull/58) ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.12.0 (Mon Apr 07 2025)
 
 #### 🚀 Enhancement
