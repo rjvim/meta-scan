@@ -1,3 +1,15 @@
+# v0.13.0 (Wed Apr 09 2025)
+
+#### 🚀 Enhancement
+
+- feat: Add Chrome extension support for MetaScan [#59](https://github.com/rjvim/meta-scan/pull/59) ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.12.1 (Tue Apr 08 2025)
 
 #### 🐛 Bug Fix
