@@ -16,6 +16,7 @@ MetaScan is a lightweight (31.2 kB) client-side JavaScript tool that extracts an
 
 - 🚀 Zero-dependency with minimal footprint
 - 🔌 Simple installation with a single script tag
+- 🧩 Chrome extension support for quick access on any website
 - 🔍 Comprehensive metadata extraction with standardized keys and missing tag detection
 - 🎨 Clean, modern UI with dark/light mode support and smooth theme transition animations
 - 🎛️ Configurable positioning on any corner of the screen with improved dropdown positioning
@@ -62,7 +63,27 @@ MetaScan is designed to serve the needs of various professionals working with we
 
 ## Installation
 
-Add the script tag to your HTML using unpkg or jsdelivr:
+### Chrome Extension
+
+MetaScan is available as a Chrome extension for quick access on any website:
+
+1. **Install from Source**:
+   - Clone this repository: `git clone https://github.com/your-username/meta-scan.git`
+   - Build the project: `npm run build`
+   - Open Chrome and navigate to `chrome://extensions/`
+   - Enable "Developer mode" (toggle in the top-right corner)
+   - Click "Load unpacked" and select the `extension` folder from the project
+   - The MetaScan icon will appear in your browser toolbar
+
+2. **Usage**:
+   - Navigate to any webpage
+   - Click the MetaScan icon in your browser toolbar
+   - The MetaScan panel will appear, displaying all metadata from the current page
+   - Click the icon again to toggle the panel on/off
+
+### Script Tag
+
+Alternatively, add the script tag to your HTML using unpkg or jsdelivr:
 
 ### Using jsdelivr
 
@@ -264,6 +285,19 @@ The MetaScan interface has been redesigned for better usability:
 - **Streamlined Component Structure**: Modular code organization with reusable Button and Dropdown components
 - **Smooth Animations**: Polished animations with improved theme toggle transitions
 - **Adaptive Animations**: Position-aware animations that adapt to the panel's corner position with enhanced transitions
+
+### Chrome Extension UI Enhancements
+
+The Chrome extension version of MetaScan includes additional UI improvements:
+
+- **Polished Panel Design**: Enhanced panel styling with improved shadows and rounded corners
+- **Gradient Header**: Professional gradient header with improved typography
+- **Enhanced Card Styling**: Cards with subtle hover effects and better spacing
+- **Improved Metadata Display**: Better formatting for metadata items with cleaner labels and values
+- **Custom Scrollbars**: Enhanced scrollbars for better navigation through content
+- **Responsive Design**: Fully responsive layout that works well on all screen sizes
+- **Smooth Entrance Animation**: Fade-in animation when the panel appears for a more polished feel
+- **Improved Copy Button Behavior**: Copy buttons that appear on hover for a cleaner interface
 
 ## Code Architecture
 

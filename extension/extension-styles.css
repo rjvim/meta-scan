@@ -1,0 +1,196 @@
+/* Extension-specific styles to enhance MetaScan UI */
+
+/* Improve overall panel styling */
+.metascan-panel {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+  max-width: 90vw !important;
+  max-height: 85vh !important;
+}
+
+/* Enhance header styling */
+.metascan-header {
+  background: linear-gradient(to right, #4285F4, #34A853) !important;
+  color: white !important;
+  padding: 12px 16px !important;
+}
+
+.metascan-header h1 {
+  font-weight: 600 !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* Improve search bar */
+.metascan-search {
+  border-radius: 20px !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05) !important;
+  padding-left: 12px !important;
+  transition: all 0.2s ease !important;
+}
+
+.metascan-search:focus {
+  box-shadow: 0 2px 8px rgba(66, 133, 244, 0.3) !important;
+  border-color: #4285F4 !important;
+}
+
+/* Enhance card styling */
+.metascan-card {
+  border-radius: 8px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.metascan-card:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Improve metadata item styling */
+.metascan-item {
+  margin-bottom: 12px !important;
+  padding-bottom: 12px !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+
+.metascan-item:last-child {
+  border-bottom: none !important;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.metascan-item-label {
+  font-weight: 600 !important;
+  color: #555 !important;
+  margin-bottom: 4px !important;
+}
+
+.metascan-item-value {
+  font-family: 'Roboto Mono', monospace !important;
+  background-color: rgba(0, 0, 0, 0.03) !important;
+  padding: 6px 8px !important;
+  border-radius: 4px !important;
+  word-break: break-all !important;
+}
+
+/* Improve button styling */
+.metascan-button {
+  border-radius: 4px !important;
+  transition: background-color 0.2s ease !important;
+  padding: 6px 10px !important;
+}
+
+.metascan-button:hover {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Improve image preview */
+.metascan-image {
+  border-radius: 4px !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+/* Improve scrollbars */
+.metascan-scrollable::-webkit-scrollbar {
+  width: 8px !important;
+  height: 8px !important;
+}
+
+.metascan-scrollable::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.03) !important;
+  border-radius: 4px !important;
+}
+
+.metascan-scrollable::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15) !important;
+  border-radius: 4px !important;
+}
+
+.metascan-scrollable::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Dark mode adjustments */
+.metascan-dark .metascan-header {
+  background: linear-gradient(to right, #1a73e8, #188038) !important;
+}
+
+.metascan-dark .metascan-item-label {
+  color: #ccc !important;
+}
+
+.metascan-dark .metascan-item-value {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.metascan-dark .metascan-button:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.metascan-dark .metascan-scrollable::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.metascan-dark .metascan-scrollable::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2) !important;
+}
+
+.metascan-dark .metascan-scrollable::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.metascan-fade-in {
+  animation: fadeIn 0.3s ease forwards !important;
+}
+
+/* Improve JSON view */
+.metascan-json {
+  font-family: 'Roboto Mono', monospace !important;
+  line-height: 1.5 !important;
+  font-size: 12px !important;
+}
+
+/* Improve copy button */
+.metascan-copy-button {
+  opacity: 0 !important;
+  transition: opacity 0.2s ease !important;
+}
+
+.metascan-item:hover .metascan-copy-button {
+  opacity: 1 !important;
+}
+
+/* Favicon display improvements */
+.metascan-favicon-list {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  margin-top: 8px !important;
+}
+
+.metascan-favicon {
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  border-radius: 4px !important;
+  padding: 4px !important;
+  background: white !important;
+  max-width: 32px !important;
+  max-height: 32px !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .metascan-panel {
+    max-width: 95vw !important;
+    max-height: 90vh !important;
+  }
+}

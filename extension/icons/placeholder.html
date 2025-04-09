@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MetaScan Icon Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        .icon-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .icon {
+            background-color: #4285F4;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+        .instructions {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: left;
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>MetaScan Icon Generator</h1>
+    <p>Right-click each icon and select "Save Image As..." to save it to the extension/icons folder</p>
+    
+    <div class="icon-container">
+        <div>
+            <div id="icon16" class="icon" style="width: 16px; height: 16px; font-size: 8px;">MS</div>
+            <p>icon16.png</p>
+        </div>
+        <div>
+            <div id="icon48" class="icon" style="width: 48px; height: 48px; font-size: 24px;">MS</div>
+            <p>icon48.png</p>
+        </div>
+        <div>
+            <div id="icon128" class="icon" style="width: 128px; height: 128px; font-size: 64px;">MS</div>
+            <p>icon128.png</p>
+        </div>
+    </div>
+    
+    <div class="instructions">
+        <h3>Instructions:</h3>
+        <ol>
+            <li>Right-click on each icon above</li>
+            <li>Select "Save Image As..."</li>
+            <li>Save to the extension/icons folder with the correct name (icon16.png, icon48.png, icon128.png)</li>
+            <li>After saving all icons, run the build-extension.sh script</li>
+        </ol>
+    </div>
+
+    <script>
+        // Convert divs to canvas elements for easy saving
+        function divToImage(elementId) {
+            const element = document.getElementById(elementId);
+            const canvas = document.createElement('canvas');
+            const size = element.offsetWidth;
+            
+            canvas.width = size;
+            canvas.height = size;
+            
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#4285F4';
+            ctx.fillRect(0, 0, size, size);
+            
+            ctx.fillStyle = 'white';
+            ctx.font = `bold ${size/2}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('MS', size/2, size/2);
+            
+            element.parentNode.replaceChild(canvas, element);
+            canvas.id = elementId;
+            canvas.className = 'icon';
+            
+            // Make it downloadable
+            canvas.onclick = function() {
+                const link = document.createElement('a');
+                link.download = `${elementId}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            };
+        }
+        
+        window.onload = function() {
+            divToImage('icon16');
+            divToImage('icon48');
+            divToImage('icon128');
+            
+            document.querySelectorAll('canvas').forEach(canvas => {
+                canvas.title = 'Click to download';
+            });
+        };
+    </script>
+</body>
+</html>
