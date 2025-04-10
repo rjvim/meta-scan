@@ -16,14 +16,25 @@ let isInitialized = false;
  * Render the UI into the shadow DOM
  */
 export function renderUI(): void {
-  if (!container) {
-    container = createIsolatedContainer();
-    const metadata = extractMetadata();
+  try {
+    if (!container) {
+      container = createIsolatedContainer();
+      const metadata = extractMetadata();
 
-    render(<App initialMetadata={metadata} />, container);
+      render(<App initialMetadata={metadata} />, container);
 
-    isInitialized = true;
-    logger.info("UI rendered");
+      isInitialized = true;
+      logger.info("UI rendered successfully");
+    }
+  } catch (error) {
+    logger.error("Failed to render MetaScan UI:", error);
+    // Clean up any partial initialization
+    if (container) {
+      container.remove();
+      container = null;
+    }
+    isInitialized = false;
+    throw error;
   }
 }
 
