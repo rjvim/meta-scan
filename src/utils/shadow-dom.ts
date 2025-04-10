@@ -10,9 +10,18 @@ let cssContent = processedStyles;
  * @returns The mount point element inside shadow root
  */
 export function createIsolatedContainer(): HTMLElement {
-  // Create root container
+  // Create root container with proper stacking context
   const container = document.createElement("div");
   container.id = "meta-scan-root";
+  container.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2147483647;
+  `;
 
   // Attach shadow DOM
   const shadowRoot = container.attachShadow({ mode: "open" });

@@ -10,6 +10,9 @@
   max-width: 400px;
   position: fixed;
   box-sizing: border-box;
+  z-index: 2147483647 !important;
+  isolation: isolate;
+  transform: translateZ(0);
 }
 
 /* Toggle button styles */

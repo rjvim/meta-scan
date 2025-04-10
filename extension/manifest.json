@@ -23,16 +23,17 @@
   "background": {
     "service_worker": "background.js"
   },
+
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js", "style-injector.js"],
+      "js": ["content.js"],
       "run_at": "document_idle"
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": ["metascan.js", "direct-inject.js", "extension-styles.css"],
+      "resources": ["metascan.js", "extension-styles.css", "icons/*"],
       "matches": ["<all_urls>"]
     }
   ]
