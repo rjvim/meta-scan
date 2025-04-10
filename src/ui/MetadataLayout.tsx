@@ -181,7 +181,7 @@ const Card = ({
           {title}
         </div>
       </div>
-      <div className="p-3 overflow-y-auto max-h-[60vh] scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">{children}</div>
+      <div className="p-3 overflow-y-auto max-h-[60vh]">{children}</div>
     </div>
   );
 };

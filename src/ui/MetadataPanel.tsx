@@ -41,7 +41,7 @@ const MetadataItem = ({
           </button>
         )}
       </div>
-      <div className="text-xs break-words text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-gray-800 p-2 rounded overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
+      <div className="text-xs break-words text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-gray-800 p-2 rounded overflow-x-auto">
         {typeof value === "object" ? (
           <pre className="whitespace-pre-wrap">
             {JSON.stringify(value, null, 2)}
@@ -62,7 +62,7 @@ const MetadataImage = ({ src, alt }: { src: string | null; alt?: string }) => {
 
   return (
     <div className="mb-3">
-      <div className="bg-gray-100 dark:bg-gray-800 rounded overflow-hidden scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
+      <div className="bg-gray-100 dark:bg-gray-800 rounded overflow-hidden">
         <div className="relative aspect-video flex items-center justify-center p-2">
           <img
             src={src}
@@ -322,7 +322,7 @@ const MetadataPanel = ({
   return (
     <div
       className={cn(
-        "flex flex-col h-full max-h-[70vh]",
+        "overflow-y-auto max-h-[70vh] scrollbar-thin",
         "bg-white dark:bg-gray-900",
         "text-black dark:text-white",
         "transition-colors duration-200",
@@ -330,7 +330,7 @@ const MetadataPanel = ({
       )}
     >
       {/* Header */}
-      <div className="p-3 border-b border-gray-200 dark:border-gray-700 flex-shrink-0 bg-white dark:bg-gray-900 z-10">
+      <div className="p-3 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-900 z-10">
         <div className="flex items-center justify-between">
           <h2 className="font-mono text-sm font-bold">MetaScan</h2>
           <div className="flex items-center space-x-2">
@@ -366,12 +366,10 @@ const MetadataPanel = ({
       )}
 
       {/* Content */}
-      <div className="flex-1 overflow-auto min-h-0 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600">
-        <div className="p-3 pt-0">{renderTabContent()}</div>
-      </div>
+      <div className="p-3 pt-0">{renderTabContent()}</div>
 
       {/* Footer */}
-      <div className="p-3 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400 text-center flex-shrink-0 bg-white dark:bg-gray-900">
+      <div className="p-3 border-t border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400 text-center">
         Data extracted at {new Date(metadata.extractedAt).toLocaleTimeString()}
       </div>
     </div>
