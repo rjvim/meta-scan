@@ -298,6 +298,8 @@ The Chrome extension version of MetaScan includes additional UI improvements:
 - **Responsive Design**: Fully responsive layout that works well on all screen sizes
 - **Smooth Entrance Animation**: Fade-in animation when the panel appears for a more polished feel
 - **Improved Copy Button Behavior**: Copy buttons that appear on hover for a cleaner interface
+- **Reliable Toggle Behavior**: Enhanced toggle reliability with debouncing and proper state management
+- **Robust Initialization**: Improved script loading with async initialization and error handling
 
 ## Code Architecture
 
