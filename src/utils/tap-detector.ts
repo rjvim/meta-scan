@@ -61,10 +61,9 @@ export function handleTap(): boolean {
     
     // Reset the counter
     resetTapCounter();
-    
     // Toggle the state
     enableOrDisable(newState);
-    
+
     // Return true to indicate the sequence was completed
     return true;
   }
