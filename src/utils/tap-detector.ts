@@ -62,8 +62,31 @@ export function handleTap(): boolean {
     // Reset the counter
     resetTapCounter();
     
-    // Toggle the state
-    enableOrDisable(newState);
+    // Toggle the state using stateManager directly to avoid opening the panel
+    stateManager.setEnableDisable(newState);
+    
+    // Show/hide the M icon without opening the panel
+    if (typeof window !== "undefined") {
+      const container = document.getElementById("meta-scan-root");
+      if (container) {
+        // Only update the visibility of the container, don't open the panel
+        container.style.display = newState ? "" : "none";
+        
+        // Always ensure the panel is closed when toggling via tap
+        if (newState) {
+          // Force the panel to be closed even when re-enabling
+          stateManager.updateState({ isOpen: false });
+        }
+      } else if (newState) {
+        // If container doesn't exist and we're enabling, render UI
+        // This will create the container but we'll prevent panel opening
+        import("../ui").then(({ renderUI }) => {
+          renderUI();
+          // Immediately close the panel after rendering
+          stateManager.updateState({ isOpen: false });
+        });
+      }
+    }
     
     // Return true to indicate the sequence was completed
     return true;
