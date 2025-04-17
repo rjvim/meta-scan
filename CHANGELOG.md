@@ -1,3 +1,16 @@
+# v0.13.1 (Thu Apr 17 2025)
+
+#### 🐛 Bug Fix
+
+- fix: prevent panel from opening when using tap feature [#69](https://github.com/rjvim/meta-scan/pull/69) ([@rjvim](https://github.com/rjvim))
+- Bump version from 0.12.1 to 0.13.0 [#69](https://github.com/rjvim/meta-scan/pull/69) ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.12.1 (Tue Apr 08 2025)
 
 #### 🐛 Bug Fix
