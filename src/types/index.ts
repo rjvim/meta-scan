@@ -31,6 +31,13 @@ export interface MetaScanOptions extends Partial<MetaScanUIState> {
    * @default 'auto'
    */
   theme?: "auto" | "light" | "dark";
+  
+  /**
+   * Enable/disable tap activation feature
+   * This feature allows enabling/disabling MetaScan with 5 taps
+   * @default false
+   */
+  enableTapFeature?: boolean;
 }
 
 export type MetadataCategory =
@@ -158,6 +165,16 @@ export interface MetaScanAPI {
 
   enableOrDisable: (enabled: boolean) => void;
 
+  /**
+   * Internal options storage
+   * @internal
+   */
+  _options?: MetaScanOptions;
+
+  /**
+   * Internal watchers
+   * @internal
+   */
   _watchers?: any;
 }
 

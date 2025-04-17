@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MetaScan Global Test</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .test-area {
+      margin: 20px 0;
+      padding: 50px;
+      background: #f0f0f0;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+    }
+    .log {
+      background: #222;
+      color: #0f0;
+      font-family: monospace;
+      padding: 10px;
+      border-radius: 4px;
+      height: 200px;
+      overflow-y: auto;
+    }
+    button {
+      padding: 10px 15px;
+      background: #6366f1;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 10px 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>MetaScan Tap Feature Test</h1>
+  
+  <div class="test-area" id="click-area">
+    <h2>Click here 5 times quickly</h2>
+    <p>The "M" icon should appear without opening the panel</p>
+  </div>
+  
+  <div>
+    <button id="enable-btn">Enable MetaScan</button>
+    <button id="disable-btn">Disable MetaScan</button>
+  </div>
+  
+  <div class="log" id="log"></div>
+  
+  <!-- Load MetaScan with tap feature enabled -->
+  <script src="../dist/auto.global.js" data-enable-tap-feature="true"></script>
+  
+  <script>
+    // Simple logging function
+    function log(message) {
+      const logElement = document.getElementById('log');
+      const entry = document.createElement('div');
+      entry.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+      logElement.prepend(entry);
+      console.log(message);
+    }
+    
+    // Wait for page load
+    window.addEventListener('load', function() {
+      // Check if MetaScan loaded
+      if (window.MetaScan) {
+        log('MetaScan loaded successfully');
+        
+        // Enable MetaScan
+        window.MetaScan.enableOrDisable(true);
+        log('MetaScan enabled');
+      } else {
+        log('ERROR: MetaScan not loaded');
+      }
+      
+      // Add button handlers
+      document.getElementById('enable-btn').addEventListener('click', function() {
+        if (window.MetaScan) {
+          window.MetaScan.enableOrDisable(true);
+          log('MetaScan enabled via button');
+        } else {
+          log('ERROR: Cannot enable - MetaScan not loaded');
+        }
+      });
+      
+      document.getElementById('disable-btn').addEventListener('click', function() {
+        if (window.MetaScan) {
+          window.MetaScan.enableOrDisable(false);
+          log('MetaScan disabled via button');
+        } else {
+          log('ERROR: Cannot disable - MetaScan not loaded');
+        }
+      });
+      
+      // Track clicks for debugging
+      let clickCount = 0;
+      let lastClickTime = 0;
+      
+      document.getElementById('click-area').addEventListener('click', function() {
+        const now = Date.now();
+        
+        // Reset counter if it's been too long
+        if (now - lastClickTime > 3000 && clickCount > 0) {
+          clickCount = 0;
+          log('Click counter reset (timeout)');
+        }
+        
+        lastClickTime = now;
+        clickCount++;
+        
+        log(`Click detected: ${clickCount}/5`);
+        
+        // Reset after 3 seconds
+        setTimeout(function() {
+          if (Date.now() - lastClickTime >= 3000) {
+            clickCount = 0;
+            log('Click counter reset (timeout)');
+          }
+        }, 3000);
+      });
+    });
+  </script>
+</body>
+</html>

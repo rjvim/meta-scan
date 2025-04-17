@@ -75,6 +75,29 @@ export function enableOrDisable(enabled: boolean): void {
  * Initialize MetaScan with options
  */
 export function init(userOptions?: Partial<MetaScanOptions>): void {
+  // Check for data attributes in script tag
+  if (typeof document !== 'undefined') {
+    const metaScanScript = document.querySelector('script[data-auto-enable]');
+    if (metaScanScript) {
+      const autoEnable = metaScanScript.getAttribute('data-auto-enable');
+      if (autoEnable === 'true') {
+        options.enabled = true;
+      } else if (autoEnable === 'false') {
+        options.enabled = false;
+      }
+    }
+    
+    // Check for tap feature opt-in
+    const tapFeatureScript = document.querySelector('script[data-enable-tap-feature]');
+    if (tapFeatureScript) {
+      const enableTapFeature = tapFeatureScript.getAttribute('data-enable-tap-feature');
+      options.enableTapFeature = enableTapFeature === 'true' || enableTapFeature === '';
+    } else {
+      // Default to disabled if not explicitly enabled
+      options.enableTapFeature = false;
+    }
+  }
+  
   if (userOptions) {
     options = { ...options, ...userOptions };
   }
@@ -134,6 +157,12 @@ export function exportData(format: "json" | "csv" | "text"): string {
  */
 export function configure(newOptions: Partial<MetaScanOptions>): void {
   options = { ...options, ...newOptions };
+  
+  // Update the exposed options reference
+  if (MetaScan._options) {
+    MetaScan._options = options;
+  }
+  
   logger.info("MetaScan reconfigured with options:", options);
 }
 
@@ -143,5 +172,6 @@ export const MetaScan: MetaScanAPI = {
   export: exportData,
   configure,
   enableOrDisable,
+  _options: options, // Expose options for internal use
   _watchers: {}, // For internal use
 };
