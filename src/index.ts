@@ -41,9 +41,6 @@ export function enableOrDisable(enabled: boolean): void {
     } else {
       // If container exists but is hidden, show it
       container.style.display = "";
-      
-      // Also update the UI state to open the panel
-      stateManager.updateState({ isOpen: true });
     }
 
     // Re-initialize DOM watcher if it was disabled
