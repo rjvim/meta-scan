@@ -1,3 +1,15 @@
+# v0.14.2 (Sat Apr 19 2025)
+
+#### 🐛 Bug Fix
+
+- Update version import to use window global and fix code formatting [#74](https://github.com/rjvim/meta-scan/pull/74) ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.14.1 (Sat Apr 19 2025)
 
 #### 🐛 Bug Fix
