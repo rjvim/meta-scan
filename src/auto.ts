@@ -65,6 +65,15 @@ if (typeof window !== "undefined") {
         options.theme = scriptTag.dataset.theme as any;
         logger.info(`Setting theme to ${options.theme}`);
       }
+      
+      // Check for tap feature enablement
+      if (scriptTag.dataset.enableTapFeature === "true") {
+        options.enableTapFeature = true;
+        logger.info("Tap feature explicitly enabled via script attribute");
+      } else {
+        options.enableTapFeature = false;
+        logger.info("Tap feature disabled (default or explicitly set to false)");
+      }
 
       // Initialize with extracted options
       logger.info("Initializing with options", options);

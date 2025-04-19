@@ -22,7 +22,7 @@ MetaScan is a lightweight (31.2 kB) client-side JavaScript tool that extracts an
 - 📋 Copy functionality for metadata values with standardized formatting
 - 🧩 Structured data extraction (JSON-LD and Microdata)
 - 🔎 Advanced search with prefix support and dedicated results view
-- 📱 Mobile-friendly with 5-tap toggle feature and improved animations
+- 📱 Mobile-friendly with opt-in 5-tap toggle feature and improved animations
 - 🔄 Integrated UI controls with enhanced component structure
 - ✨ Smooth animations for panel opening/closing and theme switching with improved transitions
 
@@ -123,16 +123,36 @@ MetaScan can be enabled or disabled by tapping anywhere on the page 5 times in q
 
 As you tap, a subtle indicator will show your progress toward the 5 taps required to toggle the state. When the sequence is completed, a toast notification will confirm that MetaScan has been enabled or disabled.
 
+#### 5-Tap Feature Configuration:
+
+The 5-tap feature allows users to toggle MetaScan visibility by tapping 5 times anywhere on the page. This feature is now **opt-in** and can be controlled with the `data-enable-tap-feature` attribute:
+
+```html
+<script
+  crossorigin="anonymous"
+  src="//cdn.jsdelivr.net/npm/meta-scan@<latest-version>/dist/auto.global.js"
+  data-enable-tap-feature="true"
+></script>
+```
+
 #### How to Use the 5-Tap Feature:
 
-1. **Tap anywhere on the page** 5 times within 3 seconds
-2. After every other tap, you'll see a toast notification showing your progress
+1. First, ensure the feature is enabled with `data-enable-tap-feature="true"`
+2. **Tap anywhere on the page** 5 times within 3 seconds
 3. After the 5th tap, MetaScan will toggle between enabled and disabled states
-4. A confirmation toast will appear showing "MetaScan enabled" or "MetaScan disabled"
+4. Only the "M" icon will appear/disappear (the panel will remain closed)
+5. To toggle again, tap 5 more times
+
+#### Behavior with Different Configurations:
+
+- `data-auto-enable="true"`: MetaScan is visible by default
+- `data-auto-enable="false" data-enable-tap-feature="false"`: MetaScan is hidden by default and the tap feature is disabled
+- `data-auto-enable="false" data-enable-tap-feature="true"`: MetaScan is hidden by default but can be toggled with 5 taps
 
 #### Troubleshooting:
 
 - Make sure to complete all 5 taps within the 3-second window
+- Verify that `data-enable-tap-feature="true"` is set if you want to use this feature
 - Tap on any part of the page (not just the document body)
 - If you're having trouble, try tapping on empty areas of the page
 - Check your browser console for log messages (useful for developers)
@@ -287,6 +307,11 @@ MetaScan has been refactored for better maintainability and extensibility:
   - Improved theme toggle transitions
   - Enhanced dropdown positioning and animations
   - Position-aware panel animations
+
+- **Enhanced Configuration**:
+  - Opt-in 5-tap feature with `data-enable-tap-feature` attribute
+  - Improved initialization with better attribute handling
+  - Consistent state management across features
 
 ## License
 
