@@ -1,7 +1,7 @@
 /**
  * Utility to detect multiple taps for enabling/disabling MetaScan
  */
-import { MetaScan } from "..";
+import { enableOrDisable } from "..";
 import { stateManager } from "../state";
 import { logger } from "./logger";
 
@@ -27,16 +27,9 @@ function resetTapCounter() {
 
 /**
  * Check if the tap feature is enabled
- * @returns {boolean} Whether the tap feature is enabled
+ * @returns {boolean} Whether the tap feature is enabled via script tag attribute
  */
 export function checkTapFeatureEnabled(): boolean {
-  // Check if the tap feature is enabled in options
-  const options = (MetaScan as any).options;
-  if (options && options.enableTapFeature === true) {
-    logger.info('MetaScan: Tap feature enabled via options');
-    return true;
-  }
-
   // Check if the tap feature is enabled via script tag attribute
   if (typeof document !== 'undefined') {
     const scriptTags = document.querySelectorAll('script[src*="meta-scan"]');
@@ -95,17 +88,8 @@ export function handleTap(): boolean {
     // Reset the counter
     resetTapCounter();
     
-    // Instead of using enableOrDisable which might open the panel,
-    // use stateManager.setEnableDisable to just toggle the visibility
-    stateManager.setEnableDisable(newState);
-    
-    // Update the UI without opening the panel
-    const container = document.getElementById("meta-scan-root");
-    if (container) {
-      container.style.display = newState ? "" : "none";
-      // Make sure the panel stays closed
-      stateManager.updateState({ isOpen: false });
-    }
+    // Toggle the state
+    enableOrDisable(newState);
 
     // Return true to indicate the sequence was completed
     return true;
@@ -123,20 +107,12 @@ export function initTapDetector() {
   
   // Add a click event listener to the document
   document.addEventListener('click', () => {
-    // Only process taps if the feature is enabled
-    if (checkTapFeatureEnabled()) {
-      // Process all clicks, not just those on the document body
-      // This makes the feature more reliable, especially on mobile
-      const result = handleTap();
-      
-      // Only log if the tap feature is enabled
-      logger.info('MetaScan: Tap detected, count: ' + tapCount);
-      
-      // If the tap threshold was reached, prevent default behavior
-      if (result) {
-        logger.info('MetaScan: Tap threshold reached, toggling visibility');
-      }
-    }
+    // Process all clicks, not just those on the document body
+    // This makes the feature more reliable, especially on mobile
+    handleTap();
+    
+    // Log for debugging
+    logger.info('MetaScan: Tap detected, count: ' + tapCount);
   });
   
   logger.info('MetaScan: Tap detector initialized');

@@ -14,10 +14,8 @@ const defaultOptions: MetaScanOptions = {
   enabled: true,
   position: "top-right",
   theme: "auto",
-  enableTapFeature: false, // Tap feature disabled by default
 };
 
-// Make options accessible for internal use
 let options = { ...defaultOptions };
 
 // In src/index.ts
@@ -78,11 +76,6 @@ export function init(userOptions?: Partial<MetaScanOptions>): void {
     options = { ...options, ...userOptions };
   }
 
-  // Update the exposed options in the MetaScan API
-  if (MetaScan) {
-    (MetaScan as any).options = { ...options };
-  }
-
   logger.info("MetaScan initialized with options:", options);
   
   // Initialize the tap detector for mobile usage
@@ -138,12 +131,6 @@ export function exportData(format: "json" | "csv" | "text"): string {
  */
 export function configure(newOptions: Partial<MetaScanOptions>): void {
   options = { ...options, ...newOptions };
-  
-  // Update the exposed options in the MetaScan API
-  if (MetaScan) {
-    (MetaScan as any).options = { ...options };
-  }
-  
   logger.info("MetaScan reconfigured with options:", options);
 }
 
@@ -154,5 +141,4 @@ export const MetaScan: MetaScanAPI = {
   configure,
   enableOrDisable,
   _watchers: {}, // For internal use
-  options: { ...options }, // Expose options for internal use
 };
