@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MetaScan Tap Feature Test</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h1 {
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+    .test-case {
+      margin-bottom: 30px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    .test-case h2 {
+      margin-top: 0;
+    }
+    .test-case p {
+      margin-bottom: 10px;
+    }
+    .test-case button {
+      padding: 8px 12px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .test-case button:hover {
+      background-color: #45a049;
+    }
+    .code {
+      background-color: #f5f5f5;
+      padding: 10px;
+      border-radius: 4px;
+      font-family: monospace;
+      overflow-x: auto;
+    }
+    .expected-behavior {
+      background-color: #fffde7;
+      padding: 10px;
+      border-left: 3px solid #ffc107;
+    }
+  </style>
+</head>
+<body>
+  <h1>MetaScan Tap Feature Test</h1>
+  <p>This page tests the tap feature implementation with different configurations.</p>
+  
+  <div class="test-case" id="test-case-1">
+    <h2>Test Case 1: Auto-Enable True</h2>
+    <p>Configuration: <code>data-auto-enable="true"</code></p>
+    <div class="expected-behavior">
+      <strong>Expected Behavior:</strong> M icon should show by default.
+    </div>
+    <p>To test this case, click the button below to load an iframe with this configuration:</p>
+    <button onclick="loadIframe('auto-enable-true')">Load Test Case 1</button>
+    <div id="iframe-container-1"></div>
+  </div>
+
+  <div class="test-case" id="test-case-2">
+    <h2>Test Case 2: Auto-Enable False & Tap Feature Disabled</h2>
+    <p>Configuration: <code>data-auto-enable="false" data-enable-tap-feature="false"</code></p>
+    <div class="expected-behavior">
+      <strong>Expected Behavior:</strong> 
+      <ul>
+        <li>M icon should NOT show by default</li>
+        <li>5-tap sequence should NOT activate M icon</li>
+        <li><code>window.MetaScan.enableOrDisable(true)</code> should show M icon</li>
+        <li><code>window.MetaScan.enableOrDisable(false)</code> should hide M icon</li>
+      </ul>
+    </div>
+    <p>To test this case, click the button below to load an iframe with this configuration:</p>
+    <button onclick="loadIframe('auto-enable-false-tap-disabled')">Load Test Case 2</button>
+    <div id="iframe-container-2"></div>
+    <div class="code">
+      <p>Run these commands in the iframe's console:</p>
+      <pre>window.MetaScan.enableOrDisable(true);  // Should show M icon
+window.MetaScan.enableOrDisable(false); // Should hide M icon</pre>
+    </div>
+  </div>
+
+  <div class="test-case" id="test-case-3">
+    <h2>Test Case 3: Auto-Enable False & Tap Feature Enabled</h2>
+    <p>Configuration: <code>data-auto-enable="false" data-enable-tap-feature="true"</code></p>
+    <div class="expected-behavior">
+      <strong>Expected Behavior:</strong> 
+      <ul>
+        <li>M icon should NOT show by default</li>
+        <li>When 5 taps are performed on page, M icon should become visible (but panel should remain closed)</li>
+        <li>When 5 more taps are performed, M icon should hide</li>
+      </ul>
+    </div>
+    <p>To test this case, click the button below to load an iframe with this configuration:</p>
+    <button onclick="loadIframe('auto-enable-false-tap-enabled')">Load Test Case 3</button>
+    <div id="iframe-container-3"></div>
+  </div>
+
+  <script>
+    function loadIframe(testCase) {
+      let containerId = '';
+      let srcContent = '';
+      
+      switch(testCase) {
+        case 'auto-enable-true':
+          containerId = 'iframe-container-1';
+          srcContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Auto-Enable True Test</title>
+</head>
+<body style="background-color: #f0f0f0; padding: 20px; height: 300px;">
+  <h2>Auto-Enable True Test</h2>
+  <p>The M icon should be visible by default.</p>
+  <p>Click anywhere on this frame 5 times to test the tap feature (should have no effect since it's already enabled).</p>
+  <script src="../../dist/auto.global.js?meta-scan" data-auto-enable="true"><\/script>
+</body>
+</html>
+          `;
+          break;
+        
+        case 'auto-enable-false-tap-disabled':
+          containerId = 'iframe-container-2';
+          srcContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Auto-Enable False & Tap Disabled Test</title>
+</head>
+<body style="background-color: #f0f0f0; padding: 20px; height: 300px;">
+  <h2>Auto-Enable False & Tap Disabled Test</h2>
+  <p>The M icon should NOT be visible by default.</p>
+  <p>Click anywhere on this frame 5 times - nothing should happen.</p>
+  <p>Use the console commands shown above to manually enable/disable the M icon.</p>
+  <script src="../../dist/auto.global.js?meta-scan" data-auto-enable="false" data-enable-tap-feature="false"><\/script>
+</body>
+</html>
+          `;
+          break;
+        
+        case 'auto-enable-false-tap-enabled':
+          containerId = 'iframe-container-3';
+          srcContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Auto-Enable False & Tap Enabled Test</title>
+</head>
+<body style="background-color: #f0f0f0; padding: 20px; height: 300px;">
+  <h2>Auto-Enable False & Tap Enabled Test</h2>
+  <p>The M icon should NOT be visible by default.</p>
+  <p>Click anywhere on this frame 5 times - the M icon should appear.</p>
+  <p>Click 5 more times - the M icon should disappear.</p>
+  <script src="../../dist/auto.global.js?meta-scan" data-auto-enable="false" data-enable-tap-feature="true"><\/script>
+</body>
+</html>
+          `;
+          break;
+      }
+      
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      
+      // Clear previous iframe if any
+      container.innerHTML = '';
+      
+      // Create iframe with the test case
+      const iframe = document.createElement('iframe');
+      iframe.style.width = '100%';
+      iframe.style.height = '350px';
+      iframe.style.border = '1px solid #ddd';
+      iframe.style.borderRadius = '4px';
+      
+      container.appendChild(iframe);
+      
+      // Write content to iframe
+      const iframeDoc = iframe.contentWindow.document;
+      iframeDoc.open();
+      iframeDoc.write(srcContent);
+      iframeDoc.close();
+    }
+  </script>
+</body>
+</html>

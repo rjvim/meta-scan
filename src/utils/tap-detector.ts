@@ -26,10 +26,36 @@ function resetTapCounter() {
 }
 
 /**
+ * Check if the tap feature is enabled
+ * @returns {boolean} Whether the tap feature is enabled via script tag attribute
+ */
+export function checkTapFeatureEnabled(): boolean {
+  // Check if the tap feature is enabled via script tag attribute
+  if (typeof document !== 'undefined') {
+    const scriptTags = document.querySelectorAll('script[src*="meta-scan"]');
+    if (scriptTags.length > 0) {
+      const scriptTag = scriptTags[0] as HTMLElement;
+      if (scriptTag.dataset.enableTapFeature === 'true') {
+        logger.info('MetaScan: Tap feature enabled via script tag attribute');
+        return true;
+      }
+    }
+  }
+
+  logger.info('MetaScan: Tap feature is disabled');
+  return false;
+}
+
+/**
  * Handle a tap event
  * @returns {boolean} Whether the tap sequence was completed
  */
 export function handleTap(): boolean {
+  // First check if the tap feature is enabled
+  if (!checkTapFeatureEnabled()) {
+    return false;
+  }
+
   const now = Date.now();
   
   // If it's been too long since the last tap, reset the counter
@@ -61,6 +87,7 @@ export function handleTap(): boolean {
     
     // Reset the counter
     resetTapCounter();
+    
     // Toggle the state
     enableOrDisable(newState);
 
