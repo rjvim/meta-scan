@@ -1,3 +1,20 @@
+# v0.14.0 (Sat Apr 19 2025)
+
+#### 🚀 Enhancement
+
+- feat: Make 5-tap feature opt-in with data-enable-tap-feature attribute [#71](https://github.com/rjvim/meta-scan/pull/71) ([@rjvim](https://github.com/rjvim))
+
+#### 🐛 Bug Fix
+
+- Update script tag and improve HTML formatting with proper indentation ([@rjvim](https://github.com/rjvim))
+- Add logging to auto-initialize and disable auto-enable in test page [#70](https://github.com/rjvim/meta-scan/pull/70) ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.13.1 (Thu Apr 17 2025)
 
 #### 🐛 Bug Fix
