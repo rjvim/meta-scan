@@ -1,3 +1,15 @@
+# v0.14.1 (Sat Apr 19 2025)
+
+#### 🐛 Bug Fix
+
+- fix: force rebuild [#73](https://github.com/rjvim/meta-scan/pull/73) ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.14.0 (Sat Apr 19 2025)
 
 #### 🚀 Enhancement
