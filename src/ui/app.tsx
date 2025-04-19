@@ -7,7 +7,8 @@ import { MenuIcon, CloseIcon } from "./icons";
 import { logger } from "../utils/logger";
 import MetadataLayout from "./MetadataLayout";
 import { stateManager } from "../state";
-import { version } from '../../package.json';
+// import { version } from "../../package.json";
+const version = (window as any).META_SCAN_VERSION || "0.0.0";
 import "./animations.css";
 
 export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
@@ -53,7 +54,7 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
   const toggleTheme = () => {
     const nextTheme = theme === "dark" ? "light" : "dark";
     // Use View Transitions API if available
-    if ('startViewTransition' in document) {
+    if ("startViewTransition" in document) {
       // @ts-ignore - TypeScript might not recognize startViewTransition
       document.startViewTransition(() => {
         requestAnimationFrame(() => {
@@ -77,7 +78,7 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
     if (uiState.isOpen) {
       // Start closing animation
       setIsClosing(true);
-      
+
       // Wait for animation to complete before updating state
       setTimeout(() => {
         setUiState((prev) => ({ ...prev, isOpen: false }));
@@ -171,8 +172,6 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
     };
     return positionMap[uiState.position];
   };
-  
-  
 
   // Get panel position origin for animation
   const getPanelOrigin = () => {
@@ -236,16 +235,22 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
 
   return (
     <div className={cn("fixed z-50", getContainerPositionClasses())}>
-      <div className={cn("flex flex-col meta-scan-container", theme === "dark" ? "dark" : "")}>
+      <div
+        className={cn(
+          "flex flex-col meta-scan-container",
+          theme === "dark" ? "dark" : ""
+        )}
+      >
         {(uiState.isOpen || isClosing) && (
           <div
             ref={panelRef}
             className={cn(
               "relative rounded-lg shadow-xl overflow-hidden bg-white dark:bg-gray-800",
-              "meta-scan-panel", !isClosing && uiState.isOpen ? "active" : "closing",
+              "meta-scan-panel",
+              !isClosing && uiState.isOpen ? "active" : "closing",
               getPanelPositionClasses()
             )}
-            style={{ '--panel-origin': getPanelOrigin() } as any}
+            style={{ "--panel-origin": getPanelOrigin() } as any}
           >
             {loading && <LoadingIndicator />}
             <MetadataLayout
@@ -271,9 +276,13 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
             "w-8 h-8 flex items-center justify-center rounded-full",
             "shadow-lg toggle-button",
             "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400",
-            uiState.isOpen ? "bg-purple-600 text-white hover:bg-purple-700 toggle-button-active" : ""
+            uiState.isOpen
+              ? "bg-purple-600 text-white hover:bg-purple-700 toggle-button-active"
+              : ""
           )}
-          title={uiState.isOpen ? "Close MetaScan panel" : "Open MetaScan panel"}
+          title={
+            uiState.isOpen ? "Close MetaScan panel" : "Open MetaScan panel"
+          }
         >
           {uiState.isOpen ? <CloseIcon /> : <MenuIcon />}
         </button>
