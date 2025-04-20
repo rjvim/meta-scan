@@ -1014,7 +1014,16 @@ const MetadataLayout = ({
         Data extracted at {new Date(metadata.extractedAt).toLocaleTimeString()}
         {metadata.missing?.hasCritical && (
           <span className="ml-2 text-red-500 dark:text-red-400 font-medium">
-            • Critical tags missing
+            • {(() => {
+              // Count critical missing tags across all categories
+              const criticalCount = [
+                ...metadata.missing.general,
+                ...metadata.missing.opengraph,
+                ...metadata.missing.twitter,
+                ...metadata.missing.technical
+              ].filter(tag => tag.importance === 'critical').length;
+              return criticalCount;
+            })()} Critical tags missing
           </span>
         )}
       </div>

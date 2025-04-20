@@ -285,6 +285,20 @@ export function App({ initialMetadata }: { initialMetadata: MetadataResult }) {
           }
         >
           {uiState.isOpen ? <CloseIcon /> : <MenuIcon />}
+          {!uiState.isOpen && metadata.missing?.hasCritical && (
+            <span className="absolute -top-1 -right-1 flex items-center justify-center bg-red-500 text-white text-xs font-bold rounded-full w-4 h-4">
+              {(() => {
+                // Count critical missing tags across all categories
+                const criticalCount = [
+                  ...metadata.missing.general,
+                  ...metadata.missing.opengraph,
+                  ...metadata.missing.twitter,
+                  ...metadata.missing.technical
+                ].filter(tag => tag.importance === 'critical').length;
+                return criticalCount;
+              })()}
+            </span>
+          )}
         </button>
       </div>
     </div>
