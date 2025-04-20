@@ -17,6 +17,7 @@ MetaScan is a lightweight (31.2 kB) client-side JavaScript tool that extracts an
 - 🚀 Zero-dependency with minimal footprint
 - 🔌 Simple installation with a single script tag
 - 🔍 Comprehensive metadata extraction with standardized keys and missing tag detection
+- 🚨 Visual indicator for missing critical metadata with count badge
 - 🎨 Clean, modern UI with dark/light mode support and smooth theme transition animations
 - 🎛️ Configurable positioning on any corner of the screen with improved dropdown positioning
 - 📋 Copy functionality for metadata values with standardized formatting
@@ -32,6 +33,7 @@ MetaScan is designed to serve the needs of various professionals working with we
 
 ### Web Developers
 - **Verify Metadata Implementation** - Instantly check metadata implementation during development
+- **Identify Missing Critical Tags** - Quickly spot missing critical metadata with visual indicators and counts
 - **Solve Structured Data Issues** - Resolve structured data problems without external tools
 - **Implement Open Graph and Twitter Card Tags** - Ensure correct implementation of Open Graph and Twitter Card tags
 - **Test Responsive Behavior** - Test metadata responsiveness across all devices
@@ -191,6 +193,8 @@ MetaScan helps identify missing metadata with an enhanced priority-based display
 - Identifies missing required metadata based on best practices
 - Shows standardized key names for easy implementation
 - Provides clear descriptions of why each tag is important
+- Displays a red badge with count of missing critical tags on the MetaScan icon
+- Shows the exact count of missing critical tags in the panel footer
 - Helps maintain metadata consistency across pages
 
 ## Extracted Metadata
