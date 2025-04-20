@@ -1,3 +1,15 @@
+# v0.15.0 (Sun Apr 20 2025)
+
+#### 🚀 Enhancement
+
+- feat: Add visual indicators for missing critical metadata tags [#75](https://github.com/rjvim/meta-scan/pull/75) ([@rjvim](https://github.com/rjvim))
+
+#### Authors: 1
+
+- Rajiv Seelam ([@rjvim](https://github.com/rjvim))
+
+---
+
 # v0.14.2 (Sat Apr 19 2025)
 
 #### 🐛 Bug Fix
